@@ -1,20 +1,9 @@
-import { useState } from "react";
-import Drink from "./components/Drink";
-import { Button, div } from "@mui/material";
 import { UserType } from "./types";
 import type { User } from "./types";
 import UserBlock from "./components/User";
 //import "./App.css";
 
 function App() {
-  const [sum, setSum] = useState(0);
-
-  const [drinkStates, setDrinkStates] = useState<{ [key: string]: number }>({
-    Lonkero: 0,
-    Bisse: 0,
-    Campari: 0,
-  });
-
   const users: User[] = [
     {
       name: "John Doe",
@@ -72,8 +61,6 @@ function App() {
     },
   ];
 
-  const drinks = ["Lonkero", "Bisse", "Campari"];
-
   return (
     <>
       <h2>Asukkaat</h2>
@@ -81,7 +68,7 @@ function App() {
         {users
           .filter((x) => x.type === UserType.ASUKAS)
           .map((u) => (
-            <UserBlock user={u} />
+            <UserBlock user={u} key={u.name} />
           ))}
       </div>
       <h2>Vanhat</h2>
@@ -89,7 +76,7 @@ function App() {
         {users
           .filter((x) => x.type === UserType.VANHA)
           .map((u) => (
-            <UserBlock user={u} />
+            <UserBlock user={u} key={u.name} />
           ))}
       </div>
       <h2>Hangaroundit</h2>
@@ -97,7 +84,7 @@ function App() {
         {users
           .filter((x) => x.type === UserType.HANGAROUND)
           .map((u) => (
-            <UserBlock user={u} />
+            <UserBlock user={u} key={u.name} />
           ))}
       </div>
     </>

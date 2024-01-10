@@ -28,7 +28,7 @@ const Drink: React.FC<{
   return (
     <>
       <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {drink.name} {drink.price}€ {drinkStates[drink.name]}
+        {drink.name} {drink.price}€
         <ButtonGroup
           variant="contained"
           aria-label="outlined primary button group"

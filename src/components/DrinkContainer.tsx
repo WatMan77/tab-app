@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import type { Drink } from "../types";
+import ShopList from "./ShopList";
 
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
@@ -44,6 +45,7 @@ const DrinkContainer = () => {
       ))}
       Current price: {sum}
       <Button onClick={() => confirm()}>Confirm</Button>
+      <ShopList drinks={drinks} amounts={drinkStates} />
     </>
   );
 };

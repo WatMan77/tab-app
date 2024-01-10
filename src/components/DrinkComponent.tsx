@@ -1,28 +1,34 @@
 import { Button, Box, ButtonGroup } from "@mui/material";
+import type { Drink } from "../types";
 
 const Drink: React.FC<{
-  name: string;
-  price: number;
+  drink: Drink;
   sum: number;
   drinkStates: { [key: string]: number };
   add: (price: number) => void;
   setDrinkStates: (drinks: { [key: string]: number }) => void;
-}> = ({ name, price, sum, add, setDrinkStates, drinkStates }) => {
+}> = ({ drink, sum, add, setDrinkStates, drinkStates }) => {
   const addDrink = () => {
-    add(sum + price);
-    setDrinkStates({ ...drinkStates, [name]: drinkStates[name] + 1 });
+    add(sum + drink.price);
+    setDrinkStates({
+      ...drinkStates,
+      [drink.name]: drinkStates[drink.name] + 1,
+    });
   };
 
   const removeDrink = () => {
-    if (drinkStates[name] >= 1) {
-      add(sum - price);
-      setDrinkStates({ ...drinkStates, [name]: drinkStates[name] - 1 });
+    if (drinkStates[drink.name] >= 1) {
+      add(sum - drink.price);
+      setDrinkStates({
+        ...drinkStates,
+        [drink.name]: drinkStates[drink.name] - 1,
+      });
     }
   };
   return (
     <>
       <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {name} {price}€ {drinkStates[name]}
+        {drink.name} {drink.price}€ {drinkStates[drink.name]}
         <ButtonGroup
           variant="contained"
           aria-label="outlined primary button group"

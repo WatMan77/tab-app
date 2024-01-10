@@ -11,5 +11,10 @@ interface User {
     bank: number
 }
 
+interface Drink {
+    name: string,
+    price: number,
+}
+
 export { UserType }
-export type { User }
+export type { User, Drink}

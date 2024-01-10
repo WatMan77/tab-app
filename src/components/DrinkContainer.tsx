@@ -1,7 +1,8 @@
-import Drink from "./Drink";
+import DrinkComponent from "./DrinkComponent";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
+import type { Drink } from "../types";
 
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
@@ -18,7 +19,7 @@ const DrinkContainer = () => {
     navigate("/");
   };
 
-  const drinks = [
+  const drinks: Drink[] = [
     {
       name: "Lonkero",
       price: 120,
@@ -32,9 +33,8 @@ const DrinkContainer = () => {
   return (
     <>
       {drinks.map((d) => (
-        <Drink
-          name={d.name}
-          price={d.price}
+        <DrinkComponent
+          drink={d}
           setDrinkStates={setDrinkStates}
           drinkStates={drinkStates}
           sum={sum}

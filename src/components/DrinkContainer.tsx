@@ -1,8 +1,11 @@
 import Drink from "./Drink";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/material";
 
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
+  const navigate = useNavigate();
 
   const [drinkStates, setDrinkStates] = useState<{ [key: string]: number }>({
     Lonkero: 0,
@@ -10,14 +13,19 @@ const DrinkContainer = () => {
     Campari: 0,
   });
 
+  const confirm = () => {
+    setSum(0);
+    navigate("/");
+  };
+
   const drinks = [
     {
       name: "Lonkero",
-      price: 1.2,
+      price: 120,
     },
     {
       name: "Campari",
-      price: 0.95,
+      price: 95,
     },
   ];
 
@@ -34,6 +42,8 @@ const DrinkContainer = () => {
           key={d.name}
         />
       ))}
+      Current price: {sum}
+      <Button onClick={() => confirm()}>Confirm</Button>
     </>
   );
 };

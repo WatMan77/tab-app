@@ -8,7 +8,8 @@ function App() {
   return (
     <>
       <h1>This is a blank space!</h1>
-      <Drink name="Lonkero" price={1.2} />
+      <Drink name="Lonkero" price={1.2} add={setSum} sum={sum} />
+      <h1>Current price is: {sum}</h1>
     </>
   );
 }

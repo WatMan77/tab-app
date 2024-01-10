@@ -1,8 +1,13 @@
 import { Button } from "@mui/material";
 
-const Drink: React.FC<{ name: string; price: number }> = ({ name, price }) => {
+const Drink: React.FC<{
+  name: string;
+  price: number;
+  sum: number;
+  add: (price: number) => void;
+}> = ({ name, price, sum, add }) => {
   return (
-    <Button variant="contained">
+    <Button onClick={() => add(price + sum)} variant="contained">
       {name} {price}€
     </Button>
   );

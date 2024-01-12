@@ -8,8 +8,8 @@ const port = 3000;
 
 app.get("/", async (req, res) => {
     try {
-        const result = await db.query("SELECT * FROM users;")
-        console.log("Result?", result);
+        const result = await db.query("SELECT * FROM account;")
+        console.log("Result?", result.rows);
     } catch (e) {
         console.log("Error", e)
     }

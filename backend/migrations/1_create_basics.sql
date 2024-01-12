@@ -4,7 +4,7 @@ CREATE TABLE account (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     category VARCHAR(50) CHECK (category IN ('ASUKAS', 'VANHA', 'HANGAROUND')),
-    balance INTEGER NOT NULL
+    balance INTEGER DEFAULT 0
 );
 
 CREATE TABLE product (

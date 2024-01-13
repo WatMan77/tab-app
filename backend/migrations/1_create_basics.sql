@@ -2,7 +2,7 @@
 
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     category VARCHAR(50) CHECK (category IN ('ASUKAS', 'VANHA', 'HANGAROUND')),
     balance INTEGER DEFAULT 0
 );

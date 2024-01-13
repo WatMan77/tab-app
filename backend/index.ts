@@ -24,6 +24,8 @@ app.post("/account", async (req, res) => {
         const account: Account = toNewAccount(req.body)
         console.log("Received account:")
         console.log("Account")
+        const result = await db.query("INSERT INTO account (username, category) VALUES($1, $2) RETURNING id, balance", [account.username, account.category])
+        console.log("Result?", result.rows);
         res.status(200).send("OK")
     } catch (e) {
         console.log(e)

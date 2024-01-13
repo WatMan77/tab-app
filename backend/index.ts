@@ -1,6 +1,8 @@
 import express from 'express';
 import 'dotenv/config';
 import { db } from "./src/database";
+import { toNewAccount } from "./src/utils";
+import { Account } from "./src/types";
 
 const app = express();
 app.use(express.json());
@@ -19,9 +21,9 @@ app.get("/", async (req, res) => {
 
 app.post("/account", async (req, res) => {
     try {
-        console.log("POST request received")
-        console.log("What is the body?")
-        console.log(req.body);
+        const account: Account = toNewAccount(req.body)
+        console.log("Received account:")
+        console.log("Account")
         res.status(200).send("OK")
     } catch (e) {
         console.log(e)

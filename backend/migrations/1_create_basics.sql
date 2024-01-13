@@ -9,7 +9,7 @@ CREATE TABLE account (
 
 CREATE TABLE product (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) UNIQUE NOT NULL,
     pricein INTEGER CHECK (pricein >= 0), -- prices are in cents because rounding errors
     priceout INTEGER CHECK (priceout >= 0)
 );

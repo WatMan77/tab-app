@@ -1,4 +1,4 @@
-import { Account, UserType } from "./types";
+import { Account, Product, UserType } from "./types";
 
 const toNewAccount = (object: unknown): Account => {
     if (isValidAccount(object)) {
@@ -25,4 +25,26 @@ const isValidUserType = (category: any): category is UserType => {
     return ['ASUKAS', 'VANHA', 'HANGAROUND'].includes(category);
 }
 
-export { toNewAccount }
+
+// Product object validation
+const toNewProduct = (object: unknown): Product => {
+    if (isValidProduct(object)) {
+        return object as Product
+    } else {
+        throw new Error("Invalid product structure")
+    }
+}
+
+const isValidProduct = (product: any): product is Product => {
+    console.log("What is the product?")
+    console.log(product)
+    const hasValidId = typeof product.id === "undefined" || typeof product.id === "number"
+    return (
+        typeof product.name === "string" &&
+        typeof product.pricein === "number" &&
+        typeof product.priceout === "number" &&
+        hasValidId
+    )
+}
+
+export { toNewAccount, toNewProduct }

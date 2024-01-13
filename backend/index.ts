@@ -1,8 +1,8 @@
 import express from 'express';
 import 'dotenv/config';
 import { db } from "./src/database";
-import { toNewAccount } from "./src/utils";
-import { Account } from "./src/types";
+import { toNewAccount, toNewProduct } from "./src/utils";
+import { Account, Product } from "./src/types";
 
 const app = express();
 app.use(express.json());
@@ -29,8 +29,21 @@ app.post("/account", async (req, res) => {
         res.status(200).send("OK")
     } catch (e) {
         console.log(e)
+        res.status(400).send(e)
     }
 });
+
+app.post("/product", async (req, res) => {
+    try {
+        const product: Product = toNewProduct(req.body)
+        const result = await db.query("INSERT INTO product (name, pricein, priceout) VALUES($1, $2, $3) RETURNING *", [product.name, product.pricein, product.priceout])
+        console.log("Product result?", result.rows)
+        res.status(200).send("OK")
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
 
 app.listen(PORT, () => {
     return console.log("Server running on port " + PORT);

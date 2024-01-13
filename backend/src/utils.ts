@@ -1,4 +1,4 @@
-import { Account, Product, UserType } from "./types";
+import { Account, Product, Transaction, UserType } from "./types";
 
 const toNewAccount = (object: unknown): Account => {
     if (isValidAccount(object)) {
@@ -36,8 +36,6 @@ const toNewProduct = (object: unknown): Product => {
 }
 
 const isValidProduct = (product: any): product is Product => {
-    console.log("What is the product?")
-    console.log(product)
     const hasValidId = typeof product.id === "undefined" || typeof product.id === "number"
     return (
         typeof product.name === "string" &&
@@ -47,4 +45,24 @@ const isValidProduct = (product: any): product is Product => {
     )
 }
 
-export { toNewAccount, toNewProduct }
+const toNewTransaction = (object: unknown): Transaction => {
+    if (isValidTranscation(object)) {
+        return object as Transaction
+    } else {
+        throw new Error("Invalid transcation structure")
+    }
+}
+
+const isValidTranscation = (transaction: any): transaction is Transaction => {
+    return (
+        typeof transaction.account_id === "number" &&
+        typeof transaction.username === "string" &&
+        typeof transaction.product_id === "number" &&
+        typeof transaction.product_name === "string" &&
+        typeof transaction.amount === "number" &&
+        Boolean(Date.parse(transaction.transaction_date))
+
+    )
+}
+
+export { toNewAccount, toNewProduct, toNewTransaction }

@@ -16,7 +16,9 @@ CREATE TABLE product (
 
 CREATE TABLE transaction (
     account_id INTEGER REFERENCES account(id),
+    username VARCHAR(50) REFERENCES account(username),
     product_id INTEGER REFERENCES product(id),
+    product_name VARCHAR(50) REFERENCES product(name),
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     amount INTEGER CHECK (amount >= 1)
 );

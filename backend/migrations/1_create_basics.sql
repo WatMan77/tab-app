@@ -1,5 +1,10 @@
 --sql commands here
 
+-- to show the time in Finnish time, do this
+-- transaction_date AT TIME ZONE 'UTC' AS utc_transaction_date
+
+SET timezone = 'Europe/Helsinki'; --make sure time is the same as in Finland
+
 CREATE TABLE account (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,

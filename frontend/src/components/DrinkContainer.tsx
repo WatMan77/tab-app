@@ -1,5 +1,5 @@
 import DrinkComponent from "./DrinkComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import type { Drink } from "../types";
@@ -8,10 +8,7 @@ import ShopList from "./ShopList";
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
   const navigate = useNavigate();
-
   const location = useLocation();
-
-  console.log("What is the state?", location.state);
 
   const [drinkStates, setDrinkStates] = useState<{ [key: string]: number }>({
     Lonkero: 0,
@@ -19,7 +16,29 @@ const DrinkContainer = () => {
     Campari: 0,
   });
 
-  const confirm = () => {
+  useEffect(() => {
+    fetch("http://localhost:3000/api/product")
+      .then((response) => response.json())
+      .then((data) => console.log("Drinks", data));
+  });
+
+  console.log("What is the state?", location.state);
+
+  const confirm = async () => {
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ t: "React POST Request Example" }),
+    };
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/transaction",
+        requestOptions
+      );
+      console.log(response);
+    } catch (e) {
+      console.log(e);
+    }
     setSum(0);
     navigate("/");
   };

@@ -2,27 +2,43 @@ import DrinkComponent from "./DrinkComponent";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
-import type { Drink } from "../types";
+import type { Product } from "../types";
 import ShopList from "./ShopList";
 
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
   const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
 
-  const [drinkStates, setDrinkStates] = useState<{ [key: string]: number }>({
-    Lonkero: 0,
-    Bisse: 0,
-    Campari: 0,
-  });
+  const [drinkStates, setDrinkStates] = useState<
+    { product: Product; amount: number }[]
+  >([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/product")
       .then((response) => response.json())
-      .then((data) => console.log("Drinks", data));
-  });
+      .then((data: Product[]) => {
+        setDrinkStates(
+          data.map((x) => {
+            return { product: x, amount: 0 };
+          })
+        );
+      });
+  }, []);
 
-  console.log("What is the state?", location.state);
+  const updateAmount = (product: string, increase: number) => {
+    console.log("Do we update a product?", product);
+    const updatedProducts = drinkStates.map((p) => {
+      if (p.product.name === product) {
+        console.log("Yes we did!", p.product.name);
+        return { ...p, amount: p.amount + increase };
+      } else {
+        console.log("Could not find ", product);
+        return p;
+      }
+    });
+    setDrinkStates(updatedProducts);
+  };
 
   const confirm = async () => {
     const requestOptions = {
@@ -43,14 +59,16 @@ const DrinkContainer = () => {
     navigate("/");
   };
 
-  const drinks: Drink[] = [
+  const drinks: Product[] = [
     {
-      name: "Lonkero",
-      price: 120,
+      name: "Sininen",
+      pricein: 120,
+      priceout: 200,
     },
     {
       name: "Campari",
-      price: 95,
+      pricein: 95,
+      priceout: 300,
     },
   ];
 
@@ -59,8 +77,8 @@ const DrinkContainer = () => {
       {drinks.map((d) => (
         <DrinkComponent
           drink={d}
-          setDrinkStates={setDrinkStates}
           drinkStates={drinkStates}
+          updateAmount={updateAmount}
           sum={sum}
           add={setSum}
           key={d.name}
@@ -68,7 +86,7 @@ const DrinkContainer = () => {
       ))}
       Current price: {sum}
       <Button onClick={() => confirm()}>Confirm</Button>
-      <ShopList drinks={drinks} amounts={drinkStates} />
+      <ShopList drinkStates={drinkStates} />
     </>
   );
 };

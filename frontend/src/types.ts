@@ -18,10 +18,12 @@ interface Account {
     balance?: number
 }
 
-interface Drink {
+interface Product {
+    id?: number,
     name: string,
-    price: number,
+    pricein: number,
+    priceout: number
 }
 
 export { UserType }
-export type { User, Drink, Account }
+export type { User, Product, Account }

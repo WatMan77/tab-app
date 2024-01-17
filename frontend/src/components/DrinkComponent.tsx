@@ -1,34 +1,31 @@
 import { Button, Box, ButtonGroup } from "@mui/material";
-import type { Drink } from "../types";
+import type { Product } from "../types";
 
 const Drink: React.FC<{
-  drink: Drink;
+  drink: Product;
   sum: number;
-  drinkStates: { [key: string]: number };
-  add: (price: number) => void;
-  setDrinkStates: (drinks: { [key: string]: number }) => void;
-}> = ({ drink, sum, add, setDrinkStates, drinkStates }) => {
+  drinkStates: { product: Product; amount: number }[];
+  add: (amount: number) => void;
+  updateAmount: (product: string, amount: number) => void;
+}> = ({ drink, sum, add, drinkStates, updateAmount }) => {
+  console.log("Drink stats in Drink component?");
+  console.log(drinkStates);
   const addDrink = () => {
-    add(sum + drink.price);
-    setDrinkStates({
-      ...drinkStates,
-      [drink.name]: drinkStates[drink.name] + 1,
-    });
+    add(sum + drink.pricein);
+    updateAmount(drink.name, 1);
   };
 
   const removeDrink = () => {
-    if (drinkStates[drink.name] >= 1) {
-      add(sum - drink.price);
-      setDrinkStates({
-        ...drinkStates,
-        [drink.name]: drinkStates[drink.name] - 1,
-      });
+    const currentAmount = drinkStates.find((p) => p.amount);
+    if (currentAmount && currentAmount.amount >= 1) {
+      add(sum - drink.pricein);
+      updateAmount(drink.name, -1);
     }
   };
   return (
     <>
       <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {drink.name} {drink.price}€
+        {drink.name} {drink.pricein}€
         <ButtonGroup
           variant="contained"
           aria-label="outlined primary button group"

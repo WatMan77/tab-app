@@ -1,16 +1,17 @@
-import type { Drink } from "../types";
+import type { Product } from "../types";
 
 const ShopList: React.FC<{
-  drinks: Drink[];
-  amounts: { [key: string]: number };
-}> = ({ drinks, amounts }) => {
+  drinkStates: { product: Product; amount: number }[];
+}> = ({ drinkStates }) => {
   // Take only drinks whose amount is > 1
-  const cart = drinks.filter((d) => amounts[d.name] >= 1);
+  const cart = drinkStates.filter((p) => p.amount >= 1);
+  console.log("Drink states?", drinkStates);
+  console.log("Cart?", cart);
   return (
     <ul>
       {cart.map((d) => (
-        <li key={d.name}>
-          {d.name} (x{amounts[d.name]}) {d.price * amounts[d.name]}€
+        <li key={d.product.name}>
+          {d.product.name} (x{d.amount}) {d.product.pricein * d.amount}€
         </li>
       ))}
     </ul>

@@ -3,11 +3,17 @@ import type { Account } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 //import "./App.css";
 
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
+  const navigate = useNavigate();
+
+  const selectProducts = () => {
+    navigate("/piikki", { state: { users: users.filter((u) => u.pressed) } });
+  };
 
   const changePress = (username: string) => {
     const updatedUsers = users.map((x) => {
@@ -68,7 +74,9 @@ const App = () => {
           ))}
       </div>
       <div>
-        <Button variant="contained">Drinks</Button>
+        <Button variant="contained" onClick={selectProducts}>
+          Drinks
+        </Button>
       </div>
     </>
   );

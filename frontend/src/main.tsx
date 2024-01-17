@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "/piikki/:name",
+    path: "/piikki",
     element: <DrinkContainer />,
   },
   {

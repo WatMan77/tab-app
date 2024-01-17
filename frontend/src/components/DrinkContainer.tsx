@@ -1,6 +1,6 @@
 import DrinkComponent from "./DrinkComponent";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import type { Drink } from "../types";
 import ShopList from "./ShopList";
@@ -8,6 +8,10 @@ import ShopList from "./ShopList";
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
   const navigate = useNavigate();
+
+  const location = useLocation();
+
+  console.log("What is the state?", location.state);
 
   const [drinkStates, setDrinkStates] = useState<{ [key: string]: number }>({
     Lonkero: 0,

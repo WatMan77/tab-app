@@ -1,10 +1,18 @@
 import { UserType } from "./types";
-import type { User } from "./types";
+import type { Account } from "./types";
 import UserBlock from "./components/User";
+import { useEffect, useState } from "react";
 //import "./App.css";
 
-function App() {
-  const users: User[] = [
+const App = () => {
+  const [users, setUsers] = useState<Account[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/api/account")
+      .then((response) => response.json())
+      .then((data) => setUsers(data));
+  }, []);
+  /*const users: User[] = [
     {
       name: "John Doe",
       type: UserType.ASUKAS,
@@ -59,36 +67,36 @@ function App() {
       username: "ivy.green",
       bank: 8000,
     },
-  ];
+  ];*/
 
   return (
     <>
       <h2>Asukkaat</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.type === UserType.ASUKAS)
+          .filter((x) => x.category === UserType.ASUKAS)
           .map((u) => (
-            <UserBlock user={u} key={u.name} />
+            <UserBlock user={u} key={u.username} />
           ))}
       </div>
       <h2>Vanhat</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.type === UserType.VANHA)
+          .filter((x) => x.category === UserType.VANHA)
           .map((u) => (
-            <UserBlock user={u} key={u.name} />
+            <UserBlock user={u} key={u.username} />
           ))}
       </div>
       <h2>Hangaroundit</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.type === UserType.HANGAROUND)
+          .filter((x) => x.category === UserType.HANGAROUND)
           .map((u) => (
-            <UserBlock user={u} key={u.name} />
+            <UserBlock user={u} key={u.username} />
           ))}
       </div>
     </>
   );
-}
+};
 
 export default App;

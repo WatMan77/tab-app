@@ -5,20 +5,30 @@ import { toNewAccount, toNewProduct, toNewTransaction } from "./src/utils";
 import { Account, Product, Transaction } from "./src/types";
 
 const app = express();
+const cors = require("cors")
+
 app.use(express.json());
+app.use(cors())
 
 const PORT = process.env.PORT || 3000;
 
 app.get("/", async (req, res) => {
-    try {
-        const result = await db.query("SELECT * FROM account;")
-    } catch (e) {
-        console.log("Error", e)
-    }
     res.send("Hello world!");
 });
 
-app.post("/account", async (req, res) => {
+app.get("/api/account", async (req, res) => {
+    try {
+        const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows
+        console.log("Accounds")
+        console.log(accounts)
+        res.status(200).send(accounts)
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
+app.post("/api/account", async (req, res) => {
     try {
         const account: Account = toNewAccount(req.body)
         console.log("Received account:")
@@ -31,7 +41,18 @@ app.post("/account", async (req, res) => {
     }
 });
 
-app.post("/product", async (req, res) => {
+app.get("/api/product", async (req, res) => {
+    try {
+        const products: Product[] = (await db.query("SELECT * FROM product;")).rows
+        console.log(products)
+        res.status(200).send(products)
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
+app.post("/api/product", async (req, res) => {
     try {
         const product: Product = toNewProduct(req.body)
         await db.query("INSERT INTO product (name, pricein, priceout) VALUES($1, $2, $3) RETURNING *", [product.name, product.pricein, product.priceout])
@@ -42,7 +63,17 @@ app.post("/product", async (req, res) => {
     }
 })
 
-app.post("/transaction", async (req, res) => {
+app.get("/api/transaction", async (req, res) => {
+    try {
+        const transactions: Transaction[] = (await db.query("SELECT * FROM transaction;")).rows
+        res.status(200).send(transactions)
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
+app.post("/api/transaction", async (req, res) => {
     try {
         const transaction: Transaction = toNewTransaction(req.body)
         await db.query(`

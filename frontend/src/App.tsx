@@ -12,7 +12,8 @@ const App = () => {
   const navigate = useNavigate();
 
   const selectProducts = () => {
-    navigate("/piikki", { state: { users: users.filter((u) => u.pressed) } });
+    const selectedUsers = users.filter((u) => u.pressed);
+    navigate("/piikki", { state: { users: selectedUsers } });
   };
 
   const changePress = (username: string) => {

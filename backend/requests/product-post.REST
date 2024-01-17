@@ -1,8 +1,8 @@
-POST http://localhost:3000/product HTTP/1.1
+POST http://localhost:3000/api/product HTTP/1.1
 Content-Type: application/json
 
 {
-    "name": "Sininen",
+    "name": "Valkoinen",
     "pricein": 120,
     "priceout": 200
 }

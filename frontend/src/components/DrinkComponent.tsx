@@ -8,8 +8,6 @@ const Drink: React.FC<{
   add: (amount: number) => void;
   updateAmount: (product: string, amount: number) => void;
 }> = ({ drink, sum, add, drinkStates, updateAmount }) => {
-  console.log("Drink stats in Drink component?");
-  console.log(drinkStates);
   const addDrink = () => {
     add(sum + drink.pricein);
     updateAmount(drink.name, 1);

@@ -74,9 +74,17 @@ app.get("/api/transaction", async (req, res) => {
 })
 
 app.post("/api/transaction", async (req, res) => {
-    try {
-        const transaction: Transaction = toNewTransaction(req.body)
-        await db.query(`
+    /*
+    * The object received is
+    * {items: {product: Product, amount: number }[], users: Account[] }
+    */
+    const data = req.body;
+    data.items.forEach((item: { product: Product, amount: number }) => {
+        data.users.forEach(async (user: Account) => {
+
+            try {
+                const transaction: Transaction = toNewTransaction(req.body)
+                await db.query(`
         INSERT INTO transaction
         (account_id, username, product_id, product_name, amount)
         VALUES($1, 
@@ -84,13 +92,15 @@ app.post("/api/transaction", async (req, res) => {
             $2,
             (SELECT name FROM product WHERE id = $2), 
             $3) RETURNING *;`,
-            [transaction.account_id, transaction.product_id, transaction.amount])
-        res.status(200).send("OK")
-    } catch (e) {
-        console.log("Transaction failed")
-        console.log(e)
-        res.status(400).send(e)
-    }
+                    [user.id, item.product.id, item.amount])
+                res.status(200).send("OK")
+            } catch (e) {
+                console.log("Transaction failed")
+                console.log(e)
+                res.status(400).send(e)
+            }
+        })
+    })
 })
 
 app.listen(PORT, () => {

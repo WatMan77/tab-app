@@ -1,99 +1,74 @@
 import { UserType } from "./types";
 import type { Account } from "./types";
-import UserBlock from "./components/User";
+import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
+import { Button } from "@mui/material";
+
 //import "./App.css";
 
 const App = () => {
-  const [users, setUsers] = useState<Account[]>([]);
+  const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
+
+  const changePress = (username: string) => {
+    const updatedUsers = users.map((x) => {
+      if (x.user.username === username) {
+        console.log(`Changed ${x.user.username} to ${!x.pressed}`);
+        return { ...x, pressed: !x.pressed };
+      } else {
+        return x;
+      }
+    });
+    setUsers(updatedUsers);
+  };
 
   useEffect(() => {
     fetch("http://localhost:3000/api/account")
       .then((response) => response.json())
-      .then((data) => setUsers(data));
+      .then((data) => {
+        setUsers(data.map((user: Account) => ({ user, pressed: false })));
+      });
   }, []);
-  /*const users: User[] = [
-    {
-      name: "John Doe",
-      type: UserType.ASUKAS,
-      username: "john.doe",
-      bank: 5000,
-    },
-    {
-      name: "Jane Doe",
-      type: UserType.VANHA,
-      bank: 2000,
-    },
-    {
-      name: "Bob Smith",
-      type: UserType.HANGAROUND,
-      bank: 3000,
-    },
-    {
-      name: "Alice Johnson",
-      type: UserType.ASUKAS,
-      username: "alice.johnson",
-      bank: 7000,
-    },
-    {
-      name: "Charlie Brown",
-      type: UserType.VANHA,
-      bank: 1500,
-    },
-    {
-      name: "Eve White",
-      type: UserType.HANGAROUND,
-      bank: 4000,
-    },
-    {
-      name: "Frank Miller",
-      type: UserType.ASUKAS,
-      username: "frank.miller",
-      bank: 6000,
-    },
-    {
-      name: "Grace Davis",
-      type: UserType.VANHA,
-      bank: 2500,
-    },
-    {
-      name: "Harry Turner",
-      type: UserType.HANGAROUND,
-      bank: 3500,
-    },
-    {
-      name: "Ivy Green",
-      type: UserType.ASUKAS,
-      username: "ivy.green",
-      bank: 8000,
-    },
-  ];*/
 
   return (
     <>
       <h2>Asukkaat</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.category === UserType.ASUKAS)
+          .filter((x) => x.user.category === UserType.ASUKAS)
           .map((u) => (
-            <UserBlock user={u} key={u.username} />
+            <UserBlock
+              user={u.user}
+              changePress={changePress}
+              key={u.user.username}
+            />
           ))}
       </div>
       <h2>Vanhat</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.category === UserType.VANHA)
+          .filter((x) => x.user.category === UserType.VANHA)
           .map((u) => (
-            <UserBlock user={u} key={u.username} />
+            <UserBlock
+              user={u.user}
+              changePress={changePress}
+              key={u.user.username}
+            />
           ))}
       </div>
       <h2>Hangaroundit</h2>
       <div className="buttonContainer">
         {users
-          .filter((x) => x.category === UserType.HANGAROUND)
+          .filter((x) => x.user.category === UserType.HANGAROUND)
           .map((u) => (
-            <UserBlock user={u} key={u.username} />
+            <UserBlock
+              user={u.user}
+              changePress={changePress}
+              key={u.user.username}
+            />
           ))}
+      </div>
+      <div>
+        <Button variant="contained">Drinks</Button>
       </div>
     </>
   );

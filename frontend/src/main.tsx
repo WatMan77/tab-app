@@ -2,7 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import {
+  createBrowserRouter,
+  Navigate,
+  RouterProvider,
+} from "react-router-dom";
 import DrinkContainer from "./components/DrinkContainer.tsx";
 
 const router = createBrowserRouter([
@@ -13,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/piikki/:name",
     element: <DrinkContainer />,
+  },
+  {
+    path: "*",
+    element: <Navigate to="/" />,
   },
 ]);
 

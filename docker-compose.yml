@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+    db:
+        image: postgres
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USERNAME: postgres
+            POSTGRES_DB: postgres
+            POSTGRES_PASSWORD: example
+    backend:
+        build: ./backend
+        ports:
+            - 3000:3000
+        environment:
+            - HOST=db # This has to be the same as the service name of the Database!
+        depends_on:
+            - db
+    frontend:
+        build: ./frontend
+        ports:
+            - 4173:4173
+        depends_on:
+            - backend

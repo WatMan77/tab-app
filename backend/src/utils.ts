@@ -54,15 +54,6 @@ const toNewTransaction = (object: unknown): Transaction => {
 }
 
 const isValidTranscation = (transaction: any): transaction is Transaction => {
-    // const hasValidUsername = typeof transaction.username === "string" || typeof transaction.username === "undefined"
-    // const hasValidProduct = typeof transaction.product_name === "string" || typeof transaction.product_name === "undefined"
-    // return (
-    //     typeof transaction.account_id === "number" &&
-    //     hasValidUsername &&
-    //     typeof transaction.product_id === "number" &&
-    //     hasValidProduct &&
-    //     typeof transaction.amount === "number"
-    // )
 
     return (
         transaction &&

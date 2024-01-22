@@ -1,4 +1,5 @@
 import express from 'express';
+require('express-async-errors')
 import 'dotenv/config';
 import { db } from "./src/database";
 import { toNewAccount, toNewProduct, toNewTransaction } from "./src/utils";

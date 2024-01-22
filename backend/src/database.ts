@@ -3,7 +3,7 @@ import { migrate } from 'postgres-migrations';
 const pool = new Pool({
     user: process.env.POSTGRES_USERNAME,
     password: process.env.POSTGRES_PASSWORD,
-    host: "localhost",
+    host: process.env.HOST || "localhost",
     port: 5432,
     database: process.env.POSTGRES_DB
 })
@@ -14,7 +14,7 @@ const initDb = async () => {
         await migrate({
             user: process.env.POSTGRES_USERNAME ?? "",
             password: process.env.POSTGRES_PASSWORD ?? "",
-            host: "localhost",
+            host: process.env.HOST || "localhost",
             port: 5432,
             database: process.env.POSTGRES_DB ?? ""
         }, './migrations');
@@ -23,10 +23,11 @@ const initDb = async () => {
         console.log(e)
     }
 }
+console.log("ENV?!?!", process.env.TS_NODE_DEV)
+if (process.env.TS_NODE_DEV) {
+    initDb().then(() => console.log("DB initialized"))
+}
 
-initDb().then(() => console.log("DB initialized"))
 
-
-console.log("Connecting to pool...")
 
 export { pool as db }

@@ -3,6 +3,7 @@ import 'dotenv/config';
 import { db } from "./src/database";
 import { toNewAccount, toNewProduct, toNewTransaction } from "./src/utils";
 import { Account, Product, Transaction } from "./src/types";
+import { UserType } from './src/types';
 
 const app = express();
 const cors = require("cors")
@@ -75,9 +76,9 @@ app.post("/api/transaction", async (req, res) => {
     * The object received is
     * {items: {product: Product, amount: number }[], users: Account[] }
     */
-    const promises: Promise<any>[] = []
 
     try {
+        const transactionPromises: Promise<any>[] = []
         console.log("What was the transaction?")
         console.log(req.body)
         const transaction: Transaction = toNewTransaction(req.body)
@@ -85,7 +86,7 @@ app.post("/api/transaction", async (req, res) => {
 
         transaction.users.forEach((user) => {
             transaction.items.forEach((item) => {
-                const query = db.query(`
+                const addTransaction = db.query(`
                         INSERT INTO transaction
                         (account_id, username, product_id, product_name, amount)
                         VALUES($1, 
@@ -93,10 +94,26 @@ app.post("/api/transaction", async (req, res) => {
                             $2,
                             (SELECT name FROM product WHERE id = $2), 
                             $3) RETURNING *;`, [user.id, item.product.id, item.amount]);
-                promises.push(query)
+                transactionPromises.push(addTransaction)
             });
         });
-        const results = await Promise.all(promises)
+        await Promise.all(transactionPromises)
+
+        const balancePromises: Promise<any>[] = []
+
+        // Now update the balances
+        transaction.users.forEach((user) => {
+            // Get the total price of the products
+            const cost: number = transaction.items.reduce((totalCost, item) => {
+                return totalCost + item.amount * item.product.pricein
+            }, 0)
+            transaction.items.forEach((item) => {
+                const setAmount = db.query(`
+                UPDATE account SET balance=balance - $1 WHERE id=$2`, [cost, user.id]);
+                balancePromises.push(setAmount);
+            })
+        })
+        await Promise.all(balancePromises)
         res.status(200).send("OK")
     } catch (e) {
         console.log("Transaction failed")

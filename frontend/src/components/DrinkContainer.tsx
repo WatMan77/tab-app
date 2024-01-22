@@ -1,5 +1,5 @@
 import DrinkComponent from "./DrinkComponent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import type { Product, Account } from "../types";
@@ -10,11 +10,18 @@ const DrinkContainer = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const users: { user: Account; amount: number }[] = useMemo(() => {
+    return location.state ? location.state.users : [];
+  }, [location.state]);
+
   const [drinkStates, setDrinkStates] = useState<
     { product: Product; amount: number }[]
   >([]);
 
   useEffect(() => {
+    if (!users || users.length < 1) {
+      navigate("/");
+    }
     fetch("http://localhost:3000/api/product")
       .then((response) => response.json())
       .then((data: Product[]) => {
@@ -24,7 +31,7 @@ const DrinkContainer = () => {
           })
         );
       });
-  }, []);
+  }, [navigate, users]);
 
   const updateAmount = (product: string, increase: number) => {
     const updatedProducts = drinkStates.map((p) => {
@@ -40,7 +47,6 @@ const DrinkContainer = () => {
   const confirm = async () => {
     // Take all the drinks that have been added to the cart
     const items = drinkStates.filter((x) => x.amount >= 1);
-    const users: { user: Account; amount: number }[] = location.state.users;
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -77,6 +83,14 @@ const DrinkContainer = () => {
       Current price: {sum}
       <Button onClick={() => confirm()}>Confirm</Button>
       <ShopList drinkStates={drinkStates} />
+      <h1>Customers</h1>
+      <ul>
+        {users.map((u) => (
+          <li key={u.user.id}>
+            {u.user.username} {u.user.balance! / 100}€
+          </li>
+        ))}
+      </ul>
     </>
   );
 };

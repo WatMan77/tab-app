@@ -5,8 +5,6 @@ const ShopList: React.FC<{
 }> = ({ drinkStates }) => {
   // Take only drinks whose amount is > 1
   const cart = drinkStates.filter((p) => p.amount >= 1);
-  console.log("Drink states?", drinkStates);
-  console.log("Cart?", cart);
   return (
     <ul>
       {cart.map((d) => (

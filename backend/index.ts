@@ -75,21 +75,17 @@ app.post("/api/transaction", async (req, res) => {
     * The object received is
     * {items: {product: Product, amount: number }[], users: Account[] }
     */
-    const data = req.body;
     const promises: Promise<any>[] = []
-    data.items.forEach((item: { product: Product, amount: number }) => {
-        data.users.forEach(async (user: Account) => {
 
-            try {
-                console.log("What was the transaction?")
-                console.log(req.body)
-                const transaction: Transaction = toNewTransaction(req.body)
-                // Check user ID's and product ids again!
-                console.log("Transaction is valid!!!", transaction)
+    try {
+        console.log("What was the transaction?")
+        console.log(req.body)
+        const transaction: Transaction = toNewTransaction(req.body)
+        // Check user ID's and product ids again!
 
-                transaction.users.forEach((user) => {
-                    transaction.items.forEach((item) => {
-                        const query = db.query(`
+        transaction.users.forEach((user) => {
+            transaction.items.forEach((item) => {
+                const query = db.query(`
                         INSERT INTO transaction
                         (account_id, username, product_id, product_name, amount)
                         VALUES($1, 
@@ -97,18 +93,16 @@ app.post("/api/transaction", async (req, res) => {
                             $2,
                             (SELECT name FROM product WHERE id = $2), 
                             $3) RETURNING *;`, [user.id, item.product.id, item.amount]);
-                        promises.push(query)
-                    });
-                });
-                const results = await Promise.all(promises)
-                res.status(200).send("OK")
-            } catch (e) {
-                console.log("Transaction failed")
-                console.log(e)
-                res.status(400).send(e)
-            }
-        })
-    })
+                promises.push(query)
+            });
+        });
+        const results = await Promise.all(promises)
+        res.status(200).send("OK")
+    } catch (e) {
+        console.log("Transaction failed")
+        console.log(e)
+        res.status(400).send(e)
+    }
 })
 
 app.listen(PORT, () => {

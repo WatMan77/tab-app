@@ -19,8 +19,6 @@ app.get("/", async (req, res) => {
 app.get("/api/account", async (req, res) => {
     try {
         const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows
-        console.log("Accounds")
-        console.log(accounts)
         res.status(200).send(accounts)
     } catch (e) {
         console.log(e)
@@ -44,7 +42,6 @@ app.post("/api/account", async (req, res) => {
 app.get("/api/product", async (req, res) => {
     try {
         const products: Product[] = (await db.query("SELECT * FROM product;")).rows
-        console.log(products)
         res.status(200).send(products)
     } catch (e) {
         console.log(e)
@@ -79,20 +76,31 @@ app.post("/api/transaction", async (req, res) => {
     * {items: {product: Product, amount: number }[], users: Account[] }
     */
     const data = req.body;
+    const promises: Promise<any>[] = []
     data.items.forEach((item: { product: Product, amount: number }) => {
         data.users.forEach(async (user: Account) => {
 
             try {
+                console.log("What was the transaction?")
+                console.log(req.body)
                 const transaction: Transaction = toNewTransaction(req.body)
-                await db.query(`
-        INSERT INTO transaction
-        (account_id, username, product_id, product_name, amount)
-        VALUES($1, 
-            (SELECT username FROM account WHERE id = $1),
-            $2,
-            (SELECT name FROM product WHERE id = $2), 
-            $3) RETURNING *;`,
-                    [user.id, item.product.id, item.amount])
+                // Check user ID's and product ids again!
+                console.log("Transaction is valid!!!", transaction)
+
+                transaction.users.forEach((user) => {
+                    transaction.items.forEach((item) => {
+                        const query = db.query(`
+                        INSERT INTO transaction
+                        (account_id, username, product_id, product_name, amount)
+                        VALUES($1, 
+                            (SELECT username FROM account WHERE id = $1),
+                            $2,
+                            (SELECT name FROM product WHERE id = $2), 
+                            $3) RETURNING *;`, [user.id, item.product.id, item.amount]);
+                        promises.push(query)
+                    });
+                });
+                const results = await Promise.all(promises)
                 res.status(200).send("OK")
             } catch (e) {
                 console.log("Transaction failed")

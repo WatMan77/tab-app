@@ -40,23 +40,13 @@ const DrinkContainer = () => {
   const confirm = async () => {
     // Take all the drinks that have been added to the cart
     const items = drinkStates.filter((x) => x.amount >= 1);
-    // This has all the users that want to order something
-    //const users: { user: Account; pressed: boolean }[] = location.state;
-
-    //WHAT THE HELL IS THIS TYPE?!?!?
-    const users: { users: { user: Account; amount: number } }[] =
-      location.state.users;
-    console.log("Users?", users);
-    console.log(
-      "Mapped?",
-      users.map((x) => x.users)
-    );
+    const users: { user: Account; amount: number }[] = location.state.users;
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         items: items,
-        users: users.map((x) => x.users.user),
+        users: users.map((x) => x.user),
       }),
     };
     try {

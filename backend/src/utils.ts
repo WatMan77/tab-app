@@ -54,16 +54,21 @@ const toNewTransaction = (object: unknown): Transaction => {
 }
 
 const isValidTranscation = (transaction: any): transaction is Transaction => {
-    console.log("What is the transaction?")
-    console.log(transaction)
-    const hasValidUsername = typeof transaction.username === "string" || typeof transaction.username === "undefined"
-    const hasValidProduct = typeof transaction.product_name === "string" || typeof transaction.product_name === "undefined"
+    // const hasValidUsername = typeof transaction.username === "string" || typeof transaction.username === "undefined"
+    // const hasValidProduct = typeof transaction.product_name === "string" || typeof transaction.product_name === "undefined"
+    // return (
+    //     typeof transaction.account_id === "number" &&
+    //     hasValidUsername &&
+    //     typeof transaction.product_id === "number" &&
+    //     hasValidProduct &&
+    //     typeof transaction.amount === "number"
+    // )
+
     return (
-        typeof transaction.account_id === "number" &&
-        hasValidUsername &&
-        typeof transaction.product_id === "number" &&
-        hasValidProduct &&
-        typeof transaction.amount === "number"
+        transaction &&
+        Array.isArray(transaction.items) &&
+        transaction.items.every((item: any) => isValidProduct(item.product) && typeof item.amount === "number") &&
+        transaction.users.every(isValidAccount)
     )
 }
 

@@ -13,6 +13,11 @@ const App = () => {
 
   const selectProducts = () => {
     const selectedUsers = users.filter((u) => u.pressed);
+    console.log("Selected users?", selectedUsers);
+    console.log(
+      "Mapped in selected users?",
+      selectedUsers.map((x) => x.user)
+    );
     navigate("/piikki", { state: { users: selectedUsers } });
   };
 

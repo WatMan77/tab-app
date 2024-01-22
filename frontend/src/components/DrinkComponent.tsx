@@ -23,7 +23,7 @@ const Drink: React.FC<{
   return (
     <>
       <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {drink.name} {drink.pricein}€
+        {drink.name} {drink.pricein / 100}€
         <ButtonGroup
           variant="contained"
           aria-label="outlined primary button group"

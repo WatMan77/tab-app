@@ -80,7 +80,7 @@ const DrinkContainer = () => {
           key={d.product.name}
         />
       ))}
-      Current price: {sum}
+      Current price: {sum / 100}€
       <Button onClick={() => confirm()}>Confirm</Button>
       <ShopList drinkStates={drinkStates} />
       <h1>Customers</h1>

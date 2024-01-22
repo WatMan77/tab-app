@@ -80,8 +80,6 @@ app.post("/api/transaction", async (req, res) => {
 
     try {
         const transactionPromises: Promise<any>[] = []
-        console.log("What was the transaction?")
-        console.log(req.body)
         const transaction: Transaction = toNewTransaction(req.body)
         // Check user ID's and product ids again!
 

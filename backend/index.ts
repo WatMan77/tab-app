@@ -5,6 +5,7 @@ import { db } from "./src/database";
 import { toNewAccount, toNewProduct, toNewTransaction } from "./src/utils";
 import { Account, Product, Transaction } from "./src/types";
 import { UserType } from './src/types';
+import bcrypt from "bcrypt";
 
 const app = express();
 const cors = require("cors")
@@ -119,6 +120,22 @@ app.post("/api/transaction", async (req, res) => {
         console.log(e)
         res.status(400).send(e)
     }
+})
+
+app.post("/api/admin", async (req, res) => {
+    const { username, password } = req.body
+
+    // 10 is the "salt round"
+    try {
+        const passwordHash = await bcrypt.hash(password, 10);
+        console.log("Password hash ", passwordHash)
+
+        const query = await db.query("INSERT INTO admin (username, password) VALUES ($1, $2)", [username, passwordHash])
+        res.status(201).send("User created")
+    } catch (e) {
+        res.status(400).send("Error creating user " + e)
+    }
+
 })
 
 app.listen(PORT, () => {

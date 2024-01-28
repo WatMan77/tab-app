@@ -27,3 +27,8 @@ CREATE TABLE transaction (
     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     amount INTEGER CHECK (amount >= 1)
 );
+
+CREATE TABLE admin (
+    username VARCHAR(50),
+    password VARCHAR(64)
+)

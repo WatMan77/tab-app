@@ -8,6 +8,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import DrinkContainer from "./components/DrinkContainer.tsx";
+import AdminLogin from "./components/Admin.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/piikki",
     element: <DrinkContainer />,
+  },
+  {
+    path: "/admin",
+    element: <AdminLogin />,
   },
   {
     path: "*",

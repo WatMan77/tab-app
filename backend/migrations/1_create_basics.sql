@@ -30,5 +30,5 @@ CREATE TABLE transaction (
 
 CREATE TABLE admin (
     username VARCHAR(50),
-    password VARCHAR(64)
+    hash VARCHAR(64)
 )

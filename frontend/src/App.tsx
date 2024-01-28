@@ -38,6 +38,7 @@ const App = () => {
 
   return (
     <>
+      <Button onClick={() => navigate("/admin")}>ADMIN</Button>
       <h2>Asukkaat</h2>
       <div className="buttonContainer">
         {users

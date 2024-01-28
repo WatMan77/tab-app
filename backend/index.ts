@@ -6,6 +6,7 @@ import { toNewAccount, toNewProduct, toNewTransaction } from "./src/utils";
 import { Account, Product, Transaction } from "./src/types";
 import { UserType } from './src/types';
 import bcrypt from "bcrypt";
+const jwt = require("jsonwebtoken")
 
 const app = express();
 const cors = require("cors")
@@ -123,19 +124,40 @@ app.post("/api/transaction", async (req, res) => {
 })
 
 app.post("/api/admin", async (req, res) => {
-    const { username, password } = req.body
-
-    // 10 is the "salt round"
     try {
+
+        const { username, password } = req.body
+
+
+        // 10 is the "salt round"
         const passwordHash = await bcrypt.hash(password, 10);
         console.log("Password hash ", passwordHash)
 
-        const query = await db.query("INSERT INTO admin (username, password) VALUES ($1, $2)", [username, passwordHash])
+        const query = await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [username, passwordHash])
         res.status(201).send("User created")
     } catch (e) {
         res.status(400).send("Error creating user " + e)
     }
+})
 
+app.post("/api/login", async (req, res) => {
+    try {
+        console.log("Body?", req.body)
+
+        const { username, password } = req.body;
+        const query: { username: string, hash: string } = (await db.query("SELECT * FROM admin WHERE username=$1", [username])).rows[0]
+        console.log("Query?", query)
+        const checkPassword = await bcrypt.compare(password, query.hash)
+        if (checkPassword) {
+            const token = jwt.sign(username, process.env.SECRET)
+            res.status(200).send(token)
+        } else {
+            res.status(401).send("Invalid password")
+        }
+    } catch (e) {
+        res.status(400).send(e)
+        console.log(e)
+    }
 })
 
 app.listen(PORT, () => {

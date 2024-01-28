@@ -1,9 +1,12 @@
 import { TextField, Button } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const logIn = async () => {
     const requestOptions = {
@@ -16,8 +19,16 @@ const AdminLogin = () => {
     };
 
     try {
-      const response = await fetch("/api/login", requestOptions);
+      const response = await (
+        await fetch("http://localhost:3000/api/login", requestOptions)
+      ).json();
       console.log(response);
+      const token = `Bearer ${response.token}`;
+      window.localStorage.setItem(
+        "loggedPiikkiAdmin",
+        JSON.stringify({ username, token })
+      );
+      navigate("/");
     } catch (e) {
       console.log(e);
     }

@@ -150,7 +150,7 @@ app.post("/api/login", async (req, res) => {
         const checkPassword = await bcrypt.compare(password, query.hash)
         if (checkPassword) {
             const token = jwt.sign(username, process.env.SECRET)
-            res.status(200).send(token)
+            res.status(200).send({ token })
         } else {
             res.status(401).send("Invalid password")
         }

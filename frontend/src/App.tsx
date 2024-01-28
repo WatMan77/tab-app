@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
   const navigate = useNavigate();
+  const storedUserKey = "loggedPiikkiAdmin";
 
   const selectProducts = () => {
     const selectedUsers = users.filter((u) => u.pressed);
@@ -36,9 +37,23 @@ const App = () => {
       });
   }, []);
 
+  const logout = () => {
+    window.localStorage.removeItem(storedUserKey);
+    navigate("/"); // Needed to refresh the page
+  };
+
+  const adminOrLogout = () => {
+    const loggedUserJSON = window.localStorage.getItem("loggedPiikkiAdmin");
+    if (loggedUserJSON) {
+      return <Button onClick={logout}>Logout</Button>;
+    } else {
+      return <Button onClick={() => navigate("/admin")}>ADMIN</Button>;
+    }
+  };
+
   return (
     <>
-      <Button onClick={() => navigate("/admin")}>ADMIN</Button>
+      {adminOrLogout()}
       <h2>Asukkaat</h2>
       <div className="buttonContainer">
         {users

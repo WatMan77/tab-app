@@ -4,9 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@mui/material";
 import type { Product, Account } from "../types";
 import ShopList from "./ShopList";
+import Other from "./OtherDrink";
 
 const DrinkContainer = () => {
   const [sum, setSum] = useState(0);
+  // State for the arbitrary amount you want to insert
+  const [other, setOther] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -47,6 +50,11 @@ const DrinkContainer = () => {
   const confirm = async () => {
     // Take all the drinks that have been added to the cart
     const items = drinkStates.filter((x) => x.amount >= 1);
+    console.log("Items?", items);
+    // add the "other" category if necessary
+    if (other > 0) {
+      items.concat();
+    }
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,6 +73,7 @@ const DrinkContainer = () => {
       console.log(e);
     }
     setSum(0);
+    setOther(0);
     navigate("/");
   };
 
@@ -80,7 +89,8 @@ const DrinkContainer = () => {
           key={d.product.name}
         />
       ))}
-      Current price: {sum / 100}€
+      <Other add={setOther} sum={other} />
+      Current price: {(sum + other * 100) / 100}€
       <Button onClick={() => confirm()}>Confirm</Button>
       <ShopList drinkStates={drinkStates} />
       <h1>Customers</h1>

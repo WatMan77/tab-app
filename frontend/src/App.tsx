@@ -47,7 +47,7 @@ const App = () => {
     if (loggedUserJSON) {
       return <Button onClick={logout}>Logout</Button>;
     } else {
-      return <Button onClick={() => navigate("/admin")}>ADMIN</Button>;
+      return <Button onClick={() => navigate("/adminlogin")}>ADMIN</Button>;
     }
   };
 

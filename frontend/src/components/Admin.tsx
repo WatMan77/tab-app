@@ -19,17 +19,25 @@ const AdminLogin = () => {
     };
 
     try {
-      const response = await (
-        await fetch("http://localhost:3000/api/login", requestOptions)
-      ).json();
-      console.log(response);
-      const token = `Bearer ${response.token}`;
+      const response = await fetch(
+        "http://localhost:3000/api/login",
+        requestOptions
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const token = `Bearer ${data.token}`;
       window.localStorage.setItem(
         "loggedPiikkiAdmin",
         JSON.stringify({ username, token })
       );
       navigate("/");
     } catch (e) {
+      console.log("LOGIN FAILED!");
       console.log(e);
     }
   };
@@ -43,6 +51,7 @@ const AdminLogin = () => {
       <TextField
         label="Enter password"
         variant="outlined"
+        type="password"
         onChange={({ target }) => setPassword(target.value)}
       />
       <Button onClick={logIn}>Log in</Button>

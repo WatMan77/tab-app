@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     element: <DrinkContainer />,
   },
   {
-    path: "/admin",
+    path: "/adminlogin",
     element: <AdminLogin />,
   },
   {

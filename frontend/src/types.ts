@@ -25,5 +25,10 @@ interface Product {
     priceout: number
 }
 
+interface Admin {
+    username: string,
+    token: string
+}
+
 export { UserType }
-export type { User, Product, Account }
+export type { User, Product, Account, Admin }

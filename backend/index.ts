@@ -167,6 +167,35 @@ app.post("/api/login", async (req, res) => {
     }
 })
 
+// New user has been added
+app.post("/api/newuser", async (req, res) => {
+    console.log("Trying  to add a user...")
+    try {
+        const authorization = req.get("authorization");
+        console.log("Authorization?", authorization)
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return res.status(400).send({ error: "Token not found" })
+        }
+
+        const token = authorization.replace("Bearer ", "");
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken) {
+            console.log("Token invalid!")
+            console.log(decodedToken.id)
+            return res.status(401).json({ error: 'token invalid' })
+        }
+        // Token is ok. Now create the new user.
+        const account: Account = toNewAccount(req.body)
+        console.log("Account?", account)
+
+        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, account.balance])
+        res.status(201).send("OK")
+    } catch (e) {
+        res.status(400).send(e)
+        console.log(e)
+    }
+})
+
 app.listen(PORT, () => {
     return console.log("Server running on port " + PORT);
 });

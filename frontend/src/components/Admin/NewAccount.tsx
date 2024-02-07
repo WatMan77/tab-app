@@ -19,8 +19,6 @@ const NewUser = () => {
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 
   const handleBalance = (amount: number): void => {
-    // This regex expression checks that the amount is a number
-    // allowing commas. so "15" "1.95" are for example allowed
     if (!amount) {
       setBalance(0);
     }

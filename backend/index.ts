@@ -169,10 +169,8 @@ app.post("/api/login", async (req, res) => {
 
 // New user has been added
 app.post("/api/newaccount", async (req, res) => {
-    console.log("Trying  to add a user...")
     try {
         const authorization = req.get("authorization");
-        console.log("Authorization?", authorization)
         if (!authorization || !authorization.startsWith("Bearer ")) {
             return res.status(400).send({ error: "Token not found" })
         }
@@ -181,12 +179,10 @@ app.post("/api/newaccount", async (req, res) => {
         const decodedToken = jwt.verify(token, process.env.SECRET)
         if (!decodedToken) {
             console.log("Token invalid!")
-            console.log(decodedToken.id)
             return res.status(401).json({ error: 'token invalid' })
         }
         // Token is ok. Now create the new user.
         const account: Account = toNewAccount(req.body)
-        console.log("Account?", account)
         // There is a chance the amount has a decimal at the very end
 
         const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, Math.floor(account.balance!)])
@@ -198,21 +194,28 @@ app.post("/api/newaccount", async (req, res) => {
 })
 
 app.put("/api/balance", async (req, res) => {
-    console.log("Updating balances")
     const { username, password } = req.body
 
     const { accounts } = req.body
-    console.log("Data?", accounts)
     const confirmedAccounts: Account[] = accounts.map((o: unknown) => toNewAccount(o))
-    console.log("Accounts?")
     try {
+        const authorization = req.get("authorization");
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return res.status(400).send({ error: "Token not found" })
+        }
+
+        const token = authorization.replace("Bearer ", "");
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken) {
+            console.log("Token invalid!")
+            return res.status(401).json({ error: 'token invalid' })
+        }
         const updatePromises: Promise<any>[] = []
 
         confirmedAccounts.forEach(a => {
             const query = db.query("UPDATE account SET balance=$1 WHERE id=$2;", [a.balance!, a.id!])
             updatePromises.push(query);
         })
-        console.log("Accounts updating...")
         await Promise.all(updatePromises)
         res.status(201).send("OK")
     } catch (e) {

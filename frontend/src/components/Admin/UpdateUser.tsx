@@ -8,7 +8,7 @@ const UpdateUser: React.FC<{
   return (
     <>
       <p>
-        {user.account.username} {user.account.balance! / 100}
+        {user.account.username} {user.account.balance! / 100} €
       </p>
       <CurrencyInput
         placeholder="Enter a value"
@@ -23,8 +23,8 @@ const UpdateUser: React.FC<{
       />
 
       <>
-        {user.account.balance! / 100} € + {user.change} € ={" "}
-        {user.account.balance! / 100 + user.change} €
+        {(user.account.balance! / 100).toFixed(2)} € + {user.change} € ={" "}
+        {(user.account.balance! / 100 + user.change).toFixed(2)} €
       </>
     </>
   );

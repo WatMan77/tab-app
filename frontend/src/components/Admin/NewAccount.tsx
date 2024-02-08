@@ -37,17 +37,15 @@ const NewUser = () => {
       body: JSON.stringify({
         username,
         category,
-        balance,
+        balance: Math.floor(balance), // Without this could casue some issues with decimals
       }),
     };
     const request = await fetch(
-      "http://localhost:3000/api/newuser",
+      "http://localhost:3000/api/newaccount",
       requestOptions
     );
     if (request.ok) {
-      setCategory("");
-      setUsername("");
-      setBalance(0);
+      window.location.reload();
     }
   };
 
@@ -75,7 +73,11 @@ const NewUser = () => {
       <CurrencyInput
         placeholder="Enter a value"
         onValueChange={(_value, _name, values) => {
-          handleBalance(values!.float!);
+          if (values!.float) {
+            handleBalance(Number.parseFloat(values!.float!.toFixed(2)));
+          } else {
+            handleBalance(0);
+          }
         }}
         decimalSeparator=","
         groupSeparator=" "

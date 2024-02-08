@@ -168,7 +168,7 @@ app.post("/api/login", async (req, res) => {
 })
 
 // New user has been added
-app.post("/api/newuser", async (req, res) => {
+app.post("/api/newaccount", async (req, res) => {
     console.log("Trying  to add a user...")
     try {
         const authorization = req.get("authorization");
@@ -187,8 +187,9 @@ app.post("/api/newuser", async (req, res) => {
         // Token is ok. Now create the new user.
         const account: Account = toNewAccount(req.body)
         console.log("Account?", account)
+        // There is a chance the amount has a decimal at the very end
 
-        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, account.balance])
+        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, Math.floor(account.balance!)])
         res.status(201).send("OK")
     } catch (e) {
         res.status(400).send(e)

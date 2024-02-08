@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Account } from "../../types";
 import NewUser from "./NewAccount";
 import UpdateUser from "./UpdateUser";
+import { Button } from "@mui/material";
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -49,6 +50,28 @@ const AdminPanel = () => {
     });
     setUsers(newState);
   };
+
+  const handleChangeConfirm = async () => {
+    const filteredUsers = users.filter((u) => u.change !== 0);
+    const updatedChangeUsers: Account[] = filteredUsers.map((u) => ({
+      ...u.account,
+      balance: u.account.balance! + u.change * 100,
+    }));
+
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        accounts: updatedChangeUsers,
+      }),
+    };
+    try {
+      await fetch("http://localhost:3000/api/balance", requestOptions);
+    } catch (e) {
+      console.log(e);
+    }
+    window.location.reload();
+  };
   return (
     <>
       <h1>Hi! You have reached the admin panel!</h1>
@@ -60,6 +83,9 @@ const AdminPanel = () => {
           handleBalanceChange={handleBalanceChange}
         />
       ))}
+      <Button variant="contained" onClick={handleChangeConfirm}>
+        Confirm
+      </Button>
     </>
   );
 };

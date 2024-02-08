@@ -196,6 +196,29 @@ app.post("/api/newuser", async (req, res) => {
     }
 })
 
+app.put("/api/balance", async (req, res) => {
+    console.log("Updating balances")
+    const { username, password } = req.body
+
+    const { accounts } = req.body
+    console.log("Data?", accounts)
+    const confirmedAccounts: Account[] = accounts.map((o: unknown) => toNewAccount(o))
+    console.log("Accounts?")
+    try {
+        const updatePromises: Promise<any>[] = []
+
+        confirmedAccounts.forEach(a => {
+            const query = db.query("UPDATE account SET balance=$1 WHERE id=$2;", [a.balance!, a.id!])
+            updatePromises.push(query);
+        })
+        console.log("Accounts updating...")
+        await Promise.all(updatePromises)
+        res.status(201).send("OK")
+    } catch (e) {
+        res.status(401).send({ error: "Error in updating balances" })
+    }
+})
+
 app.listen(PORT, () => {
     return console.log("Server running on port " + PORT);
 });

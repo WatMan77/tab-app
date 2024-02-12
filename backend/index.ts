@@ -55,6 +55,18 @@ app.get("/api/product", async (req, res) => {
 
 app.post("/api/product", async (req, res) => {
     try {
+        const authorization = req.get("authorization");
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return res.status(400).send({ error: "Token not found" })
+        }
+
+        const token = authorization.replace("Bearer ", "");
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken) {
+            console.log("Token invalid!")
+            return res.status(401).json({ error: 'token invalid' })
+        }
+
         const product: Product = toNewProduct(req.body)
         await db.query("INSERT INTO product (name, pricein, priceout) VALUES($1, $2, $3) RETURNING *", [product.name, product.pricein, product.priceout])
         res.status(200).send("OK")

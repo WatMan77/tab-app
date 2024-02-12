@@ -21,6 +21,7 @@ const NewUser = () => {
   const handleBalance = (amount: number): void => {
     if (!amount) {
       setBalance(0);
+      return;
     }
 
     setBalance(amount * 100);

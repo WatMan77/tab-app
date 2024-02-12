@@ -4,6 +4,7 @@ import { Account } from "../../types";
 import NewUser from "./NewAccount";
 import UpdateUser from "./UpdateUser";
 import { Button } from "@mui/material";
+import NewProduct from "./NewProduct";
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -86,6 +87,8 @@ const AdminPanel = () => {
       <Button variant="contained" onClick={handleChangeConfirm}>
         Confirm
       </Button>
+      <br></br>
+      <NewProduct />
     </>
   );
 };

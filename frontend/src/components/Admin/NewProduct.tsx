@@ -7,6 +7,8 @@ const NewProduct = () => {
   const [priceIn, setPriceIn] = useState(0);
   const [priceOut, setPriceOut] = useState(0);
 
+  const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
+
   const handlePriceIn = (price: number) => {
     if (!price) {
       setPriceIn(0);
@@ -26,9 +28,10 @@ const NewProduct = () => {
   };
 
   const handleNewDrink = async () => {
+    const token = JSON.parse(userInfo!).token;
     const requestOptions = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": token },
       body: JSON.stringify({
         name,
         pricein: priceIn,
@@ -56,12 +59,16 @@ const NewProduct = () => {
         onValueChange={(_value, _name, values) => {
           handlePriceIn(Number.parseFloat(values!.float!.toFixed(2)));
         }}
+        decimalSeparator=","
+        groupSeparator=" "
       />
       <CurrencyInput
         placeholder="Price out"
         onValueChange={(_value, _name, values) => {
           handlePriceOut(Number.parseFloat(values!.float!.toFixed(2)));
         }}
+        decimalSeparator=","
+        groupSeparator=" "
       />
       <Button onClick={handleNewDrink}>Add product</Button>
     </>

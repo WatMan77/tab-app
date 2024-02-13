@@ -92,8 +92,35 @@ app.put("/api/product", async (req, res) => {
 
         const product: Product = toNewProduct(req.body);
         await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE id=$4;", [product.name, product.pricein, product.priceout, product.id!])
+        res.status(201).send("OK");
     } catch (e) {
         console.log(e)
+        res.status(401).json({ error: e })
+    }
+})
+
+app.delete("/api/product", async (req, res) => {
+    try {
+        const authorization = req.get("authorization");
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return res.status(400).send({ error: "Token not found" })
+        }
+
+        const token = authorization.replace("Bearer ", "");
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken) {
+            console.log("Token invalid!")
+            return res.status(401).json({ error: 'token invalid' })
+        }
+
+        const id = req.body.id;
+        if (!id) {
+            return res.status(400).json({ error: "Id not found" })
+        }
+        await db.query("DELETE FROM product WHERE id=$1;", [id]);
+        res.status(204).send("Delete successful")
+    } catch (e) {
+
     }
 })
 
@@ -186,7 +213,6 @@ app.post("/api/login", async (req, res) => {
             return;
         }
 
-        console.log("Query?", query)
         const checkPassword = await bcrypt.compare(password, query.hash)
         if (checkPassword) {
             const token = jwt.sign(username, process.env.SECRET)

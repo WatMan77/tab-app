@@ -1,7 +1,7 @@
 import { Account } from "../../types";
 import CurrencyInput from "react-currency-input-field";
 
-const UpdateUser: React.FC<{
+const UpdateBalance: React.FC<{
   user: { account: Account; change: number };
   handleBalanceChange: (id: number, change: number) => void;
 }> = ({ user, handleBalanceChange }) => {
@@ -30,4 +30,4 @@ const UpdateUser: React.FC<{
   );
 };
 
-export default UpdateUser;
+export default UpdateBalance;

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Account, Product } from "../../types";
 import NewUser from "./NewAccount";
-import UpdateUser from "./UpdateUser";
+import UpdateBalance from "./UpdateBalance";
 import { Button } from "@mui/material";
 import NewProduct from "./NewProduct";
 import EditProduct from "./EditProduct";
@@ -87,7 +87,7 @@ const AdminPanel = () => {
       <h1>Hi! You have reached the admin panel!</h1>
       <NewUser />
       {users.map((u) => (
-        <UpdateUser
+        <UpdateBalance
           key={u.account.id!}
           user={u}
           handleBalanceChange={handleBalanceChange}

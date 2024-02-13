@@ -26,6 +26,18 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
     await fetch("http://localhost:3000/api/product", requestOptions);
   };
 
+  const handleDelete = async () => {
+    const token = JSON.parse(userInfo!).token;
+    const requestOptions = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({
+        id: product.id,
+      }),
+    };
+    await fetch("http://localhost:3000/api/product", requestOptions);
+  };
+
   return (
     <div>
       <TextField
@@ -48,7 +60,10 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
           setPriceOut(values!.float ? values!.float * 100 : 0);
         }}
       />
-      <Button onClick={handleUpdate}>Update {product.name}</Button>
+      <Button variant="contained" onClick={handleUpdate}>
+        Update {product.name}
+      </Button>
+      <Button onClick={handleDelete}>Delete {product.name}</Button>
     </div>
   );
 };

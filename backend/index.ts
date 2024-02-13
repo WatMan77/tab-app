@@ -76,6 +76,27 @@ app.post("/api/product", async (req, res) => {
     }
 })
 
+app.put("/api/product", async (req, res) => {
+    try {
+        const authorization = req.get("authorization");
+        if (!authorization || !authorization.startsWith("Bearer ")) {
+            return res.status(400).send({ error: "Token not found" })
+        }
+
+        const token = authorization.replace("Bearer ", "");
+        const decodedToken = jwt.verify(token, process.env.SECRET)
+        if (!decodedToken) {
+            console.log("Token invalid!")
+            return res.status(401).json({ error: 'token invalid' })
+        }
+
+        const product: Product = toNewProduct(req.body);
+        await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE id=$4;", [product.name, product.pricein, product.priceout, product.id!])
+    } catch (e) {
+        console.log(e)
+    }
+})
+
 app.get("/api/transaction", async (req, res) => {
     try {
         const transactions: Transaction[] = (await db.query("SELECT * FROM transaction;")).rows

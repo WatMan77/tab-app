@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Account } from "../../types";
+import { Account, Product } from "../../types";
 import NewUser from "./NewAccount";
 import UpdateUser from "./UpdateUser";
 import { Button } from "@mui/material";
 import NewProduct from "./NewProduct";
+import EditProduct from "./EditProduct";
 
 const AdminPanel = () => {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ const AdminPanel = () => {
   const [users, setUsers] = useState<{ account: Account; change: number }[]>(
     []
   );
+
+  const [products, setProducts] = useState<Product[]>([]);
 
   //console.log("Users?", users);
   useEffect(() => {
@@ -33,6 +36,12 @@ const AdminPanel = () => {
             return { account: u, change: 0 };
           })
         );
+      });
+
+    fetch("http://localhost:3000/api/product")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data as Product[]);
       });
   }, [navigate]);
 
@@ -89,6 +98,9 @@ const AdminPanel = () => {
       </Button>
       <br></br>
       <NewProduct />
+      {products.map((p) => (
+        <EditProduct key={p.name} product={p} />
+      ))}
     </>
   );
 };

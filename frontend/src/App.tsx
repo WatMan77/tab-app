@@ -4,6 +4,7 @@ import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import "./styling/accounts.css";
 
 //import "./App.css";
 
@@ -12,9 +13,12 @@ const App = () => {
   const navigate = useNavigate();
   const storedUserKey = "loggedPiikkiAdmin";
 
+  const selectedUsers = users.filter((u) => u.pressed);
+
   const selectProducts = () => {
-    const selectedUsers = users.filter((u) => u.pressed);
-    navigate("/piikki", { state: { users: selectedUsers } });
+    if (selectedUsers.length > 0) {
+      navigate("/piikki", { state: { users: selectedUsers } });
+    }
   };
 
   const changePress = (username: string) => {
@@ -55,43 +59,47 @@ const App = () => {
     <>
       {adminOrLogout()}
       <h2>Asukkaat</h2>
-      <div className="buttonContainer">
+      <div className="account-grid">
         {users
           .filter((x) => x.user.category === UserType.ASUKAS)
           .map((u) => (
             <UserBlock
-              user={u.user}
+              user={u}
               changePress={changePress}
               key={u.user.username}
             />
           ))}
       </div>
       <h2>Vanhat</h2>
-      <div className="buttonContainer">
+      <div className="account-grid">
         {users
           .filter((x) => x.user.category === UserType.VANHA)
           .map((u) => (
             <UserBlock
-              user={u.user}
+              user={u}
               changePress={changePress}
               key={u.user.username}
             />
           ))}
       </div>
       <h2>Hangaroundit</h2>
-      <div className="buttonContainer">
+      <div className="account-grid">
         {users
           .filter((x) => x.user.category === UserType.HANGAROUND)
           .map((u) => (
             <UserBlock
-              user={u.user}
+              user={u}
               changePress={changePress}
               key={u.user.username}
             />
           ))}
       </div>
       <div>
-        <Button variant="contained" onClick={selectProducts}>
+        <Button
+          variant="contained"
+          disabled={selectedUsers.length <= 0}
+          onClick={selectProducts}
+        >
           Drinks
         </Button>
       </div>

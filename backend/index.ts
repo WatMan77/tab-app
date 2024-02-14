@@ -253,7 +253,6 @@ app.post("/api/newaccount", async (req, res) => {
 })
 
 app.put("/api/balance", async (req, res) => {
-    const { username, password } = req.body
 
     const { accounts } = req.body
     const confirmedAccounts: Account[] = accounts.map((o: unknown) => toNewAccount(o))
@@ -266,7 +265,6 @@ app.put("/api/balance", async (req, res) => {
         const token = authorization.replace("Bearer ", "");
         const decodedToken = jwt.verify(token, process.env.SECRET)
         if (!decodedToken) {
-            console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })
         }
         const updatePromises: Promise<any>[] = []

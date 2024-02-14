@@ -71,9 +71,12 @@ const AdminPanel = () => {
       balance: u.account.balance! + u.change * 100,
     }));
 
+    const userData = window.localStorage.getItem("loggedPiikkiAdmin");
+    const token = JSON.parse(userData!).token;
+
     const requestOptions = {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": token },
       body: JSON.stringify({
         accounts: updatedChangeUsers,
       }),

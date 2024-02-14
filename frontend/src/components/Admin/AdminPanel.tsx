@@ -14,6 +14,9 @@ const AdminPanel = () => {
     []
   );
 
+  const balanceSum =
+    users.map((u) => u.account.balance!).reduce((a, b) => a + b, 0) / 100;
+
   const [products, setProducts] = useState<Product[]>([]);
 
   //console.log("Users?", users);
@@ -94,13 +97,15 @@ const AdminPanel = () => {
         />
       ))}
       <Button variant="contained" onClick={handleChangeConfirm}>
-        Confirm
+        Confirm change
       </Button>
-      <br></br>
+      <br />
       <NewProduct />
       {products.map((p) => (
         <EditProduct key={p.name} product={p} />
       ))}
+      <br />
+      <p>Piikin tilanne: {balanceSum.toFixed(2)}€</p>
     </>
   );
 };

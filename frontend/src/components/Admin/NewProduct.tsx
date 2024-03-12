@@ -43,6 +43,7 @@ const NewProduct = () => {
       setName("");
       setPriceIn(0);
       setPriceOut(0);
+      window.location.reload();
     } catch (e) {
       console.log(e);
     }

@@ -9,6 +9,28 @@ const NavBar = () => {
 
   const adminData = window.localStorage.getItem("loggedPiikkiAdmin");
 
+  const logout = () => {
+    window.localStorage.removeItem("loggedPiikkiAdmin");
+    navigate("/"); // Needed to refresh the page
+  };
+
+  const adminOrLogout = (logged: string | null) => {
+    if (logged) {
+      // return <Button onClick={logout}>Logout</Button>;
+      return (
+        <MenuItem key="logout" onClick={logout}>
+          Logout
+        </MenuItem>
+      );
+    } else {
+      return (
+        <MenuItem key="login" onClick={() => navigate("/adminlogin")}>
+          Login
+        </MenuItem>
+      );
+    }
+  };
+
   const home = (
     <>
       <MenuItem key="home" onClick={() => navigate("/")}>
@@ -34,6 +56,7 @@ const NavBar = () => {
         <Toolbar>
           {home}
           {adminData && adminPages}
+          {adminOrLogout(adminData)}
         </Toolbar>
       </AppBar>
     </div>

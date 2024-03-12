@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Product } from "../../types";
 import EditProduct from "./EditProduct";
+import NewProduct from "./NewProduct";
 
 const ProductAdmin = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -15,6 +16,7 @@ const ProductAdmin = () => {
 
   return (
     <>
+      <NewProduct />
       {products.map((p) => (
         <EditProduct key={p.name} product={p} />
       ))}

@@ -36,6 +36,7 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
       }),
     };
     await fetch("http://localhost:3000/api/product", requestOptions);
+    window.location.reload();
   };
 
   return (

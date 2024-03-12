@@ -11,7 +11,6 @@ import "./styling/accounts.css";
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
   const navigate = useNavigate();
-  const storedUserKey = "loggedPiikkiAdmin";
 
   const selectedUsers = users.filter((u) => u.pressed);
 
@@ -41,23 +40,8 @@ const App = () => {
       });
   }, []);
 
-  const logout = () => {
-    window.localStorage.removeItem(storedUserKey);
-    navigate("/"); // Needed to refresh the page
-  };
-
-  const adminOrLogout = () => {
-    const loggedUserJSON = window.localStorage.getItem("loggedPiikkiAdmin");
-    if (loggedUserJSON) {
-      return <Button onClick={logout}>Logout</Button>;
-    } else {
-      return <Button onClick={() => navigate("/adminlogin")}>ADMIN</Button>;
-    }
-  };
-
   return (
     <>
-      {adminOrLogout()}
       <h2>Asukkaat</h2>
       <div className="account-grid">
         {users

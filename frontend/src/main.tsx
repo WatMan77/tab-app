@@ -9,24 +9,55 @@ import {
 } from "react-router-dom";
 import DrinkContainer from "./components/DrinkContainer.tsx";
 import AdminLogin from "./components/Admin/Admin.tsx";
-import AdminPanel from "./components/Admin/AdminPanel.tsx";
+import NavBar from "./components/NavBar.tsx";
+import BalanceAdmin from "./components/Admin/BalanceAdmin.tsx";
+import ProductAdmin from "./components/Admin/ProductAdmin.tsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <>
+        <NavBar />
+        <App />
+      </>
+    ),
   },
   {
     path: "/piikki",
-    element: <DrinkContainer />,
+    element: (
+      <>
+        <NavBar />
+        <DrinkContainer />
+      </>
+    ),
   },
   {
     path: "/adminlogin",
-    element: <AdminLogin />,
+    element: (
+      <>
+        <NavBar />
+        <AdminLogin />
+      </>
+    ),
   },
   {
-    path: "/adminpanel",
-    element: <AdminPanel />,
+    path: "/balances",
+    element: (
+      <>
+        <NavBar />
+        <BalanceAdmin />
+      </>
+    ),
+  },
+  {
+    path: "/products",
+    element: (
+      <>
+        <NavBar />
+        <ProductAdmin />
+      </>
+    ),
   },
   {
     path: "*",
@@ -36,6 +67,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <RouterProvider router={router}></RouterProvider>
   </React.StrictMode>
 );

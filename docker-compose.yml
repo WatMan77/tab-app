@@ -8,7 +8,7 @@ services:
             - 5432:5432
         environment:
             POSTGRES_USERNAME: postgres
-            POSTGRES_DB: postgres
+            POSTGRES_DB: reform
             POSTGRES_PASSWORD: example
     backend:
         build: ./backend

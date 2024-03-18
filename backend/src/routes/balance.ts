@@ -23,8 +23,9 @@ router.put("/", async (req, res) => {
         }
         const updatePromises: Promise<any>[] = []
 
+
         confirmedAccounts.forEach(a => {
-            const query = db.query("UPDATE account SET balance=$1 WHERE id=$2;", [a.balance!, a.id!])
+            const query = db.query("UPDATE account SET balance=$1 WHERE username=$2;", [a.balance!, a.username])
             updatePromises.push(query);
         })
         await Promise.all(updatePromises)

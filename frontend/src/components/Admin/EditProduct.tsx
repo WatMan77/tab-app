@@ -5,7 +5,7 @@ import { Product } from "../../types";
 import { useState } from "react";
 
 const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
-  const [name, setName] = useState(product.name);
+  const [newName, setNewName] = useState(product.name);
   const [priceIn, setPriceIn] = useState(product.pricein);
   const [priceOut, setPriceOut] = useState(product.priceout);
 
@@ -17,8 +17,8 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": token },
       body: JSON.stringify({
-        id: product.id,
-        name,
+        name: product.name,
+        newName,
         pricein: priceIn,
         priceout: priceOut,
       }),
@@ -42,8 +42,8 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
   return (
     <div>
       <TextField
-        value={name}
-        onChange={({ target }) => setName(target.value)}
+        value={newName}
+        onChange={({ target }) => setNewName(target.value)}
       />
       <CurrencyInput
         decimalSeparator=","

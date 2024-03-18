@@ -55,7 +55,11 @@ router.put("/", async (req, res) => {
         }
 
         const product: Product = toNewProduct(req.body);
-        await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE id=$4;", [product.name, product.pricein, product.priceout, product.id!])
+        const newName = req.body.newName
+        if (!newName || typeof newName !== 'string') {
+            return res.status(401).json({ error: "No new name found" })
+        }
+        await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE name=$4;", [newName, product.pricein, product.priceout, product.name])
         res.status(201).send("OK");
     } catch (e) {
         console.log(e)

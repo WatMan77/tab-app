@@ -10,6 +10,7 @@ const NewProduct = () => {
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 
   const handlePriceIn = (price: number) => {
+    console.log("WHat is the price IN?!?", price);
     if (!price) {
       setPriceIn(0);
       return;
@@ -19,6 +20,8 @@ const NewProduct = () => {
   };
 
   const handlePriceOut = (price: number) => {
+    console.log("WHat is the price OUT?!?", price);
+
     if (!price) {
       setPriceIn(0);
       return;

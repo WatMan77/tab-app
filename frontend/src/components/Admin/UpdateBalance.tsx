@@ -3,7 +3,7 @@ import CurrencyInput from "react-currency-input-field";
 
 const UpdateBalance: React.FC<{
   user: { account: Account; change: number };
-  handleBalanceChange: (id: number, change: number) => void;
+  handleBalanceChange: (username: string, change: number) => void;
 }> = ({ user, handleBalanceChange }) => {
   return (
     <>
@@ -14,7 +14,7 @@ const UpdateBalance: React.FC<{
         placeholder="Enter a value"
         onValueChange={(_value, _name, values) => {
           handleBalanceChange(
-            user.account.id!,
+            user.account.username,
             values!.float ? values!.float : 0
           );
         }}

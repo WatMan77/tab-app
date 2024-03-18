@@ -27,6 +27,7 @@ app.use("/api/admin", adminRouter)
 app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
 
+
 // New user has been added
 app.post("/api/newaccount", async (req, res) => {
     try {

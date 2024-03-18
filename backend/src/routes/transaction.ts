@@ -31,32 +31,25 @@ router.post("/", async (req, res) => {
             transaction.items.forEach((item) => {
                 const addTransaction = db.query(`
                         INSERT INTO transaction
-                        (account_id, username, product_id, product_name, amount)
-                        VALUES($1, 
-                            (SELECT username FROM account WHERE id = $1),
-                            $2,
-                            (SELECT name FROM product WHERE id = $2), 
-                            $3) RETURNING *;`, [user.id, item.product.id, item.amount]);
+                        (username, product_name, amount)
+                        VALUES ($1, $2, $3) RETURNING *;`,
+                    [user.username, item.product.name, item.amount]);
                 transactionPromises.push(addTransaction)
             });
         });
         await Promise.all(transactionPromises)
 
-        const balancePromises: Promise<any>[] = []
-
         // Now update the balances
-        transaction.users.forEach((user) => {
+        transaction.users.forEach(async (user) => {
             // Get the total price of the products
             const cost: number = transaction.items.reduce((totalCost, item) => {
                 return totalCost + item.amount * item.product.pricein
             }, 0)
-            transaction.items.forEach((item) => {
-                const setAmount = db.query(`
-                UPDATE account SET balance=balance - $1 WHERE id=$2`, [cost, user.id]);
-                balancePromises.push(setAmount);
-            })
+
+            // Update the balances here
+            await db.query(`
+                UPDATE account SET balance=balance - $1 WHERE username=$2`, [cost, user.username]);
         })
-        await Promise.all(balancePromises)
         res.status(200).send("OK")
     } catch (e) {
         console.log("Transaction failed")

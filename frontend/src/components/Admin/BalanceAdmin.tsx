@@ -12,9 +12,9 @@ const BalanceAdmin = () => {
   const balanceSum =
     users.map((u) => u.account.balance!).reduce((a, b) => a + b, 0) / 100;
 
-  const handleBalanceChange = (id: number, change: number) => {
+  const handleBalanceChange = (username: string, change: number) => {
     const newState = users.map((u) => {
-      if (u.account.id === id) {
+      if (u.account.username === username) {
         return { ...u, change };
       } else {
         return u;
@@ -70,7 +70,7 @@ const BalanceAdmin = () => {
 
       {users.map((u) => (
         <UpdateBalance
-          key={u.account.id!}
+          key={u.account.username}
           user={u}
           handleBalanceChange={handleBalanceChange}
         />

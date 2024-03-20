@@ -1,7 +1,7 @@
 import express from "express"
 import { db } from "../database"
 import bcrypt from "bcrypt";
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 
 const router = express.Router();
 
@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
 
         const checkPassword = await bcrypt.compare(password, query.hash)
         if (checkPassword) {
-            const token = jwt.sign(username, process.env.SECRET)
+            const token = jwt.sign(username, process.env.SECRET!)
             res.status(200).send({ token })
         } else {
             res.status(401).json({ error: "Username or password is invalid" });

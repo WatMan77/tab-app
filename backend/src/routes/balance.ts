@@ -2,7 +2,7 @@ import express from "express"
 import { db } from "../database"
 import { Account } from "../types";
 import { toNewAccount } from "../utils";
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.put("/", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET)
+        const decodedToken = jwt.verify(token, process.env.SECRET!)
         if (!decodedToken) {
             return res.status(401).json({ error: 'token invalid' })
         }

@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+const { Pool } = require("pg")
 import { migrate } from 'postgres-migrations';
 const pool = new Pool({
     user: process.env.POSTGRES_USERNAME,

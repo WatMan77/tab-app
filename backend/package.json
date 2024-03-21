@@ -18,7 +18,12 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "tsx --watch index.ts",
-    "lint": "eslint --ext .ts ."
+    "lint": "eslint --ext .ts .",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "name": "backend",
   "version": "1.0.0",

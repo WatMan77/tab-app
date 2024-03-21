@@ -46,7 +46,9 @@ app.post("/api/newaccount", async (req, res) => {
         const account: Account = toNewAccount(req.body)
         // There is a chance the amount has a decimal at the very end
 
-        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, Math.floor(account.balance!)])
+        const balance = Math.floor(account.balance!)
+
+        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])
         res.status(201).send("OK")
     } catch (e) {
         res.status(400).send(e)

@@ -1,6 +1,6 @@
-import { Pool } from "pg";
+import pg from "pg";
 import { migrate } from 'postgres-migrations';
-const pool = new Pool({
+const pool = new pg.Pool({
     user: process.env.POSTGRES_USERNAME,
     password: process.env.POSTGRES_PASSWORD,
     host: process.env.HOST || "localhost",

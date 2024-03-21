@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
                         INSERT INTO transaction
                         (username, product_name, amount)
                         VALUES ($1, $2, $3) RETURNING *;`,
-                    [user.username, item.product.name, item.amount]);
+                    [user.username, item.product.name, item.amount.toString()]);
                 transactionPromises.push(addTransaction)
             });
         });
@@ -48,7 +48,7 @@ router.post("/", async (req, res) => {
 
             // Update the balances here
             await db.query(`
-                UPDATE account SET balance=balance - $1 WHERE username=$2`, [cost, user.username]);
+                UPDATE account SET balance=balance - $1 WHERE username=$2`, [cost.toString(), user.username]);
         })
         res.status(200).send("OK")
     } catch (e) {

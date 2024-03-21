@@ -1,32 +1,42 @@
 import pg from "pg";
 import { migrate } from 'postgres-migrations';
-const pool = new pg.Pool({
-    user: process.env.POSTGRES_USERNAME,
-    password: process.env.POSTGRES_PASSWORD,
-    host: process.env.HOST || "localhost",
-    port: 5432,
-    database: process.env.POSTGRES_DB
-})
 
+const test_variables = {
+    user: process.env.POSTGRES_USERNAME ?? "postgres",
+    password: process.env.POSTGRES_PASSWORD ?? "test",
+    host: process.env.HOST_TEST! || "localhost",
+    port: 5432,
+    database: process.env.POSTGRES_DB ?? "test-db"
+}
+
+
+const dev_variables = {
+    user: process.env.POSTGRES_USERNAME!,
+    password: process.env.POSTGRES_PASSWORD!,
+    host: process.env.HOST! || "localhost",
+    port: 5432,
+    database: process.env.POSTGRES_DB!
+}
+
+//const pool = new pg.Pool(process.env.NODE_ENV === "test" ? test_variables : dev_variables)
+const pool = new pg.Pool(test_variables)
 const initDb = async () => {
     try {
         await migrate({
-            user: process.env.POSTGRES_USERNAME ?? "",
-            password: process.env.POSTGRES_PASSWORD ?? "",
+            user: process.env.POSTGRES_USERNAME!,
+            password: process.env.POSTGRES_PASSWORD!,
             host: process.env.HOST || "localhost",
             port: 5432,
-            database: process.env.POSTGRES_DB ?? ""
+            database: process.env.POSTGRES_DB!
         }, './migrations');
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)
     }
 }
-console.log("ENV?!?!", process.env.TS_NODE_DEV)
-if (process.env.TS_NODE_DEV) {
+
+if (process.env.NODE_ENV !== "test") {
     initDb().then(() => console.log("DB initialized"))
 }
 
-
-
-export { pool as db }
+export { pool as db, initDb }

@@ -10,6 +10,16 @@ services:
             POSTGRES_USERNAME: postgres
             POSTGRES_DB: reform
             POSTGRES_PASSWORD: example
+    test-db:
+        image: postgres
+        restart: always
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USERNAME: postgres
+            POSTGRES_DB: test-db
+            POSTGRES_PASSWORD: test
+
     backend:
         build: ./backend
         ports:

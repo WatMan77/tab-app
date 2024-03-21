@@ -31,7 +31,7 @@ router.post("/", async (req, res) => {
         }
 
         const product: Product = toNewProduct(req.body)
-        await db.query("INSERT INTO product (name, pricein, priceout) VALUES($1, $2, $3) RETURNING *", [product.name, product.pricein, product.priceout])
+        await db.query("INSERT INTO product (name, pricein, priceout) VALUES($1, $2, $3) RETURNING *", [product.name, product.pricein.toString(), product.priceout.toString()])
         res.status(200).send("OK")
     } catch (e) {
         console.log(e)
@@ -58,7 +58,7 @@ router.put("/", async (req, res) => {
         if (!newName || typeof newName !== 'string') {
             return res.status(401).json({ error: "No new name found" })
         }
-        await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE name=$4;", [newName, product.pricein, product.priceout, product.name])
+        await db.query("UPDATE product SET name=$1, pricein=$2, priceout=$3 WHERE name=$4;", [newName, product.pricein.toString(), product.priceout.toString(), product.name])
         res.status(201).send("OK");
     } catch (e) {
         console.log(e)

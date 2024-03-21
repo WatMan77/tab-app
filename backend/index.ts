@@ -1,5 +1,5 @@
 import express from 'express';
-require('express-async-errors')
+import "express-async-errors"
 import 'dotenv/config';
 import { db } from "./src/database";
 import { toNewAccount } from "./src/utils";
@@ -10,10 +10,10 @@ import { transactionRouter } from "./src/routes/transaction"
 import { adminRouter } from "./src/routes/admin"
 import { loginRouter } from "./src/routes/login"
 import { balanceRouter } from "./src/routes/balance"
-const jwt = require("jsonwebtoken")
+import jwt from "jsonwebtoken"
 
 const app = express();
-const cors = require("cors")
+import cors from "cors"
 
 app.use(express.json());
 app.use(cors())
@@ -37,7 +37,7 @@ app.post("/api/newaccount", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET)
+        const decodedToken = jwt.verify(token, process.env.SECRET!)
         if (!decodedToken) {
             console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })
@@ -46,7 +46,9 @@ app.post("/api/newaccount", async (req, res) => {
         const account: Account = toNewAccount(req.body)
         // There is a chance the amount has a decimal at the very end
 
-        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, Math.floor(account.balance!)])
+        const balance = Math.floor(account.balance!)
+
+        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])
         res.status(201).send("OK")
     } catch (e) {
         res.status(400).send(e)

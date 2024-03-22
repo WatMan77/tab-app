@@ -1,6 +1,6 @@
 import express from "express"
 import { db } from "../database"
-import { Transaction } from '../types'
+import { Log, Transaction } from '../types'
 import { toNewTransaction } from '../utils'
 
 
@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
     try {
-        const transactions: Transaction[] = (await db.query("SELECT * FROM transaction;")).rows
+        const transactions: Log[] = (await db.query("SELECT * FROM transaction;")).rows
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)
@@ -25,7 +25,6 @@ router.post("/", async (req, res) => {
     try {
         const transactionPromises: Promise<any>[] = []
         const transaction: Transaction = toNewTransaction(req.body)
-        // Check user ID's and product ids again!
 
         transaction.users.forEach((user) => {
             transaction.items.forEach((item) => {

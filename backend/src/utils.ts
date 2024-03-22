@@ -36,12 +36,10 @@ const toNewProduct = (object: unknown): Product => {
 }
 
 const isValidProduct = (product: any): product is Product => {
-    const hasValidId = typeof product.id === "undefined" || typeof product.id === "number"
     return (
         typeof product.name === "string" &&
         typeof product.pricein === "number" &&
-        typeof product.priceout === "number" &&
-        hasValidId
+        typeof product.priceout === "number"
     )
 }
 

@@ -22,4 +22,11 @@ interface Transaction {
     users: Account[]
 }
 
-export { Account, Product, Transaction, UserType }
+interface Log {
+    name: string,
+    product_name: string,
+    transaction_date: Date,
+    amount: number
+}
+
+export { Account, Product, Transaction, UserType, Log }

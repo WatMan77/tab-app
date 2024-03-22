@@ -80,11 +80,11 @@ router.delete("/", async (req, res) => {
             return res.status(401).json({ error: 'token invalid' })
         }
 
-        const id = req.body.id;
-        if (!id) {
-            return res.status(400).json({ error: "Id not found" })
+        const name = req.body.name;
+        if (!name) {
+            return res.status(400).json({ error: "'name' not found" })
         }
-        await db.query("DELETE FROM product WHERE id=$1;", [id]);
+        await db.query("DELETE FROM product WHERE name=$1;", [name]);
         res.status(204).send("Delete successful")
     } catch (e) {
 

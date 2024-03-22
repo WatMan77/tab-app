@@ -1,10 +1,10 @@
-import { describe, test, expect, beforeEach, afterAll, beforeAll } from "@jest/globals"
+import { describe, test, expect, afterAll, beforeAll } from "@jest/globals"
 import request from "supertest"
 import app from "../index"
 import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
-import { Account, UserType, Product } from "../src/types"
+import { Product } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -93,5 +93,19 @@ describe("Products with correct token", () => {
             name: "Bisse"
         })
         expect(response.body).not.toContainEqual(products[0])
+    })
+
+    test("delete a drink", async () => {
+        await request(app)
+            .delete("/api/product")
+            .set("Authorization", "Bearer " + token)
+            .send({ name: products[1].name })
+            .expect(204)
+
+        const response = await request(app)
+            .get("/api/product")
+            .expect(200)
+
+        expect(response.body).not.toContainEqual(products[1])
     })
 })

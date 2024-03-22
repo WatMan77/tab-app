@@ -8,9 +8,11 @@ const router = express.Router();
 
 router.put("/", async (req, res) => {
 
+
     const { accounts } = req.body
-    const confirmedAccounts: Account[] = accounts.map((o: unknown) => toNewAccount(o))
+    console.log("Accounts?!?", accounts)
     try {
+        const confirmedAccounts: Account[] = accounts.map((o: unknown) => toNewAccount(o))
         const authorization = req.get("authorization");
         if (!authorization || !authorization.startsWith("Bearer ")) {
             return res.status(400).send({ error: "Token not found" })

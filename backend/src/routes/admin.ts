@@ -9,7 +9,6 @@ router.post("/", async (req, res) => {
 
         const { username, password } = req.body
 
-
         // 10 is the "salt round"
         const passwordHash = await bcrypt.hash(password, 10);
         console.log("Password hash ", passwordHash)

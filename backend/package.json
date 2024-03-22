@@ -21,7 +21,7 @@
     "tsc": "tsc",
     "dev": "tsx --watch index.ts",
     "lint": "eslint --ext .ts .",
-    "test": "jest --forceExit"
+    "test": "jest --forceExit --runInBand"
   },
   "jest": {
     "preset": "ts-jest",

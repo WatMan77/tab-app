@@ -1,9 +1,9 @@
-FROM node:20.11
+FROM oven/bun:latest
 
 WORKDIR /frontend
 
 COPY . .
 
-RUN npm ci && npm run build
+RUN bun install && bun run build
 
-CMD ["npm", "run", "preview", "--", "--host"]
+CMD ["bun", "run", "preview", "--", "--host"]

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Product } from "../../types";
+import type { Product } from "../../types";
 import EditProduct from "./EditProduct";
 import NewProduct from "./NewProduct";
 

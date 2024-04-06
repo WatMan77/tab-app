@@ -1,10 +1,10 @@
-import { describe, test, expect, beforeEach, afterAll, beforeAll } from "@jest/globals"
+import { describe, test, expect, afterAll, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
 import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
-import { Account, UserType } from "../src/types"
+import { type Account, UserType } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 afterAll(() => {
     console.log("Ending it")
-    db.end()
+    // db.end()
 })
 
 describe("Accounts", () => {
@@ -48,7 +48,7 @@ describe("Accounts", () => {
             balance: 0
         }
 
-        const response = await request(app)
+        await request(app)
             .post("/api/newaccount")
             .set("Authorization", `Bearer ${token}`)
             .send(newUser)

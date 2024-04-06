@@ -3,7 +3,7 @@ import "express-async-errors"
 import 'dotenv/config';
 import { db } from "./src/database";
 import { toNewAccount } from "./src/utils";
-import { Account } from "./src/types";
+import type { Account } from "./src/types";
 import { accountRouter } from "./src/routes/account"
 import { productRouter } from "./src/routes/product"
 import { transactionRouter } from "./src/routes/transaction"
@@ -18,7 +18,7 @@ import cors from "cors"
 app.use(express.json());
 app.use(cors())
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env['PORT'] || 3000;
 
 app.use("/api/account", accountRouter)
 app.use("/api/product", productRouter)
@@ -27,6 +27,9 @@ app.use("/api/admin", adminRouter)
 app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
 
+app.get("/api/", async (req, res) => {
+    return res.send("Hello world!")
+})
 
 // New user has been added
 app.post("/api/newaccount", async (req, res) => {
@@ -37,7 +40,7 @@ app.post("/api/newaccount", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET!)
+        const decodedToken = jwt.verify(token, process.env['SECRET']!)
         if (!decodedToken) {
             console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })
@@ -48,7 +51,7 @@ app.post("/api/newaccount", async (req, res) => {
 
         const balance = Math.floor(account.balance!)
 
-        const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])
+        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])
         res.status(201).send("OK")
     } catch (e) {
         res.status(400).send(e)
@@ -56,7 +59,7 @@ app.post("/api/newaccount", async (req, res) => {
     }
 })
 
-if (process.env.NODE_ENV !== "test") {
+if (Bun.env.NODE_ENV !== "test") {
     app.listen(PORT, () => {
         return console.log("Server running on port " + PORT);
     });

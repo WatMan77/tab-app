@@ -1,11 +1,11 @@
-FROM node:20.11
+FROM oven/bun:latest
 
 WORKDIR /backend
 
 COPY . .
 
-RUN npm ci && npm run tsc
+RUN bun install
 
 EXPOSE 3000
 
-CMD ["node", "./dist/index.js"]
+CMD ["bun", "index.ts"]

@@ -1,10 +1,10 @@
-import { describe, test, expect, afterAll, beforeAll } from "@jest/globals"
+import { describe, test, expect, afterAll, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
 import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
-import { Product } from "../src/types"
+import type { Product } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 afterAll(() => {
     console.log("Ending it")
-    db.end()
+    // db.end()
 })
 
 describe("Products with correct token", () => {

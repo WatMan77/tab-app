@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import CurrencyInput from "react-currency-input-field";
 
-import { Product } from "../../types";
+import type { Product } from "../../types";
 import { useState } from "react";
 
 const EditProduct: React.FC<{ product: Product }> = ({ product }) => {

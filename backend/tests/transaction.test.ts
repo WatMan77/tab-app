@@ -1,10 +1,10 @@
-import { describe, test, expect, afterAll, beforeAll } from "@jest/globals"
+import { describe, test, expect, afterAll, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
 import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
-import { Transaction, Log, Account } from "../src/types"
+import type { Transaction, Log, Account } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -26,7 +26,7 @@ beforeAll(async () => {
 
 afterAll(() => {
     console.log("Ending it")
-    db.end()
+    //db.end()
 })
 
 describe("Transaction", () => {
@@ -96,7 +96,6 @@ describe("Transaction", () => {
             return total + product.pricein * amount;
         }, 0);
 
-        console.log("What is the totalCost?", totalCost)
         for (const u of db_accounts.body) {
             // First find the original price
             const original = accounts.find(x => x.username === u.username)

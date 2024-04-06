@@ -1,6 +1,6 @@
 import express from "express"
 import { db } from "../database"
-import { Product } from '../types'
+import type { Product } from '../types'
 import { toNewProduct } from '../utils'
 import jwt from "jsonwebtoken"
 
@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET!)
+        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
         if (!decodedToken) {
             console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })
@@ -47,7 +47,7 @@ router.put("/", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET!)
+        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
         if (!decodedToken) {
             console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })
@@ -74,7 +74,7 @@ router.delete("/", async (req, res) => {
         }
 
         const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env.SECRET!)
+        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
         if (!decodedToken) {
             console.log("Token invalid!")
             return res.status(401).json({ error: 'token invalid' })

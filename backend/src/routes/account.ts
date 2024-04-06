@@ -1,6 +1,6 @@
 import express from 'express';
 import { db } from "../database"
-import { Account } from '../types'
+import type { Account } from '../types';
 import { toNewAccount } from '../utils'
 
 const router = express.Router();

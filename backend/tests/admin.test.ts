@@ -1,8 +1,8 @@
-import { describe, test, expect, beforeEach, afterAll, beforeAll } from "@jest/globals"
+import { describe, test, expect, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
-import { db, initDb } from "../src/database"
-import { accounts, admin, products } from "./db_values"
+import { db } from "../src/database"
+import { admin } from "./db_values"
 import bcrypt from "bcrypt"
 
 beforeAll(async () => {

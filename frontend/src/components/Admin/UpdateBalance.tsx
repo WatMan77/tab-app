@@ -1,4 +1,4 @@
-import { Account } from "../../types";
+import type { Account } from "../../types";
 import CurrencyInput from "react-currency-input-field";
 
 const UpdateBalance: React.FC<{

@@ -1,4 +1,4 @@
-import { Account } from "../types.ts";
+import type { Account } from "../types.ts";
 import { Button } from "@mui/material";
 
 const UserBlock: React.FC<{

@@ -1,6 +1,6 @@
 import UpdateBalance from "./UpdateBalance";
 import { useState, useEffect } from "react";
-import { Account } from "../../types";
+import type { Account } from "../../types";
 import NewUser from "./NewAccount";
 import { Button } from "@mui/material";
 

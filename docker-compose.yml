@@ -25,9 +25,8 @@ services:
         ports:
             - 3000:3000
         environment:
-            - HOST=db # This has to be the same as the service name of the Database!
-        depends_on:
-            - db
+            - HOST=test-db # This has to be the same as the service name of the Database!
+
     frontend:
         build: ./frontend
         ports:

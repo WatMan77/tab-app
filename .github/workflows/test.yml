@@ -1,0 +1,19 @@
+name: testing
+
+on:
+  push:
+    branches:
+      - "*"
+jobs:
+  my-job:
+    name: my-job
+    runs-on: ubuntu-latest
+    steps:
+      # ...
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: cd backend
+
+      # run any `bun` or `bunx` command
+      - run: bun install
+      - run: bun run test

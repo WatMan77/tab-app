@@ -27,4 +27,4 @@ CREATE TABLE transaction (
 CREATE TABLE admin (
     username VARCHAR(50),
     hash VARCHAR(64)
-)
+);

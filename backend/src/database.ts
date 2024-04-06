@@ -21,20 +21,16 @@ const dev_variables = {
 const pool = new pg.Pool(test_variables)
 const initDb = async () => {
     try {
-        await migrate({
-            user: process.env["POSTGRES_USERNAME"]!,
-            password: process.env["POSTGRES_PASSWORD"]!,
-            host: process.env["HOST"] || "localhost",
-            port: 5432,
-            database: process.env["POSTGRES_DB"]!
-        }, './migrations');
+        await migrate(test_variables, './migrations');
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)
     }
 }
 
-if (process.env.NODE_ENV !== "test") {
+console.log("NODE_END?!?!?", Bun.env.NODE_ENV)
+
+if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
     initDb().then(() => console.log("DB initialized"))
 }
 

@@ -1,0 +1,39 @@
+name: testing
+
+on:
+  push:
+    branches:
+      - "*"
+jobs:
+  my-job:
+    name: my-job
+    runs-on: ubuntu-latest
+
+    services:
+      test-db:
+        image: postgres
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_DB: test-db
+          POSTGRES_PASSWORD: test
+          HOST: test-db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      # ...
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      # run any `bun` or `bunx` command
+      - run: bun install
+        working-directory: ./backend
+      - name: Setup tables
+        working-directory: ./backend
+        run: psql "postgresql://postgres:test@localhost/test-db" -f migrations/1_create_basics.sql
+      - run: bun run test
+        working-directory: ./backend
+        env:
+          CI: true
+          SECRET: ${{ secrets.SECRET }}

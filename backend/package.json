@@ -19,10 +19,10 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "dev": "bun --watch run ./index.ts",
+    "dev": "NODE_ENV=dev bun --watch run ./index.ts",
     "lint": "eslint --ext .ts .",
     "tests": "jest --forceExit --runInBand",
-    "test": "bun test"
+    "test": "NODE_ENV=test bun test"
   },
   "name": "backend",
   "version": "1.0.0",

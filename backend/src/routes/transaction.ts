@@ -1,12 +1,12 @@
 import express from "express"
 import { db } from "../database"
-import { Log, Transaction } from '../types'
+import type { Log, Transaction } from '../types';
 import { toNewTransaction } from '../utils'
 
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
     try {
         const transactions: Log[] = (await db.query("SELECT * FROM transaction;")).rows
         res.status(200).send(transactions)

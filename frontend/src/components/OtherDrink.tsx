@@ -1,25 +1,23 @@
-import { Box } from "@mui/material";
-import { Unstable_NumberInput as NumberInput } from "@mui/base/Unstable_NumberInput";
+import { Box, TextField } from "@mui/material";
 
 const Other: React.FC<{
   sum: number;
   add: (amount: number) => void;
-}> = ({ sum, add }) => {
-  const name = "MUU";
-
-  const changePrice = (val: number) => {
-    add(val);
+}> = ({ add }) => {
+  const changePrice = (val: string) => {
+    const n: number = Number.parseFloat(val);
+    add(isNaN(n) ? 0 : n);
   };
+
   return (
     <>
-      <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {name}
-        <NumberInput
-          placeholder="0"
-          value={sum}
-          onChange={(_event, val) => changePrice(val ? val : 0)}
-        />
-      </Box>
+      <Box component="section" sx={{ p: 2, border: "1px dashed grey" }} />
+      <TextField
+        label="Muu määrä"
+        placeholder="0"
+        type="number"
+        onChange={({ target }) => changePrice(target.value)}
+      />
     </>
   );
 };

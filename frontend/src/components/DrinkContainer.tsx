@@ -53,8 +53,17 @@ const DrinkContainer = () => {
     console.log("Items?", items);
     // add the "other" category if necessary
     if (other > 0) {
-      items.concat();
+      const otherProduct: { product: Product; amount: number } = {
+        product: {
+          name: "MUU",
+          pricein: other * 100,
+          priceout: 0,
+        },
+        amount: 1,
+      };
+      items.push(otherProduct);
     }
+    console.log("What are the items?!", items);
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },

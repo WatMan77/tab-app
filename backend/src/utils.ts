@@ -1,4 +1,4 @@
-import { Account, Product, Transaction, UserType } from "./types";
+import type { Account, Product, Transaction, UserType } from "./types";
 
 const toNewAccount = (object: unknown): Account => {
     if (isValidAccount(object)) {

@@ -1,24 +1,28 @@
 import { UserType } from "./types";
-import type { Account } from "./types";
+import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "./styling/accounts.css";
+import ProductContainer from "./components/ProductContainer";
 
 //import "./App.css";
 
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
+  const [drinkStates, setDrinkStates] = useState<
+    { product: Product; amount: number }[]
+  >([]);
   const navigate = useNavigate();
 
   const selectedUsers = users.filter((u) => u.pressed);
 
-  const selectProducts = () => {
-    if (selectedUsers.length > 0) {
-      navigate("/piikki", { state: { users: selectedUsers } });
-    }
-  };
+  // const selectProducts = () => {
+  //   if (selectedUsers.length > 0) {
+  //     navigate("/piikki", { state: { users: selectedUsers } });
+  //   }
+  // };
 
   const changePress = (username: string) => {
     const updatedUsers = users.map((x) => {
@@ -32,62 +36,85 @@ const App = () => {
     setUsers(updatedUsers);
   };
 
+  const updateAmount = (product: string, increase: number) => {
+    const updatedProducts = drinkStates.map((p) => {
+      if (p.product.name === product) {
+        return { ...p, amount: p.amount + increase };
+      } else {
+        return p;
+      }
+    });
+    setDrinkStates(updatedProducts);
+  };
+
   useEffect(() => {
     fetch("http://localhost:3000/api/account")
       .then((response) => response.json())
       .then((data) => {
         setUsers(data.map((user: Account) => ({ user, pressed: false })));
       });
+    fetch("http://localhost:3000/api/product")
+      .then((response) => response.json())
+      .then((data: Product[]) => {
+        setDrinkStates(
+          data.map((x) => {
+            return { product: x, amount: 0 };
+          })
+        );
+      });
   }, []);
 
   return (
-    <>
-      <h2>Asukkaat</h2>
-      <div className="account-grid">
-        {users
-          .filter((x) => x.user.category === UserType.ASUKAS)
-          .map((u) => (
-            <UserBlock
-              user={u}
-              changePress={changePress}
-              key={u.user.username}
-            />
-          ))}
-      </div>
-      <h2>Vanhat</h2>
-      <div className="account-grid">
-        {users
-          .filter((x) => x.user.category === UserType.VANHA)
-          .map((u) => (
-            <UserBlock
-              user={u}
-              changePress={changePress}
-              key={u.user.username}
-            />
-          ))}
-      </div>
-      <h2>Hangaroundit</h2>
-      <div className="account-grid">
-        {users
-          .filter((x) => x.user.category === UserType.HANGAROUND)
-          .map((u) => (
-            <UserBlock
-              user={u}
-              changePress={changePress}
-              key={u.user.username}
-            />
-          ))}
-      </div>
+    <Stack
+      direction="row"
+      justifyContent="flex-start"
+      alignItems="stretch"
+      spacing={2}
+    >
       <div>
-        <Button
-          variant="contained"
-          disabled={selectedUsers.length <= 0}
-          onClick={selectProducts}
-        >
-          Drinks
-        </Button>
+        <h2>Asukkaat</h2>
+        <div className="account-grid">
+          {users
+            .filter((x) => x.user.category === UserType.ASUKAS)
+            .map((u) => (
+              <UserBlock
+                user={u}
+                changePress={changePress}
+                key={u.user.username}
+              />
+            ))}
+        </div>
+        <h2>Vanhat</h2>
+        <div className="account-grid">
+          {users
+            .filter((x) => x.user.category === UserType.VANHA)
+            .map((u) => (
+              <UserBlock
+                user={u}
+                changePress={changePress}
+                key={u.user.username}
+              />
+            ))}
+        </div>
+        <h2>Hangaroundit</h2>
+        <div className="account-grid">
+          {users
+            .filter((x) => x.user.category === UserType.HANGAROUND)
+            .map((u) => (
+              <UserBlock
+                user={u}
+                changePress={changePress}
+                key={u.user.username}
+              />
+            ))}
+        </div>
       </div>
-    </>
+      <ProductContainer
+        className="prodcut-column"
+        drinkState={drinkStates}
+        updateAmount={updateAmount}
+      />
+    </Stack>
   );
 };
 

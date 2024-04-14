@@ -7,14 +7,17 @@ const Drink: React.FC<{
   drinkStates: { product: Product; amount: number }[];
   add: (amount: number) => void;
   updateAmount: (product: string, amount: number) => void;
-}> = ({ drink, sum, add, drinkStates, updateAmount }) => {
+  amount: number;
+}> = ({ drinkStates, drink, sum, updateAmount, add, amount }) => {
   const addDrink = () => {
     add(sum + drink.pricein);
     updateAmount(drink.name, 1);
   };
 
   const removeDrink = () => {
-    const currentAmount = drinkStates.find((p) => p.amount);
+    const currentAmount = drinkStates.find(
+      (p) => p.product.name === drink.name
+    );
     if (currentAmount && currentAmount.amount >= 1) {
       add(sum - drink.pricein);
       updateAmount(drink.name, -1);
@@ -22,16 +25,19 @@ const Drink: React.FC<{
   };
   return (
     <>
-      <Box component="section" sx={{ p: 2, border: "1px dashed grey" }}>
-        {drink.name} {drink.pricein / 100}€
+      <Box display="flex" gap={2}>
+        <Box sx={{ flex: 1 }}>
+          {drink.name} {drink.pricein / 100}€
+        </Box>
+        <Box>{amount}</Box>
         <ButtonGroup
           variant="contained"
           aria-label="outlined primary button group"
         >
-          <Button onClick={() => addDrink()} variant="contained">
+          <Button onClick={addDrink} variant="contained">
             +
           </Button>
-          <Button onClick={() => removeDrink()} variant="contained">
+          <Button onClick={removeDrink} variant="contained">
             -
           </Button>
         </ButtonGroup>

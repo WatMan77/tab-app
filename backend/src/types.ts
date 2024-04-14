@@ -29,4 +29,5 @@ interface Log {
     amount: number
 }
 
-export { Account, Product, Transaction, UserType, Log }
+export { UserType }
+export type { Account, Product, Transaction, Log }

@@ -25,12 +25,12 @@ const CategoryWrapper: React.FC<{
     }
   };
   return (
-    <>
+    <div className="account-grid">
       <TextField onChange={({ target }) => handleChange(target.value)} />
       {filtered.map((f) => (
         <UserBlock user={f} changePress={changePress} key={f.user.username} />
       ))}
-    </>
+    </div>
   );
 };
 

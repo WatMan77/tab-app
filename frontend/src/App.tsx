@@ -2,8 +2,7 @@ import { UserType } from "./types";
 import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
-import { Button, Stack } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { Stack } from "@mui/material";
 import "./styling/accounts.css";
 import ProductContainer from "./components/ProductContainer";
 
@@ -14,15 +13,6 @@ const App = () => {
   const [drinkStates, setDrinkStates] = useState<
     { product: Product; amount: number }[]
   >([]);
-  const navigate = useNavigate();
-
-  const selectedUsers = users.filter((u) => u.pressed);
-
-  // const selectProducts = () => {
-  //   if (selectedUsers.length > 0) {
-  //     navigate("/piikki", { state: { users: selectedUsers } });
-  //   }
-  // };
 
   const changePress = (username: string) => {
     const updatedUsers = users.map((x) => {
@@ -45,6 +35,17 @@ const App = () => {
       }
     });
     setDrinkStates(updatedProducts);
+  };
+
+  const resetStates = (): void => {
+    const updatedProducts = drinkStates.map((p) => {
+      return { ...p, amount: 0 };
+    });
+    const updatedUsers = users.map((u) => {
+      return { ...u, pressed: false };
+    });
+    setDrinkStates(updatedProducts);
+    setUsers(updatedUsers);
   };
 
   useEffect(() => {
@@ -113,6 +114,8 @@ const App = () => {
         className="prodcut-column"
         drinkState={drinkStates}
         updateAmount={updateAmount}
+        users={users.filter((u) => u.pressed)}
+        resetStates={resetStates}
       />
     </Stack>
   );

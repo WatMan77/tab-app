@@ -15,7 +15,9 @@ const Drink: React.FC<{
   };
 
   const removeDrink = () => {
-    const currentAmount = drinkStates.find((p) => p.amount);
+    const currentAmount = drinkStates.find(
+      (p) => p.product.name === drink.name
+    );
     if (currentAmount && currentAmount.amount >= 1) {
       add(sum - drink.pricein);
       updateAmount(drink.name, -1);

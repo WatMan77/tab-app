@@ -50,7 +50,6 @@ const DrinkContainer = () => {
   const confirm = async () => {
     // Take all the drinks that have been added to the cart
     const items = drinkStates.filter((x) => x.amount >= 1);
-    console.log("Items?", items);
     // add the "other" category if necessary
     if (other > 0) {
       const otherProduct: { product: Product; amount: number } = {
@@ -63,7 +62,6 @@ const DrinkContainer = () => {
       };
       items.push(otherProduct);
     }
-    console.log("What are the items?!", items);
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -73,11 +71,7 @@ const DrinkContainer = () => {
       }),
     };
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/transaction",
-        requestOptions
-      );
-      console.log(response);
+      await fetch("http://localhost:3000/api/transaction", requestOptions);
     } catch (e) {
       console.log(e);
     }
@@ -105,7 +99,7 @@ const DrinkContainer = () => {
       <h1>Customers</h1>
       <ul>
         {users.map((u) => (
-          <li key={u.user.id}>
+          <li key={u.user.username}>
             {u.user.username} {u.user.balance! / 100}€
           </li>
         ))}

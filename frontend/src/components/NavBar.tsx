@@ -4,7 +4,6 @@ import { Toolbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
-  console.log("NavBar");
   const navigate = useNavigate();
 
   const adminData = window.localStorage.getItem("loggedPiikkiAdmin");

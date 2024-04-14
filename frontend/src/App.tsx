@@ -4,6 +4,7 @@ import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import "./styling/accounts.css";
+import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
 
 //import "./App.css";
@@ -17,7 +18,6 @@ const App = () => {
   const changePress = (username: string) => {
     const updatedUsers = users.map((x) => {
       if (x.user.username === username) {
-        console.log(`Changed ${x.user.username} to ${!x.pressed}`);
         return { ...x, pressed: !x.pressed };
       } else {
         return x;
@@ -85,29 +85,20 @@ const App = () => {
               />
             ))}
         </div>
+
         <h2>Vanhat</h2>
         <div className="account-grid">
-          {users
-            .filter((x) => x.user.category === UserType.VANHA)
-            .map((u) => (
-              <UserBlock
-                user={u}
-                changePress={changePress}
-                key={u.user.username}
-              />
-            ))}
+          <CategoryWrapper
+            changePress={changePress}
+            users={users.filter((x) => x.user.category === UserType.VANHA)}
+          />
         </div>
         <h2>Hangaroundit</h2>
         <div className="account-grid">
-          {users
-            .filter((x) => x.user.category === UserType.HANGAROUND)
-            .map((u) => (
-              <UserBlock
-                user={u}
-                changePress={changePress}
-                key={u.user.username}
-              />
-            ))}
+          <CategoryWrapper
+            changePress={changePress}
+            users={users.filter((x) => x.user.category === UserType.HANGAROUND)}
+          />
         </div>
       </div>
       <ProductContainer

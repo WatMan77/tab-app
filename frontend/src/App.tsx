@@ -87,19 +87,15 @@ const App = () => {
         </div>
 
         <h2>Vanhat</h2>
-        <div className="account-grid">
-          <CategoryWrapper
-            changePress={changePress}
-            users={users.filter((x) => x.user.category === UserType.VANHA)}
-          />
-        </div>
+        <CategoryWrapper
+          changePress={changePress}
+          users={users.filter((x) => x.user.category === UserType.VANHA)}
+        />
         <h2>Hangaroundit</h2>
-        <div className="account-grid">
-          <CategoryWrapper
-            changePress={changePress}
-            users={users.filter((x) => x.user.category === UserType.HANGAROUND)}
-          />
-        </div>
+        <CategoryWrapper
+          changePress={changePress}
+          users={users.filter((x) => x.user.category === UserType.HANGAROUND)}
+        />
       </div>
       <ProductContainer
         className="prodcut-column"

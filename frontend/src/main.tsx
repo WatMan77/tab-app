@@ -7,7 +7,6 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import DrinkContainer from "./components/DrinkContainer.tsx";
 import AdminLogin from "./components/Admin/Admin.tsx";
 import NavBar from "./components/NavBar.tsx";
 import BalanceAdmin from "./components/Admin/BalanceAdmin.tsx";
@@ -20,15 +19,6 @@ const router = createBrowserRouter([
       <>
         <NavBar />
         <App />
-      </>
-    ),
-  },
-  {
-    path: "/piikki",
-    element: (
-      <>
-        <NavBar />
-        <DrinkContainer />
       </>
     ),
   },

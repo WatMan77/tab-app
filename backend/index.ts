@@ -10,6 +10,7 @@ import { transactionRouter } from "./src/routes/transaction"
 import { adminRouter } from "./src/routes/admin"
 import { loginRouter } from "./src/routes/login"
 import { balanceRouter } from "./src/routes/balance"
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
 const app = express();
@@ -27,9 +28,27 @@ app.use("/api/admin", adminRouter)
 app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
 
-app.get("/api/", async (req, res) => {
-    return res.send("Hello world!")
-})
+if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
+    app.delete("/api/reset", async (_req, res) => {
+        try {
+            await db.query("TRUNCATE transaction, account, product, transaction, admin;")
+            res.status(204).send("OK")
+        } catch (e) {
+            console.log(e)
+        }
+    })
+    app.get("/api/testadmin", async (_req, res) => {
+        try {
+            const passwordHash = await bcrypt.hash("password123", 10);
+            await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", ["admin", passwordHash])
+            res.status(201).send("OK")
+
+        } catch (e) {
+            console.log(e)
+        }
+    })
+}
+
 
 // New user has been added
 app.post("/api/newaccount", async (req, res) => {

@@ -57,7 +57,7 @@ jobs:
       - run: bun install && bun run dev &
         working-directory: ./frontend
 
-      - run: bunx playwright install  --with-deps
+      - run: bun install @playwright/test --with-deps && bunx playwright install
         working-directory: ./playwright
 
       - name: Run the playwright tests

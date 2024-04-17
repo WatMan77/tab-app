@@ -33,4 +33,26 @@ test.describe("Admin can", () => {
         await expect(page.getByText("Products")).toBeVisible()
         await expect(page.getByText("Logout")).toBeVisible()
     })
+
+    test("Log out", async ({ page }) => {
+        test.setTimeout(5000)
+        await page.goto('http://localhost:5173')
+        await page.locator('.MuiMenuItem-root').last().click()
+        await page.getByRole('textbox').first().fill(admin)
+        await page.getByRole('textbox').last().fill(password)
+        await page.getByRole("button", { name: "LOG IN" }).click()
+        // Due to flakyness, we need these so that the Logout button
+        // renders
+        await expect(page.getByText("Balances")).toBeVisible()
+        await expect(page.getByText("Products")).toBeVisible()
+        await expect(page.getByText("Logout")).toBeVisible()
+
+        // Now the logout button should be last
+        await page.locator('.MuiMenuItem-root').last().click()
+        await expect(page.getByText("Balances")).not.toBeVisible()
+        await expect(page.getByText("Products")).not.toBeVisible()
+        await expect(page.getByText("Logout")).not.toBeVisible()
+        await expect(page.getByText("Login")).toBeVisible()
+
+    })
 })

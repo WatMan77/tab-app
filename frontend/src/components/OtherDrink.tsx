@@ -1,22 +1,25 @@
-import { Box, TextField } from "@mui/material";
-
+import { TextField } from "@mui/material";
 const Other: React.FC<{
-  sum: number;
   add: (amount: number) => void;
-}> = ({ add }) => {
+  other: string;
+  setOther: (value: string) => void;
+}> = ({ add, other, setOther }) => {
   const changePrice = (val: string) => {
     const n: number = Number.parseFloat(val);
-    add(isNaN(n) ? 0 : n);
+    add(isNaN(n) ? 0 : n * 100);
   };
 
   return (
     <>
-      <Box component="section" sx={{ p: 2, border: "1px dashed grey" }} />
       <TextField
         label="Muu määrä"
         placeholder="0"
         type="number"
-        onChange={({ target }) => changePrice(target.value)}
+        onChange={({ target }) => {
+          changePrice(target.value);
+          setOther(target.value);
+        }}
+        value={other}
       />
     </>
   );

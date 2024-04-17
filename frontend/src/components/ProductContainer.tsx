@@ -2,6 +2,7 @@ import type { Product, Account } from "../types";
 import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button } from "@mui/material";
+import Other from "./OtherDrink";
 
 interface ProductContainerProps {
   drinkState: { product: Product; amount: number }[];
@@ -21,9 +22,23 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   resetStates,
 }) => {
   const [sum, setSum] = useState(0);
+  const [other, setOther] = useState<string>("");
 
   const confirm = async () => {
     const items = drinkState.filter((x) => x.amount >= 1);
+    if (parseInt(other) > 0) {
+      const otherFloat = parseFloat(other);
+      const otherFixed = otherFloat.toFixed(2);
+      const otherProduct: { product: Product; amount: number } = {
+        product: {
+          name: "MUU",
+          pricein: parseFloat(otherFixed) * 100,
+          priceout: 0,
+        },
+        amount: 1,
+      };
+      items.push(otherProduct);
+    }
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,6 +51,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       await fetch("http://localhost:3000/api/transaction", requestOptions);
       resetStates();
       setSum(0);
+      setOther("");
     } catch (e) {
       console.log(e);
     }
@@ -56,6 +72,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             updateAmount={updateAmount}
           />
         ))}
+        <Other add={setSum} other={other} setOther={setOther} />
         Yhteensä: {sum / 100} € <br />
         <Button
           disabled={users.length == 0 || sum <= 0}

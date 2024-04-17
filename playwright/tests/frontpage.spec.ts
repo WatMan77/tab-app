@@ -1,7 +1,15 @@
 import { test, expect } from '@playwright/test'
 
+const admin = "admin"
+const password = "password123"
+const login = async (page: any) => {
+    await page.locator('.MuiMenuItem-root').last().click()
+    await page.getByRole('textbox').first().fill(admin)
+    await page.getByRole('textbox').last().fill(password)
+    await page.getByRole("button", { name: "LOG IN" }).click()
+}
+
 test.beforeEach(async ({ request }) => {
-    console.log("Deleting...")
     await request.delete("http://localhost:3000/api/reset")
     await request.get("http://localhost:3000/api/testadmin")
 })
@@ -17,8 +25,6 @@ test('Frontpage shows the basic texts', async ({ page }) => {
 })
 
 test.describe("Admin can", () => {
-    const admin = "admin"
-    const password = "password123"
     test("Log in", async ({ page }) => {
         test.setTimeout(5000)
         await page.goto('http://localhost:5173')
@@ -53,6 +59,43 @@ test.describe("Admin can", () => {
         await expect(page.getByText("Products")).not.toBeVisible()
         await expect(page.getByText("Logout")).not.toBeVisible()
         await expect(page.getByText("Login")).toBeVisible()
+
+    })
+
+    test("Create a new account", async ({ page }) => {
+        //test.setTimeout(7000)
+        const users = [
+            {
+                name: "J. Joutomies",
+                amount: "10",
+                category: "ASUKAS"
+            },
+            {
+                name: "V. Vanha",
+                amount: "200",
+                category: "VANHA"
+            },
+            {
+                name: "H. Hangaround",
+                amount: "5",
+                category: "HANGAROUND"
+            }
+        ]
+        await page.goto('http://localhost:5173')
+        await login(page)
+        await page.getByText("Balances").click()
+        for (const u of users) {
+            await page.getByRole('textbox').first().fill(u.name)
+            await page.locator('.MuiSelect-select').click()
+            await page.getByText(u.category).click()
+            await page.getByPlaceholder('Enter a value').first().fill(u.amount)
+            await page.getByText("CREATE USER").click()
+
+            // The page refreshes after adding a user. Wait for it to load
+            await page.waitForURL('**/balances');
+            await expect(page.getByText(u.name + " " + u.amount + " €")).toBeVisible()
+        }
+
 
     })
 })

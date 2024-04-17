@@ -5,8 +5,8 @@ on:
     branches:
       - "*"
 jobs:
-  my-job:
-    name: my-job
+  tests:
+    name: backend-tests
     runs-on: ubuntu-latest
 
     services:
@@ -37,3 +37,41 @@ jobs:
         env:
           CI: true
           SECRET: ${{ secrets.SECRET }}
+
+  playwright-tests:
+    name: Playwright tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get Bun
+        uses: oven-sh/setup-bun@v1
+
+      - run: bun install && bun run dev &
+        working-directory: ./backend
+        env:
+          CI: true
+          SECRET: ${{ secrets.SECRET }}
+
+      - run: bun install && bun run dev &
+        working-directory: ./frontend
+
+      - run: bunx playwright install  --with-deps
+        working-directory: ./playwright
+
+      - name: Run the playwright tests
+        working-directory: ./playwright
+        run: bun run test
+
+    services:
+      test-db:
+        image: postgres
+        env:
+          POSTGRES_USERNAME: postgres
+          POSTGRES_DB: test-db
+          POSTGRES_PASSWORD: test
+          HOST: test-db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5

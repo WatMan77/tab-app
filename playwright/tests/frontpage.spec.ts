@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import * as testValues from "../../backend/tests/db_values"
 
 const admin = "admin"
 const password = "password123"
@@ -11,7 +12,7 @@ const login = async (page: any) => {
 
 test.beforeEach(async ({ request }) => {
     await request.delete("http://localhost:3000/api/reset")
-    await request.get("http://localhost:3000/api/testadmin")
+    await request.get("http://localhost:3000/api/testdb")
 })
 
 test('Frontpage shows the basic texts', async ({ page }) => {
@@ -24,120 +25,103 @@ test('Frontpage shows the basic texts', async ({ page }) => {
     await expect(page.getByText("Tuotteet")).toBeVisible()
 })
 
-test.describe("Admin can", () => {
-    test("Log in", async ({ page }) => {
-        test.setTimeout(5000)
+test.describe("Basic user", () => {
+    test("can see users, products and buttons", async ({ page }) => {
         await page.goto('http://localhost:5173')
-        await expect(page.getByText("Asukkaat")).toBeVisible()
-        await page.locator('.MuiMenuItem-root').last().click()
-        await expect(page.getByText("LOG IN")).toBeVisible()
-        await page.getByRole('textbox').first().fill(admin)
-        await page.getByRole('textbox').last().fill(password)
-        await page.getByRole("button", { name: "LOG IN" }).click()
-
-        await expect(page.getByText("Balances")).toBeVisible()
-        await expect(page.getByText("Products")).toBeVisible()
-        await expect(page.getByText("Logout")).toBeVisible()
-    })
-
-    test("Log out", async ({ page }) => {
-        test.setTimeout(5000)
-        await page.goto('http://localhost:5173')
-        await page.locator('.MuiMenuItem-root').last().click()
-        await page.getByRole('textbox').first().fill(admin)
-        await page.getByRole('textbox').last().fill(password)
-        await page.getByRole("button", { name: "LOG IN" }).click()
-        // Due to flakyness, we need these so that the Logout button
-        // renders
-        await expect(page.getByText("Balances")).toBeVisible()
-        await expect(page.getByText("Products")).toBeVisible()
-        await expect(page.getByText("Logout")).toBeVisible()
-
-        // Now the logout button should be last
-        await page.locator('.MuiMenuItem-root').last().click()
-        await expect(page.getByText("Balances")).not.toBeVisible()
-        await expect(page.getByText("Products")).not.toBeVisible()
-        await expect(page.getByText("Logout")).not.toBeVisible()
-        await expect(page.getByText("Login")).toBeVisible()
-
-    })
-
-    test("Create a new account and change bank value", async ({ page }) => {
-        const users = [
-            {
-                name: "J. Joutomies",
-                amount: "10",
-                category: "ASUKAS"
-            },
-            {
-                name: "V. Vanha",
-                amount: "200",
-                category: "VANHA"
-            },
-            {
-                name: "H. Hangaround",
-                amount: "5",
-                category: "HANGAROUND"
-            }
-        ]
-        await page.goto('http://localhost:5173')
-        await login(page)
-        await page.getByText("Balances").click()
-        for (const u of users) {
-            await page.getByRole('textbox').first().fill(u.name)
-            await page.locator('.MuiSelect-select').click()
-            await page.getByText(u.category).click()
-            await page.getByPlaceholder('Enter a value').first().fill(u.amount)
-            await page.getByText("CREATE USER").click()
-
-            // The page refreshes after adding a user. Wait for it to load
-            await page.waitForURL('**/balances');
-            await expect(page.getByText(u.name + " " + u.amount + " €")).toBeVisible()
+        for (const u of testValues.accounts) {
+            await expect(page.getByText(u.username)).toBeVisible()
         }
 
-        // Now change the value in the bank
-        for (let i = 0; i < users.length; i += 1) {
-            await page.getByPlaceholder("Enter a value").nth(i + 1).fill("10")
-            // 10.00 € + 10 € = 20.00 €
-            await expect(page.getByText(`${users[i].amount}.00 € + 10 € = ${parseFloat(users[i].amount) + 10}.00 €`)).toBeVisible()
+        for (const p of testValues.products) {
+            await expect(page.getByText(`${p.name} ${p.pricein / 100}€`)).toBeVisible()
         }
 
-        // Confirm the change
-        await page.getByText("Confirm change").click()
-        await page.waitForURL('**/balances');
-        for (let i = 0; i < users.length; i += 1) {
-            await expect(page.getByText(`${users[i].name} ${parseFloat(users[i].amount) + 10} €`)).toBeVisible()
+        await expect(page.getByLabel("Muu määrä")).toBeVisible()
+
+        const confirm = page.getByText("Vahvista")
+        await expect(confirm).toBeVisible()
+        await expect(confirm).toHaveCSS("background-color", "rgba(0, 0, 0, 0.12)")
+    })
+
+    test("can press the buttons and order products", async ({ page }) => {
+        await page.goto('http://localhost:5173')
+        for (const u of testValues.accounts) {
+            const button = page.getByText(u.username)
+            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+            await button.click()
+            await expect(button).toHaveCSS("background-color", "rgb(27, 94, 32)")
+        }
+
+        for (let i = 0; i < testValues.products.length; i += 1) {
+            await page.getByText("+").nth(i).click()
+        }
+
+        const sum = testValues.products.reduce((a, b) => a + b.pricein, 0)
+        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)} €`)).toBeVisible()
+        const confirm = page.getByText("Vahvista")
+        await expect(confirm).toHaveCSS("background-color", "rgb(25, 118, 210)")
+
+        await confirm.click()
+
+        // Confirm button has been pressed. Everything should turn back to normal
+        for (const u of testValues.accounts) {
+            await expect(page.getByText(u.username)).toBeVisible()
+        }
+
+        for (const u of testValues.accounts) {
+            const button = page.getByText(u.username)
+            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
         }
     })
 
-    test("Add new products and edit them", async ({ page }) => {
+    test("can press buttons twice to deselect a user", async ({ page }) => {
         await page.goto('http://localhost:5173')
-        await login(page)
 
-        const products = [
-            {
-                name: "Kalja",
-                pricein: "1",
-                priceout: "1,5"
-            }
-        ]
-
-        await page.getByText("Products").click()
-        for (const p of products) {
-            await page.getByPlaceholder("Product name").fill(p.name)
-            await page.getByPlaceholder("Price in").fill(p.pricein)
-            await page.getByPlaceholder("Price out").fill(p.priceout)
-            await page.getByText("ADD PRODUCT").click()
-            await page.waitForURL('**/products');
-
-            // TODO: How do you find a textbox based on the value
-            // Then you need to edit it.
-            // await expect(page.getByRole('textbox', { name: p.name })).toBeVisible()
-            // await expect(page.getByRole('textbox', { name: p.pricein })).toBeVisible()
-            // await expect(page.getByRole('textbox', { name: p.priceout })).toBeVisible()
-
-            await expect(page.getByText(`UPDATE ${p.name}`)).toBeVisible()
-            await expect(page.getByText(`DELETE ${p.name}`)).toBeVisible()
+        for (const a of testValues.accounts) {
+            const button = page.getByText(a.username)
+            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+            await button.click()
         }
+
+        for (const a of testValues.accounts) {
+            const button = page.getByText(a.username)
+            await button.click()
+        }
+
+        /**
+         * Here is the flakyness.. For some reason the last user
+         * element doesn't change colors fast enough and detects that the color
+         * is the darker blue when de-selecting the user
+         */
+
+
+        for (let i = 0; i < testValues.accounts.length - 1; i += 1) {
+            const button = page.getByText(testValues.accounts[i].username)
+            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+
+        }
+
+        const finalUser = page.getByText(testValues.accounts[testValues.accounts.length - 1].username)
+        await expect(finalUser).toHaveCSS("background-color", "rgb(21, 101, 192)")
+    })
+
+    test("can remove drinks from the 'cart'", async ({ page }) => {
+        await page.goto('http://localhost:5173')
+
+        const plus = page.getByText("+")
+        for (let i = 0; i < testValues.products.length; i += 1) {
+            await plus.nth(i).click()
+        }
+
+        const sum = testValues.products.reduce((a, b) => a + b.pricein, 0)
+
+        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)} €`)).toBeVisible()
+
+        const minus = page.getByText("-")
+        for (let i = 0; i < testValues.products.length; i += 1) {
+            await minus.nth(i).click()
+        }
+
+        await expect(page.getByText("Yhteensä: 0 €")).toBeVisible()
     })
 })

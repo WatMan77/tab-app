@@ -117,7 +117,7 @@ test.describe("Basic user", () => {
 
         await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)} €`)).toBeVisible()
 
-        const minus = page.getByText("-")
+        const minus = page.getByText("-", { exact: true })
         for (let i = 0; i < testValues.products.length; i += 1) {
             await minus.nth(i).click()
         }

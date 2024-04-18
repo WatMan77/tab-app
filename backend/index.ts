@@ -10,6 +10,7 @@ import { transactionRouter } from "./src/routes/transaction"
 import { adminRouter } from "./src/routes/admin"
 import { loginRouter } from "./src/routes/login"
 import { balanceRouter } from "./src/routes/balance"
+import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 
@@ -46,6 +47,19 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
         } catch (e) {
             console.log(e)
         }
+    })
+
+    app.get("/api/testdb", async (_req, res) => {
+
+        for (const a of testValues.accounts) {
+            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+        }
+
+        for (const p of testValues.products) {
+            await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toString(), p.priceout.toString()])
+        }
+
+        res.status(201).send("OK")
     })
 }
 

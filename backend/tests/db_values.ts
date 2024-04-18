@@ -1,5 +1,4 @@
-import pg from "pg";
-import { Account, Product, UserType } from "../src/types";
+import { type Account, type Product, UserType } from "../src/types";
 
 const accounts: Account[] = [
     {

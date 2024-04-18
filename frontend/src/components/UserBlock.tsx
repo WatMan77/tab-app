@@ -12,7 +12,7 @@ const UserBlock: React.FC<{
       onClick={() => changePress(user.user.username)}
       color={user.pressed ? "success" : "primary"}
     >
-      {user.user.username}
+      {`${user.user.username} ${(user.user.balance! / 100).toFixed(2)}€`}
     </Button>
   );
 };

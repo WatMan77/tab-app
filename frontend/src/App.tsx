@@ -37,6 +37,18 @@ const App = () => {
     setDrinkStates(updatedProducts);
   };
 
+  const fetchAccounts = (): void => {
+    fetch("http://localhost:3000/api/account")
+      .then((response) => response.json())
+      .then((data) => {
+        const sorted = data.sort(
+          (a: { username: string }, b: { username: string }) =>
+            a.username.localeCompare(b.username)
+        );
+        setUsers(sorted.map((user: Account) => ({ user, pressed: false })));
+      });
+  };
+
   const resetStates = (): void => {
     const updatedProducts = drinkStates.map((p) => {
       return { ...p, amount: 0 };
@@ -46,14 +58,11 @@ const App = () => {
     });
     setDrinkStates(updatedProducts);
     setUsers(updatedUsers);
+    fetchAccounts();
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/account")
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data.map((user: Account) => ({ user, pressed: false })));
-      });
+    fetchAccounts();
     fetch("http://localhost:3000/api/product")
       .then((response) => response.json())
       .then((data: Product[]) => {

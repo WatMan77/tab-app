@@ -57,6 +57,14 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
     }
   };
 
+  const finalSum = () => {
+    if (other === "") {
+      return sum / 100;
+    } else {
+      return (sum + parseFloat(other) * 100) / 100;
+    }
+  };
+
   return (
     <>
       <Stack spacing={2}>
@@ -72,8 +80,8 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             updateAmount={updateAmount}
           />
         ))}
-        <Other add={setSum} other={other} setOther={setOther} />
-        Yhteensä: {sum / 100} € <br />
+        <Other other={other} setOther={setOther} />
+        Yhteensä: {finalSum()} € <br />
         <Button
           disabled={users.length == 0 || sum <= 0}
           variant="contained"

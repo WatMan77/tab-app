@@ -14,6 +14,16 @@ bun run dev
 
 # Run tests
 
+## Backend Tests
+
+cd backend
+
+bun run test
+
+## Playwright tests
+
+cd playwright
+
 bun run test
 
 # Start a build

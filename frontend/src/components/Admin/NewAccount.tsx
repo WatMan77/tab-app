@@ -10,7 +10,7 @@ import { UserType } from "../../types";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 
-const NewUser = () => {
+const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
   const [category, setCategory] = useState("");
   const [username, setUsername] = useState("");
   const [balance, setBalance] = useState(0);
@@ -46,7 +46,7 @@ const NewUser = () => {
       requestOptions
     );
     if (request.ok) {
-      window.location.reload();
+      fetchUsers();
     }
   };
 

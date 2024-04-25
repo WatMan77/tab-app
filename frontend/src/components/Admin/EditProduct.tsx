@@ -4,7 +4,10 @@ import CurrencyInput from "react-currency-input-field";
 import type { Product } from "../../types";
 import { useState } from "react";
 
-const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
+const EditProduct: React.FC<{
+  product: Product;
+  fetchProducts: () => void;
+}> = ({ product, fetchProducts }) => {
   const [newName, setNewName] = useState(product.name);
   const [priceIn, setPriceIn] = useState(product.pricein);
   const [priceOut, setPriceOut] = useState(product.priceout);
@@ -24,6 +27,7 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
       }),
     };
     await fetch("http://localhost:3000/api/product", requestOptions);
+    fetchProducts();
   };
 
   const handleDelete = async () => {
@@ -36,7 +40,7 @@ const EditProduct: React.FC<{ product: Product }> = ({ product }) => {
       }),
     };
     await fetch("http://localhost:3000/api/product", requestOptions);
-    window.location.reload();
+    fetchProducts();
   };
 
   return (

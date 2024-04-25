@@ -23,6 +23,18 @@ const BalanceAdmin = () => {
     setUsers(newState);
   };
 
+  const fetchUsers = () => {
+    fetch("http://localhost:3000/api/account")
+      .then((res) => res.json())
+      .then((data) => {
+        setUsers(
+          (data as Account[]).map((u: Account) => {
+            return { account: u, change: 0 };
+          })
+        );
+      });
+  };
+
   const handleChangeConfirm = async () => {
     const filteredUsers = users.filter((u) => u.change !== 0);
     const updatedChangeUsers: Account[] = filteredUsers.map((u) => ({
@@ -45,24 +57,16 @@ const BalanceAdmin = () => {
     } catch (e) {
       console.log(e);
     }
-    window.location.reload();
+    fetchUsers();
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/account")
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(
-          (data as Account[]).map((u: Account) => {
-            return { account: u, change: 0 };
-          })
-        );
-      });
+    fetchUsers();
   }, []);
 
   return (
     <div>
-      <NewUser />
+      <NewUser fetchUsers={fetchUsers} />
 
       <Button variant="contained" onClick={handleChangeConfirm}>
         Confirm change

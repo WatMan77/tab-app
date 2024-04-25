@@ -2,7 +2,9 @@ import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import { TextField, Button } from "@mui/material";
 
-const NewProduct = () => {
+const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
+  fetchProducts,
+}) => {
   const [name, setName] = useState("");
   const [priceIn, setPriceIn] = useState(0);
   const [priceOut, setPriceOut] = useState(0);
@@ -43,7 +45,7 @@ const NewProduct = () => {
       setName("");
       setPriceIn(0);
       setPriceOut(0);
-      window.location.reload();
+      fetchProducts();
     } catch (e) {
       console.log(e);
     }

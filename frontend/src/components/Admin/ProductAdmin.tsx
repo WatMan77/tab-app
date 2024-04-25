@@ -6,19 +6,23 @@ import NewProduct from "./NewProduct";
 const ProductAdmin = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
-  useEffect(() => {
+  const fetchProducts = () => {
     fetch("http://localhost:3000/api/product")
       .then((res) => res.json())
       .then((data) => {
         setProducts(data as Product[]);
       });
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
 
   return (
     <>
-      <NewProduct />
+      <NewProduct fetchProducts={fetchProducts} />
       {products.map((p) => (
-        <EditProduct key={p.name} product={p} />
+        <EditProduct key={p.name} product={p} fetchProducts={fetchProducts} />
       ))}
     </>
   );

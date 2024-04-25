@@ -26,7 +26,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
 
   const confirm = async () => {
     const items = drinkState.filter((x) => x.amount >= 1);
-    if (parseInt(other) > 0) {
+    if (parseFloat(other) > 0) {
       const otherFloat = parseFloat(other);
       const otherFixed = otherFloat.toFixed(2);
       const otherProduct: { product: Product; amount: number } = {
@@ -83,7 +83,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
         <Other other={other} setOther={setOther} />
         Yhteensä: {finalSum()} € <br />
         <Button
-          disabled={users.length == 0 || sum <= 0}
+          disabled={users.length == 0 || finalSum() <= 0}
           variant="contained"
           onClick={() => confirm()}
         >

@@ -12,14 +12,12 @@ interface User {
 }
 
 interface Account {
-    id?: number,
     username: string,
     category: UserType,
     balance?: number
 }
 
 interface Product {
-    id?: number,
     name: string,
     pricein: number,
     priceout: number

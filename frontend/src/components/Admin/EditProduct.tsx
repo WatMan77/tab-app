@@ -36,7 +36,7 @@ const EditProduct: React.FC<{
       method: "DELETE",
       headers: { "Content-Type": "application/json", "Authorization": token },
       body: JSON.stringify({
-        id: product.id,
+        name: product.name,
       }),
     };
     await fetch("http://localhost:3000/api/product", requestOptions);

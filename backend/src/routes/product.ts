@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
     try {
         const products: Product[] = (await db.query("SELECT * FROM product;")).rows
         res.status(200).send(products)
@@ -87,7 +87,7 @@ router.delete("/", async (req, res) => {
         await db.query("DELETE FROM product WHERE name=$1;", [name]);
         res.status(204).send("Delete successful")
     } catch (e) {
-
+        console.log("Deletion failed", e)
     }
 })
 

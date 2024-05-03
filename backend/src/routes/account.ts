@@ -5,7 +5,7 @@ import { toNewAccount } from '../utils'
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
     try {
         const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows
         res.status(200).send(accounts)

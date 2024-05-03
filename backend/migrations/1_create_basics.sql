@@ -8,7 +8,8 @@ SET timezone = 'Europe/Helsinki'; --make sure time is the same as in Finland
 CREATE TABLE account (
     username VARCHAR(50) UNIQUE NOT NULL,
     category VARCHAR(50) CHECK (category IN ('ASUKAS', 'VANHA', 'HANGAROUND')),
-    balance INTEGER DEFAULT 0
+    balance INTEGER DEFAULT 0,
+    closed BOOLEAN DEFAULT false
 );
 
 CREATE TABLE product (

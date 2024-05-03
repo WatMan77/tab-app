@@ -10,6 +10,7 @@ import { transactionRouter } from "./src/routes/transaction"
 import { adminRouter } from "./src/routes/admin"
 import { loginRouter } from "./src/routes/login"
 import { balanceRouter } from "./src/routes/balance"
+import { closeRouter } from './src/routes/closed';
 import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
@@ -22,6 +23,7 @@ app.use(cors())
 
 const PORT = process.env['PORT'] || 3000;
 
+app.use("/api/account/closed", closeRouter)
 app.use("/api/account", accountRouter)
 app.use("/api/product", productRouter)
 app.use("/api/transaction", transactionRouter)

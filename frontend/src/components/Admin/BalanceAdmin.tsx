@@ -9,6 +9,9 @@ const BalanceAdmin = () => {
     []
   );
 
+  const userData = window.localStorage.getItem("loggedPiikkiAdmin");
+  const token = JSON.parse(userData!).token;
+
   const balanceSum =
     users.map((u) => u.account.balance!).reduce((a, b) => a + b, 0) / 100;
 
@@ -35,15 +38,29 @@ const BalanceAdmin = () => {
       });
   };
 
+  const changePiikkiStatus = async (account: Account) => {
+    const requestOptions = {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({
+        account: account,
+      }),
+    };
+
+    try {
+      await fetch("http://localhost:3000/api/account/closed", requestOptions);
+      fetchUsers();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const handleChangeConfirm = async () => {
     const filteredUsers = users.filter((u) => u.change !== 0);
     const updatedChangeUsers: Account[] = filteredUsers.map((u) => ({
       ...u.account,
       balance: u.account.balance! + u.change * 100,
     }));
-
-    const userData = window.localStorage.getItem("loggedPiikkiAdmin");
-    const token = JSON.parse(userData!).token;
 
     const requestOptions = {
       method: "PUT",
@@ -77,6 +94,7 @@ const BalanceAdmin = () => {
           key={u.account.username}
           user={u}
           handleBalanceChange={handleBalanceChange}
+          changePiikkiStatus={changePiikkiStatus}
         />
       ))}
 

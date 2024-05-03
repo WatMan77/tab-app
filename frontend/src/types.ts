@@ -14,7 +14,8 @@ interface User {
 interface Account {
     username: string,
     category: UserType,
-    balance?: number
+    balance?: number,
+    closed: boolean
 }
 
 interface Product {

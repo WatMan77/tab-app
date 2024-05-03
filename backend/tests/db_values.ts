@@ -4,17 +4,20 @@ const accounts: Account[] = [
     {
         username: "Jarmo",
         category: UserType.ASUKAS,
-        balance: 1000
+        balance: 1000,
+        closed: false
     },
     {
         username: "Kari",
         category: UserType.ASUKAS,
-        balance: -1000
+        balance: -1000,
+        closed: false
     },
     {
         username: "Mikael",
         category: UserType.VANHA,
-        balance: 10000
+        balance: 10000,
+        closed: false
     }
 ]
 
@@ -22,7 +25,7 @@ const products: Product[] = [
     {
         name: "Kalja",
         pricein: 100,
-        priceout: 200
+        priceout: 200,
     },
     {
         name: "Lonkero",

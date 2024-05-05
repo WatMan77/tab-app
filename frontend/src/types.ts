@@ -16,6 +16,7 @@ interface Account {
     category: UserType,
     balance?: number,
     closed: boolean
+    recent: Date | null
 }
 
 interface Product {

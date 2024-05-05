@@ -59,7 +59,7 @@ describe("Transaction", () => {
 
         // Check that the amount subtracted is correct
         const db_accounts = await request(app)
-            .get("/api/account")
+            .get("/api/account/transactions")
             .expect(200)
 
         const user: Account = db_accounts.body.find((x: Account) => x.username === account.username)
@@ -89,7 +89,7 @@ describe("Transaction", () => {
             .expect(200)
 
         const db_accounts = await request(app)
-            .get("/api/account")
+            .get("/api/account/transactions")
             .expect(200)
 
         const totalCost = transaction.items.reduce((total, { product, amount }) => {

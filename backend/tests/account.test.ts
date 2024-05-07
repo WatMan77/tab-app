@@ -32,8 +32,9 @@ afterAll(() => {
 describe("Accounts", () => {
     test("get all users", async () => {
         const response = await request(app)
-            .get("/api/account")
-        expect(response.body).toEqual(accounts)
+            .get("/api/account/transactions")
+        expect(response.body).toEqual(expect.arrayContaining(accounts));
+
     })
 
     test("add a new account", async () => {
@@ -45,7 +46,9 @@ describe("Accounts", () => {
         const newUser: Account = {
             username: "Jerry",
             category: UserType.VANHA,
-            balance: 0
+            balance: 0,
+            closed: false,
+            recent: null
         }
 
         await request(app)

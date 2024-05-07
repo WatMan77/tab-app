@@ -48,7 +48,7 @@ describe("Balance", () => {
 
         // Check that the balance in the database is correct
         const response = await request(app)
-            .get("/api/account")
+            .get("/api/account/transactions")
             .expect(200)
 
         expect(response.body).toContainEqual({ ...accounts[0], balance: accounts[0].balance! - 100 })
@@ -70,7 +70,7 @@ describe("Balance", () => {
             .expect(201)
 
         const response = await request(app)
-            .get("/api/account")
+            .get("/api/account/transactions")
             .expect(200)
 
         // FIX IN FUTURE VERSIONS!

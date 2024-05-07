@@ -5,6 +5,22 @@ import { toNewAccount } from '../utils'
 
 const router = express.Router();
 
+router.get("/transactions", async (_req, res) => {
+    try {
+        // Get all users with their most recent transaction.
+        // Leaves blank transaction if user has not done it earlier.
+        const accounts: Account[] = (await db.query(`
+        SELECT u.*, MAX(t.transaction_date) AS recent
+        FROM account AS u
+        LEFT JOIN transaction t ON u.username=t.username
+        GROUP BY u.username, u.category, u.balance, u.closed
+        ORDER BY recent DESC;`)).rows
+        res.status(200).send(accounts)
+    } catch (e) {
+        console.log(e)
+    }
+})
+
 router.get("/", async (_req, res) => {
     try {
         const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows

@@ -5,19 +5,22 @@ const accounts: Account[] = [
         username: "Jarmo",
         category: UserType.ASUKAS,
         balance: 1000,
-        closed: false
+        closed: false,
+        recent: null
     },
     {
         username: "Kari",
         category: UserType.ASUKAS,
         balance: -1000,
-        closed: false
+        closed: false,
+        recent: null
     },
     {
         username: "Mikael",
         category: UserType.VANHA,
         balance: 10000,
-        closed: false
+        closed: false,
+        recent: null
     }
 ]
 

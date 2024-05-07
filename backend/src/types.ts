@@ -8,7 +8,8 @@ interface Account {
     username: string,
     category: UserType,
     balance?: number,
-    closed: boolean
+    closed: boolean,
+    recent: Date | null
 }
 
 interface Product {

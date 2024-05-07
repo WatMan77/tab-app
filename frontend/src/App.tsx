@@ -15,6 +15,9 @@ const App = () => {
     { product: Product; amount: number }[]
   >([]);
 
+  const [vanhatNameFilter, setVanhatNameFilter] = useState("");
+  const [hangNameFilter, setHangNameFilter] = useState("");
+
   const changePress = (username: string) => {
     const updatedUsers = users.map((x) => {
       if (x.user.username === username) {
@@ -38,10 +41,10 @@ const App = () => {
   };
 
   const fetchAccounts = (): void => {
-    fetch("http://localhost:3000/api/account")
+    fetch("http://localhost:3000/api/account/transactions")
       .then((response) => response.json())
       .then((data) => {
-        const sorted = data.sort(
+        const sorted = [...data].sort(
           (a: { username: string }, b: { username: string }) =>
             a.username.localeCompare(b.username)
         );
@@ -59,6 +62,8 @@ const App = () => {
     setDrinkStates(updatedProducts);
     setUsers(updatedUsers);
     fetchAccounts();
+    setVanhatNameFilter("");
+    setHangNameFilter("");
   };
 
   useEffect(() => {
@@ -99,11 +104,15 @@ const App = () => {
         <CategoryWrapper
           changePress={changePress}
           users={users.filter((x) => x.user.category === UserType.VANHA)}
+          nameFilter={vanhatNameFilter}
+          setNameFilter={setVanhatNameFilter}
         />
         <h2>Hangaroundit</h2>
         <CategoryWrapper
           changePress={changePress}
           users={users.filter((x) => x.user.category === UserType.HANGAROUND)}
+          nameFilter={hangNameFilter}
+          setNameFilter={setHangNameFilter}
         />
       </div>
       <ProductContainer

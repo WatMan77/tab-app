@@ -6,9 +6,25 @@ In both backend and frontend run 'bun install' and you should be ok
 
 ## In frontend
 
+bun install
+
 bun run dev
 
-## In backend
+## .env file
+
+Backend requires a .env file to run. You can insert the following values for development and test purposes
+
+POSTGRES_USERNAME=postgres
+
+POSTGRES_DB=test-db
+
+POSTGRES_PASSWORD=test
+
+SECRET=secret
+
+## Running backend
+
+bun install
 
 bun run dev
 

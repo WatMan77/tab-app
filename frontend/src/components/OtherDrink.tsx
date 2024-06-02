@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
 const Other: React.FC<{
   other: string;
   setOther: (value: string) => void;
@@ -7,7 +7,11 @@ const Other: React.FC<{
     <>
       <TextField
         label="Muu määrä"
-        placeholder="0"
+        placeholder="0"   
+        color="secondary"
+        InputProps={{
+          startAdornment: <InputAdornment position="start">€</InputAdornment>,
+        }}
         type="number"
         onChange={({ target }) => {
           setOther(target.value);

@@ -1,6 +1,7 @@
 import type { Account } from "../../types";
 import CurrencyInput from "react-currency-input-field";
-import { Button } from "@mui/material";
+import { Button, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const UpdateBalance: React.FC<{
   user: { account: Account; change: number };
@@ -8,43 +9,57 @@ const UpdateBalance: React.FC<{
   changePiikkiStatus: (account: Account) => void;
 }> = ({ user, handleBalanceChange, changePiikkiStatus }) => {
   return (
-    <>
-      <p>
-        {user.account.username} {user.account.balance! / 100} €
-      </p>
-      <CurrencyInput
-        placeholder="Enter a value"
-        onValueChange={(_value, _name, values) => {
-          handleBalanceChange(
-            user.account.username,
-            values!.float ? values!.float : 0
-          );
-        }}
-        decimalSeparator=","
-        groupSeparator=" "
-      />
+    <div className={"account " + (user.account.closed ? 'closed' : '')}>
+      <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="panel1-header"
+        className="summary"
+      >
+          <h3>
+            {user.account.username} {user.account.balance! / 100} €
+          </h3>
+      </AccordionSummary>
+      <AccordionDetails>
+          <div className="row">
+          <CurrencyInput
+            placeholder="Enter a value"
+            onValueChange={(_value, _name, values) => {
+              handleBalanceChange(
+                user.account.username,
+                values!.float ? values!.float : 0
+              );
+            }}
+            decimalSeparator=","
+            groupSeparator=" "
+          />
 
-      <>
-        {(user.account.balance! / 100).toFixed(2)} € + {user.change} € ={" "}
-        {(user.account.balance! / 100 + user.change).toFixed(2)} €
-      </>
-      {user.account.closed ? (
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => changePiikkiStatus(user.account)}
-        >
-          Avaa piikki
-        </Button>
-      ) : (
-        <Button
-          variant="contained"
-          onClick={() => changePiikkiStatus(user.account)}
-        >
-          Sulje piikki
-        </Button>
-      )}
-    </>
+          <>
+            {(user.account.balance! / 100).toFixed(2)} € + {user.change} € ={" "}
+            {(user.account.balance! / 100 + user.change).toFixed(2)} €
+          </>
+          {user.account.closed ? (
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => changePiikkiStatus(user.account)}
+            >
+              Avaa piikki
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => changePiikkiStatus(user.account)}
+            >
+              Sulje piikki
+            </Button>
+          )}
+          </div>
+      </AccordionDetails>
+    </Accordion>
+    </div>
   );
 };
 

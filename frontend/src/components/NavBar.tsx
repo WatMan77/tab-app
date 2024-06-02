@@ -2,6 +2,9 @@ import AppBar from "@mui/material/AppBar";
 import MenuItem from "@mui/material/MenuItem";
 import { Toolbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import "../styling/navbar.scss";
+import crown from '../assets/crown_white.svg';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -17,8 +20,8 @@ const NavBar = () => {
     if (logged) {
       // return <Button onClick={logout}>Logout</Button>;
       return (
-        <MenuItem key="logout" onClick={logout}>
-          Logout
+        <MenuItem className="admin" key="logout" onClick={logout}>
+          <LogoutIcon sx={{marginRight: "10px"}}/> Logout
         </MenuItem>
       );
     } else {
@@ -51,8 +54,9 @@ const NavBar = () => {
 
   return (
     <div>
-      <AppBar position="static">
+      <AppBar component="nav">
         <Toolbar>
+        <img className="crown" src={crown} alt=""/>
           {home}
           {adminData && adminPages}
           {adminOrLogout(adminData)}

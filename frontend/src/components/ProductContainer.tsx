@@ -3,6 +3,7 @@ import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button } from "@mui/material";
 import Other from "./OtherDrink";
+import "../styling/aside.scss";
 
 interface ProductContainerProps {
   drinkState: { product: Product; amount: number }[];
@@ -66,7 +67,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   };
 
   return (
-    <>
+    <div className="aside">
       <Stack spacing={2}>
         <h2>Tuotteet</h2>
         {drinkState.map((drink) => (
@@ -80,17 +81,21 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             updateAmount={updateAmount}
           />
         ))}
+    
         <Other other={other} setOther={setOther} />
-        Yhteensä: {finalSum()} € <br />
-        <Button
-          disabled={users.length == 0 || finalSum() <= 0}
-          variant="contained"
-          onClick={() => confirm()}
-        >
-          Vahvista
-        </Button>
+
       </Stack>
-    </>
+      <div class="aside-footer">
+          <span className="calculated">Yhteensä: <strong>{finalSum()} €</strong></span>
+          <Button
+            disabled={users.length == 0 || finalSum() <= 0}
+            variant="contained"
+            onClick={() => confirm()}
+          >
+            Vahvista
+          </Button>
+        </div>
+    </div>
   );
 };
 

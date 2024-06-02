@@ -24,25 +24,30 @@ const Drink: React.FC<{
     }
   };
   return (
-    <>
-      <Box display="flex" gap={2}>
+    <div className={"drink " + (amount > 0 ? 'selected' : '')}>
+      <Box display="flex" gap={2} >
         <Box sx={{ flex: 1 }}>
-          {drink.name} {drink.pricein / 100}€
+          {drink.name}
         </Box>
-        <Box>{amount}</Box>
+        <Box>
+        {drink.pricein / 100}€
+        </Box>
+
         <ButtonGroup
           variant="contained"
+          color="secondary"
           aria-label="outlined primary button group"
         >
-          <Button onClick={addDrink} variant="contained">
+          <Button className="plus" color="secondary" onClick={addDrink} variant="contained">
             +
           </Button>
-          <Button onClick={removeDrink} variant="contained">
+          <Button className="minus" color="secondary" onClick={removeDrink} variant="contained">
             -
           </Button>
         </ButtonGroup>
+        <Box sx={{ minWidth: "20px", fontWeight: "bold" }}>{amount}</Box>
       </Box>
-    </>
+    </div>
   );
 };
 

@@ -51,13 +51,13 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
   };
 
   return (
-    <>
-      <TextField
+    <div className="box-container">
+      <TextField 
         label="Enter account name"
         value={username}
         onChange={({ target }) => setUsername(target.value)}
       />
-      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <FormControl variant="outlined" sx={{ m: 1, minWidth: 120, flexGrow: 1 }}>
         <InputLabel>User type</InputLabel>
         <Select
           label="User type"
@@ -83,8 +83,8 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         decimalSeparator=","
         groupSeparator=" "
       />
-      <Button onClick={handleNewUser}>Create user</Button>
-    </>
+      <Button variant="contained" onClick={handleNewUser}>Create user</Button>
+    </div>
   );
 };
 

@@ -1,0 +1,134 @@
+:root {
+  --black: #222831;
+  --dark-grey: #121212;
+  --blue: #1D267D;
+  --white: #F4FAFF;
+  --border: #4B4B4B;
+  --radius: 8px;
+  --content-width: 980px;
+  --content-height: calc(100dvh - 64px);
+}
+
+body {
+  color: var(--white);
+  margin: 0;
+}
+
+.main-content {
+  padding: 1rem 1rem 4rem;
+  flex-grow: 1;
+  margin: 64px auto 0 !important;
+  height: var(--content-height);
+  overflow-y: scroll;
+
+  h2 {
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+}
+
+.container {
+  max-width: var(--content-width);
+  margin: 80px auto 0;
+  padding: 1rem;
+
+  &--balance {
+    padding-bottom: 10rem;
+  }
+}
+
+.box-container {
+  background-color:  var(--dark-grey);
+  border-radius: var(--radius);
+  max-width: var(--content-width);
+  margin: 0; 
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  box-shadow: 1px 2px 20px 0 rgba(24, 30, 38, 1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-bottom: 2rem;
+
+  button {
+    padding: 14px;
+  }
+
+}
+
+input {
+  font: inherit;
+  letter-spacing: inherit;
+  color: currentColor;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  box-sizing: content-box;
+  background:  rgba(255, 255, 255, 0.01) !important;
+  margin: 0;
+  padding: 14px;
+}
+
+.balance-footer {
+  background-color: rgba(18, 18, 18, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  position: fixed;
+  bottom: 0;
+  width: 100vw;
+  left: 0;
+  letter-spacing: 0.5px;
+
+  .container {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.account {
+  margin-bottom: 1rem;
+  border-radius: -var(--radius);
+
+  h3 {
+    margin: 0.5rem;
+  }
+
+  &.closed {
+    >div {
+      background-color: #1c1010;
+    }
+
+  }
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+
+  button {
+    margin-left: auto;
+  }
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: 4fr 100px 100px 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  span {
+    font-size: 12px;
+    letter-spacing: 0.75px;
+  }
+
+  .product-name {
+    input {
+      padding: 16px;
+    }
+
+  }
+}

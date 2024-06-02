@@ -51,13 +51,16 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
     }
   };
   return (
-    <>
+    <div className="box-container">
       <TextField
+        label="Product name"
         placeholder="Product name"
         value={name}
         onChange={({ target }) => setName(target.value)}
+        sx={{ m: 1, minWidth: 120, flexGrow: 1 }}
       />
       <CurrencyInput
+        label="Price in"
         placeholder="Price in"
         onValueChange={(_value, _name, values) => {
           handlePriceIn(Number.parseFloat(values!.float!.toFixed(2)));
@@ -73,8 +76,8 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         decimalSeparator=","
         groupSeparator=" "
       />
-      <Button onClick={handleNewDrink}>Add product</Button>
-    </>
+      <Button variant="contained" onClick={handleNewDrink}>Add product</Button>
+    </div>
   );
 };
 

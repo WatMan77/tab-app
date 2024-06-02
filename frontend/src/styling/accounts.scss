@@ -1,0 +1,17 @@
+.account-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+
+    >div {
+        grid-column: 1 / -1;
+    }
+
+    .search {
+        input {
+            padding: 14px;
+            background: transparent !important;
+        }
+    }
+}

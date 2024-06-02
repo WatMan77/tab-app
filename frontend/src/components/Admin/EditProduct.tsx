@@ -1,5 +1,6 @@
 import { Button, TextField } from "@mui/material";
 import CurrencyInput from "react-currency-input-field";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import type { Product } from "../../types";
 import { useState } from "react";
@@ -44,8 +45,10 @@ const EditProduct: React.FC<{
   };
 
   return (
-    <div>
+    <>
       <TextField
+        variant="standard"
+        className="product-name"
         value={newName}
         onChange={({ target }) => setNewName(target.value)}
       />
@@ -65,11 +68,17 @@ const EditProduct: React.FC<{
           setPriceOut(values!.float ? values!.float * 100 : 0);
         }}
       />
-      <Button variant="contained" onClick={handleUpdate}>
-        Update {product.name}
+      <Button variant="contained" color="secondary" onClick={handleUpdate}>
+      Update
+        {/* Update {product.name} */}
       </Button>
-      <Button onClick={handleDelete}>Delete {product.name}</Button>
-    </div>
+      <Button 
+        variant="outlined" 
+        color="error" 
+        onClick={handleDelete}>
+        <DeleteIcon />
+      </Button>
+    </>
   );
 };
 

@@ -8,6 +8,8 @@
         font-size: 22px;
         padding: 10px !important;
         display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
         align-items: center;
         flex-wrap: wrap;
         line-height: 1;

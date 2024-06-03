@@ -4,6 +4,22 @@
     grid-column-gap: 1rem;
     grid-row-gap: 1rem;
 
+    button {
+        font-size: 22px;
+        padding: 10px !important;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        line-height: 1;
+        font-weight: bold;
+
+        >span {
+            font-size: 16px;
+            margin-left: 0.5rem;
+            font-weight: 500;
+        }
+    }
+
     >div {
         grid-column: 1 / -1;
     }

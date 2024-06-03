@@ -26,9 +26,11 @@ const Drink: React.FC<{
   return (
     <div className={"drink " + (amount > 0 ? 'selected' : '')}>
       <Box display="flex" gap={2} >
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1 }} className="drink-title">
           {drink.name}
+          <span class="drink-color"></span>
         </Box>
+
         <Box>
         {drink.pricein / 100}€
         </Box>

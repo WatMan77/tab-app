@@ -14,6 +14,8 @@ const Drink: React.FC<{
     updateAmount(drink.name, 1);
   };
 
+  const drinkColor = `drink-color drink-color--${drink.color.toLowerCase()}`;
+
   const removeDrink = () => {
     const currentAmount = drinkStates.find(
       (p) => p.product.name === drink.name
@@ -24,26 +26,34 @@ const Drink: React.FC<{
     }
   };
   return (
-    <div className={"drink " + (amount > 0 ? 'selected' : '')}>
-      <Box display="flex" gap={2} >
+    <div className={"drink " + (amount > 0 ? "selected" : "")}>
+      <Box display="flex" gap={2}>
         <Box sx={{ flex: 1 }} className="drink-title">
           {drink.name}
-          <span class="drink-color"></span>
+          <span class={drinkColor}></span>
         </Box>
 
-        <Box>
-        {drink.pricein / 100}€
-        </Box>
+        <Box>{drink.pricein / 100}€</Box>
 
         <ButtonGroup
           variant="contained"
           color="secondary"
           aria-label="outlined primary button group"
         >
-          <Button className="plus" color="secondary" onClick={addDrink} variant="contained">
+          <Button
+            className="plus"
+            color="secondary"
+            onClick={addDrink}
+            variant="contained"
+          >
             +
           </Button>
-          <Button className="minus" color="secondary" onClick={removeDrink} variant="contained">
+          <Button
+            className="minus"
+            color="secondary"
+            onClick={removeDrink}
+            variant="contained"
+          >
             -
           </Button>
         </ButtonGroup>

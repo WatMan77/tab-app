@@ -61,6 +61,21 @@
     &--blue {
         background: blue;
     }
+    &--white {
+        background: white;
+    }
+    &--red {
+        background: red;
+    }
+    &--black {
+        background: black;
+    }
+    &--redblue {
+        background: linear-gradient(-45deg, black, red 49%, blue 51%);
+    }
+    &--yellowblack {
+        background: linear-gradient(-45deg, black, black 49%, yellow 51%);
+    }
 }
 
 .aside-footer {

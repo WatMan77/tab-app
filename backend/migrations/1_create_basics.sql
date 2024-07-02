@@ -15,7 +15,8 @@ CREATE TABLE account (
 CREATE TABLE product (
     name VARCHAR(50) UNIQUE NOT NULL,
     pricein INTEGER CHECK (pricein >= 0), -- prices are in cents because rounding errors
-    priceout INTEGER CHECK (priceout >= 0)
+    priceout INTEGER CHECK (priceout >= 0),
+    color VARCHAR(50) NOT NULL CHECK (color in ('WHITE', 'BLUE', 'RED', 'BLACK', 'YELLOW', 'REDBLUE', 'YELLOWBLACK'))
 );
 
 CREATE TABLE transaction (

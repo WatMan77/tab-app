@@ -22,12 +22,23 @@ interface Account {
 interface Product {
     name: string,
     pricein: number,
-    priceout: number
+    priceout: number,
+    color: Color
 }
 
 interface Admin {
     username: string,
     token: string
+}
+
+export enum Color {
+    WHITE = "WHITE",
+    RED = "RED",
+    BLUE = "BLUE",
+    YELLOW = "YELLOW",
+    REDBLUE = "REDBLUE",
+    YELLOWBLACK = "YELLOWBLACK",
+    BLACK = "BLACK"
 }
 
 export { UserType }

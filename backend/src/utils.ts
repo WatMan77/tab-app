@@ -61,4 +61,5 @@ const isValidTranscation = (transaction: any): transaction is Transaction => {
     )
 }
 
+
 export { toNewAccount, toNewProduct, toNewTransaction }

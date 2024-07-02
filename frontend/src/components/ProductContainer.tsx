@@ -1,4 +1,4 @@
-import type { Product, Account } from "../types";
+import { type Product, type Account, Color } from "../types";
 import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button } from "@mui/material";
@@ -35,6 +35,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           name: "MUU",
           pricein: parseFloat(otherFixed) * 100,
           priceout: 0,
+          color: Color.WHITE, // Inserted as Color is required
         },
         amount: 1,
       };
@@ -81,20 +82,28 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             updateAmount={updateAmount}
           />
         ))}
-    
-        <Other other={other} setOther={setOther} />
 
+        <Other other={other} setOther={setOther} />
       </Stack>
       <div class="aside-footer">
-          <span className="calculated">Yhteensä: <strong>{finalSum()} €</strong></span>
-          <Button
-            disabled={users.length == 0 || finalSum() <= 0}
-            variant="contained"
-            onClick={() => confirm()}
-          >
-            Vahvista
-          </Button>
-        </div>
+        <span className="calculated">
+          Yhteensä: <strong>{finalSum()} €</strong>
+        </span>
+        <Button
+          disabled={users.length == 0 || finalSum() <= 0}
+          variant="contained"
+          onClick={() => confirm()}
+        >
+          Vahvista
+        </Button>
+        <Button
+          disabled={users.length == 0 || finalSum() <= 0}
+          variant="contained"
+          onClick={resetStates}
+        >
+          Peruuta
+        </Button>
+      </div>
     </div>
   );
 };

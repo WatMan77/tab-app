@@ -1,5 +1,5 @@
 import { type Account, type Product, UserType } from "../src/types";
-
+import { Color } from "../src/types";
 const accounts: Account[] = [
     {
         username: "Jarmo",
@@ -29,16 +29,19 @@ const products: Product[] = [
         name: "Kalja",
         pricein: 100,
         priceout: 200,
+        color: Color.WHITE
     },
     {
         name: "Lonkero",
         pricein: 140,
-        priceout: 250
+        priceout: 250,
+        color: Color.BLUE
     },
     {
         name: "Jaegermeister",
         pricein: 240,
-        priceout: 300
+        priceout: 300,
+        color: Color.RED
     }
 ]
 

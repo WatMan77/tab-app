@@ -111,7 +111,6 @@ const EditProduct: React.FC<{
       </FormControl>
       <Button variant="contained" color="secondary" onClick={handleUpdate}>
         Update
-        {/* Update {product.name} */}
       </Button>
 
       <Button variant="outlined" color="error" onClick={handleClickOpen}>

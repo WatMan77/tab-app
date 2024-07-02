@@ -22,7 +22,7 @@ describe("Admin", () => {
     })
 
     test("wrong credentials don't give a token", async () => {
-        const response = await request(app)
+        await request(app)
             .post("/api/login")
             .send({ username: "NotAUser", password: "NotAPassword" })
             .expect(401)

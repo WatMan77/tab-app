@@ -32,7 +32,7 @@ interface Log {
     amount: number
 }
 
-enum Color {
+export enum Color {
     WHITE = "WHITE",
     RED = "RED",
     BLUE = "BLUE",

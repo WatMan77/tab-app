@@ -5,6 +5,7 @@ import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Product } from "../src/types"
+import { Color } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -16,7 +17,7 @@ beforeAll(async () => {
     }
 
     for (const p of products) {
-        await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toString(), p.priceout.toString()])
+        await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
     }
 
     // Add the admin to the database
@@ -51,7 +52,8 @@ describe("Products with correct token", () => {
         const newProduct: Product = {
             name: "Skumppa",
             pricein: 900,
-            priceout: 1000
+            priceout: 1000,
+            color: Color.YELLOWBLACK
         }
         // Add the new drink
         await request(app)
@@ -75,7 +77,8 @@ describe("Products with correct token", () => {
             newName: "Bisse",
             pricein: 200,
             priceout: 300,
-            name: "Kalja"
+            name: "Kalja",
+            color: Color.WHITE
         }
         await request(app)
             .put("/api/product")
@@ -90,7 +93,8 @@ describe("Products with correct token", () => {
         expect(response.body).toContainEqual({
             pricein: 200,
             priceout: 300,
-            name: "Bisse"
+            name: "Bisse",
+            color: Color.WHITE
         })
         expect(response.body).not.toContainEqual(products[0])
     })

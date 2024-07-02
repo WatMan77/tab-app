@@ -1,6 +1,15 @@
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
-import { TextField, Button } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  type SelectChangeEvent,
+} from "@mui/material";
+import { Color } from "../../types";
 
 const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   fetchProducts,
@@ -8,8 +17,17 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   const [name, setName] = useState("");
   const [priceIn, setPriceIn] = useState(0);
   const [priceOut, setPriceOut] = useState(0);
+  const [color, setColor] = useState<Color>(Color.WHITE);
 
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
+
+  const colorMenuItems = () => {
+    return Object.keys(Color).map((c) => (
+      <MenuItem key={c} value={c}>
+        {c}
+      </MenuItem>
+    ));
+  };
 
   const handlePriceIn = (price: number) => {
     if (!price) {
@@ -29,6 +47,10 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
     setPriceOut(price * 100);
   };
 
+  const handleNewColor = (event: SelectChangeEvent) => {
+    setColor(event.target.value as Color);
+  };
+
   const handleNewDrink = async () => {
     const token = JSON.parse(userInfo!).token;
     const requestOptions = {
@@ -38,6 +60,7 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         name,
         pricein: priceIn,
         priceout: priceOut,
+        color: color,
       }),
     };
     try {
@@ -45,19 +68,23 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
       setName("");
       setPriceIn(0);
       setPriceOut(0);
+      setColor(Color.WHITE);
       fetchProducts();
     } catch (e) {
       console.log(e);
     }
   };
   return (
-    <>
+    <div className="box-container">
       <TextField
+        label="Product name"
         placeholder="Product name"
         value={name}
         onChange={({ target }) => setName(target.value)}
+        sx={{ m: 1, minWidth: 120, flexGrow: 1 }}
       />
       <CurrencyInput
+        label="Price in"
         placeholder="Price in"
         onValueChange={(_value, _name, values) => {
           handlePriceIn(Number.parseFloat(values!.float!.toFixed(2)));
@@ -73,8 +100,17 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         decimalSeparator=","
         groupSeparator=" "
       />
-      <Button onClick={handleNewDrink}>Add product</Button>
-    </>
+
+      <FormControl fullWidth>
+        <InputLabel id="demo-simple-select-label">Väri</InputLabel>
+        <Select value={color} label={"Väri"} onChange={handleNewColor}>
+          {colorMenuItems()}
+        </Select>
+      </FormControl>
+      <Button variant="contained" onClick={handleNewDrink}>
+        Add product
+      </Button>
+    </div>
   );
 };
 

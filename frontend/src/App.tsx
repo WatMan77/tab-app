@@ -2,12 +2,14 @@ import { UserType } from "./types";
 import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
-import { Stack } from "@mui/material";
-import "./styling/accounts.css";
+import { Stack, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-//import "./App.css";
+import "./App.scss";
 
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
@@ -81,12 +83,13 @@ const App = () => {
 
   return (
     <Stack
+      className="wrapper"
       direction="row"
       justifyContent="flex-start"
       alignItems="stretch"
       spacing={2}
     >
-      <div>
+      <div class="main-content">
         <h2>Asukkaat</h2>
         <div className="account-grid">
           {users
@@ -116,7 +119,7 @@ const App = () => {
         />
       </div>
       <ProductContainer
-        className="prodcut-column"
+        className="product-column"
         drinkState={drinkStates}
         updateAmount={updateAmount}
         users={users.filter((u) => u.pressed)}

@@ -1,0 +1,100 @@
+.aside {
+    padding: 0;
+    background-color: rgba(0, 0, 0, 0.12);
+    height: 100dvh;
+    overflow: hidden;
+    overflow-y: scroll;
+    position: relative;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    margin: 64px auto 0 !important;
+    height: var(--content-height);
+    min-width: 500px;
+
+    >div {
+        padding: 1rem;
+    }
+}
+
+.drink {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.5rem;
+    margin-top: 0.5rem !important;
+
+    >div {
+        padding: 0.5rem;
+    }
+
+    &.selected {
+        >div {
+
+            border-radius: var(--radius);
+            background: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    > div {
+        align-items: center;
+    }
+
+    .plus, 
+    .minus {
+        font-size: 1.25rem;
+        min-width: 4rem !important;
+    }
+
+}
+
+.drink-title {
+    display: flex;
+    align-items: center;
+}
+
+.drink-color {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient( -45deg, black, black 49%, yellow 51% ); 
+    border-radius: 50%;
+    border: 1px solid white;
+    margin-left: 10px;
+
+    &--blue {
+        background: blue;
+    }
+    &--white {
+        background: white;
+    }
+    &--red {
+        background: red;
+    }
+    &--black {
+        background: black;
+    }
+    &--redblue {
+        background: linear-gradient(-45deg, black, red 49%, blue 51%);
+    }
+    &--yellowblack {
+        background: linear-gradient(-45deg, black, black 49%, yellow 51%);
+    }
+}
+
+.aside-footer {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba(18, 18, 18, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    gap: 1rem;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+    z-index: 10;
+
+    button {
+        height: 56px;
+        font-size: 1.25rem;
+        letter-spacing: 1.2;
+        font-weight: bold;
+    }
+}

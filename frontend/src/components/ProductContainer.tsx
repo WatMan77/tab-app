@@ -1,8 +1,9 @@
-import type { Product, Account } from "../types";
+import { type Product, type Account, Color } from "../types";
 import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button } from "@mui/material";
 import Other from "./OtherDrink";
+import "../styling/aside.scss";
 
 interface ProductContainerProps {
   drinkState: { product: Product; amount: number }[];
@@ -34,6 +35,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           name: "MUU",
           pricein: parseFloat(otherFixed) * 100,
           priceout: 0,
+          color: Color.WHITE, // Inserted as Color is required
         },
         amount: 1,
       };
@@ -66,7 +68,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   };
 
   return (
-    <>
+    <div className="aside">
       <Stack spacing={2}>
         <h2>Tuotteet</h2>
         {drinkState.map((drink) => (
@@ -80,8 +82,13 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             updateAmount={updateAmount}
           />
         ))}
+
         <Other other={other} setOther={setOther} />
-        Yhteensä: {finalSum()} € <br />
+      </Stack>
+      <div class="aside-footer">
+        <span className="calculated">
+          Yhteensä: <strong>{finalSum()} €</strong>
+        </span>
         <Button
           disabled={users.length == 0 || finalSum() <= 0}
           variant="contained"
@@ -89,8 +96,15 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
         >
           Vahvista
         </Button>
-      </Stack>
-    </>
+        <Button
+          disabled={users.length == 0 || finalSum() <= 0}
+          variant="contained"
+          onClick={resetStates}
+        >
+          Peruuta
+        </Button>
+      </div>
+    </div>
   );
 };
 

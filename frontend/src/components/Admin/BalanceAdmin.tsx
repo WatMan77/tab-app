@@ -82,12 +82,8 @@ const BalanceAdmin = () => {
   }, []);
 
   return (
-    <div>
+    <div className="container container--balance">
       <NewUser fetchUsers={fetchUsers} />
-
-      <Button variant="contained" onClick={handleChangeConfirm}>
-        Confirm change
-      </Button>
 
       {users.map((u) => (
         <UpdateBalance
@@ -98,7 +94,16 @@ const BalanceAdmin = () => {
         />
       ))}
 
-      <p>Piikin tilanne: {balanceSum.toFixed(2)}€</p>
+      <div className="balance-footer">
+        <div className="container">
+        <p>Piikin tilanne: <strong>{balanceSum.toFixed(2)}€</strong></p>
+
+          <Button variant="contained" onClick={handleChangeConfirm}>
+            Confirm change
+          </Button>
+
+        </div>
+      </div>
     </div>
   );
 };

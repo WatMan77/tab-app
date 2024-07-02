@@ -1,7 +1,8 @@
 import type { Account } from "../types";
 import { useState, useEffect, useCallback } from "react";
 import UserBlock from "./UserBlock";
-import { TextField } from "@mui/material";
+import { TextField, InputAdornment } from "@mui/material";
+import SearchIcon from '@mui/icons-material/Search';
 
 const CategoryWrapper: React.FC<{
   users: { user: Account; pressed: boolean }[];
@@ -91,10 +92,20 @@ const CategoryWrapper: React.FC<{
   };
   return (
     <div className="account-grid">
-      <TextField
-        value={nameFilter}
-        onChange={({ target }) => handleChange(target.value)}
-      />
+      <div className="search">
+        <TextField
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          variant="standard"
+          value={nameFilter}
+          onChange={({ target }) => handleChange(target.value)}
+        />
+      </div>
       {filtered.map((f) => (
         <UserBlock user={f} changePress={changePress} key={f.user.username} />
       ))}

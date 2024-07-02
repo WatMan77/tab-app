@@ -13,7 +13,8 @@ const UserBlock: React.FC<{
       color={user.pressed ? "success" : "primary"}
       disabled={user.user.closed}
     >
-      {`${user.user.username} ${(user.user.balance! / 100).toFixed(2)}€`}
+      {`${user.user.username}`}
+      <span>{`${(user.user.balance! / 100).toFixed(2)}€`}</span>
     </Button>
   );
 };

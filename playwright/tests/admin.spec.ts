@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
 
-
 const admin = "admin"
 const password = "password123"
 const login = async (page: any) => {
@@ -109,7 +108,8 @@ test.describe("Admin can", () => {
             {
                 name: "Kalja",
                 pricein: "1",
-                priceout: "1,5"
+                priceout: "1,5",
+                color: "WHITE"
             }
         ]
 

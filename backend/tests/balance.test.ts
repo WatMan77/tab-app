@@ -16,7 +16,7 @@ beforeAll(async () => {
     }
 
     for (const p of products) {
-        await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toString(), p.priceout.toString()])
+        await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
     }
 
     // Add the admin to the database

@@ -5,7 +5,12 @@ import {
   MenuItem,
   Select,
   TextField,
+  Dialog,
+  DialogActions,
   type SelectChangeEvent,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import CurrencyInput from "react-currency-input-field";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,6 +26,7 @@ const EditProduct: React.FC<{
   const [priceIn, setPriceIn] = useState(product.pricein);
   const [priceOut, setPriceOut] = useState(product.priceout);
   const [color, setColor] = useState(product.color);
+  const [open, setOpen] = useState(false);
 
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 
@@ -34,6 +40,13 @@ const EditProduct: React.FC<{
 
   const handleNewColor = (event: SelectChangeEvent) => {
     setColor(event.target.value as Color);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const handleUpdate = async () => {
@@ -100,9 +113,29 @@ const EditProduct: React.FC<{
         Update
         {/* Update {product.name} */}
       </Button>
-      <Button variant="outlined" color="error" onClick={handleDelete}>
+
+      <Button variant="outlined" color="error" onClick={handleClickOpen}>
         <DeleteIcon />
       </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Poistatko tuotteen?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Haluatko varmasti poistaa tuotteen {product.name}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>EI</Button>
+          <Button onClick={handleDelete}>KYLLÄ</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

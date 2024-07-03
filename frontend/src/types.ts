@@ -19,6 +19,15 @@ interface Account {
     recent: Date | null
 }
 
+interface UpdateAccount {
+    username: string,
+    category: UserType,
+    balance?: number,
+    closed: boolean
+    recent: Date | null,
+    newName: string
+}
+
 interface Product {
     name: string,
     pricein: number,
@@ -42,4 +51,4 @@ export enum Color {
 }
 
 export { UserType }
-export type { User, Product, Account, Admin }
+export type { User, Product, Account, Admin, UpdateAccount }

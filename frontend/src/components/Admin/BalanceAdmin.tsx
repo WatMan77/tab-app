@@ -1,13 +1,13 @@
 import UpdateBalance from "./UpdateBalance";
 import { useState, useEffect } from "react";
-import type { Account } from "../../types";
+import type { Account, UpdateAccount } from "../../types";
 import NewUser from "./NewAccount";
 import { Button } from "@mui/material";
 
 const BalanceAdmin = () => {
-  const [users, setUsers] = useState<{ account: Account; change: number }[]>(
-    []
-  );
+  const [users, setUsers] = useState<
+    { account: Account; change: number; newName: string }[]
+  >([]);
 
   const userData = window.localStorage.getItem("loggedPiikkiAdmin");
   const token = JSON.parse(userData!).token;
@@ -26,13 +26,28 @@ const BalanceAdmin = () => {
     setUsers(newState);
   };
 
+  const handleNameChange = (username: string, newName: string) => {
+    // Don't accidentally set an empty name!
+    if (newName.trim() === "") {
+      return;
+    }
+    const newState = users.map((u) => {
+      if (u.account.username === username) {
+        return { ...u, newName };
+      } else {
+        return u;
+      }
+    });
+    setUsers(newState);
+  };
+
   const fetchUsers = () => {
     fetch("http://localhost:3000/api/account")
       .then((res) => res.json())
       .then((data) => {
         setUsers(
           (data as Account[]).map((u: Account) => {
-            return { account: u, change: 0 };
+            return { account: u, change: 0, newName: "" };
           })
         );
       });
@@ -56,10 +71,13 @@ const BalanceAdmin = () => {
   };
 
   const handleChangeConfirm = async () => {
-    const filteredUsers = users.filter((u) => u.change !== 0);
-    const updatedChangeUsers: Account[] = filteredUsers.map((u) => ({
+    const filteredUsers = users.filter(
+      (u) => u.change !== 0 || u.newName !== ""
+    );
+    const updatedChangeUsers: UpdateAccount[] = filteredUsers.map((u) => ({
       ...u.account,
       balance: u.account.balance! + u.change * 100,
+      newName: u.newName,
     }));
 
     const requestOptions = {
@@ -91,17 +109,19 @@ const BalanceAdmin = () => {
           user={u}
           handleBalanceChange={handleBalanceChange}
           changePiikkiStatus={changePiikkiStatus}
+          handleNameChange={handleNameChange}
         />
       ))}
 
       <div className="balance-footer">
         <div className="container">
-        <p>Piikin tilanne: <strong>{balanceSum.toFixed(2)}€</strong></p>
+          <p>
+            Piikin tilanne: <strong>{balanceSum.toFixed(2)}€</strong>
+          </p>
 
           <Button variant="contained" onClick={handleChangeConfirm}>
             Confirm change
           </Button>
-
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import UpdateBalance from "./UpdateBalance";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Account, UpdateAccount } from "../../types";
 import NewUser from "./NewAccount";
 import { Button } from "@mui/material";
@@ -14,6 +14,16 @@ const BalanceAdmin = () => {
 
   const balanceSum =
     users.map((u) => u.account.balance!).reduce((a, b) => a + b, 0) / 100;
+
+  const compareAccounts = (a: Account, b: Account): number => {
+    if (a.username < b.username) {
+      return -1;
+    }
+    if (a.username > b.username) {
+      return 1;
+    }
+    return 0;
+  };
 
   const handleBalanceChange = (username: string, change: number) => {
     const newState = users.map((u) => {
@@ -41,17 +51,18 @@ const BalanceAdmin = () => {
     setUsers(newState);
   };
 
-  const fetchUsers = () => {
+  const fetchUsers = useCallback(() => {
     fetch("http://localhost:3000/api/account")
       .then((res) => res.json())
       .then((data) => {
+        data.sort(compareAccounts);
         setUsers(
           (data as Account[]).map((u: Account) => {
             return { account: u, change: 0, newName: "" };
           })
         );
       });
-  };
+  }, []);
 
   const changePiikkiStatus = async (account: Account) => {
     const requestOptions = {
@@ -97,7 +108,7 @@ const BalanceAdmin = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   return (
     <div className="container container--balance">

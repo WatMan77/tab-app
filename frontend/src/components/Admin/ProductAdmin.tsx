@@ -27,6 +27,7 @@ const ProductAdmin = () => {
         <span>Price out</span>
         <span></span>
         <span></span>
+        <span></span>
       {products.map((p) => (
         <EditProduct key={p.name} product={p} fetchProducts={fetchProducts} />
       ))}

@@ -23,8 +23,8 @@ const EditProduct: React.FC<{
   fetchProducts: () => void;
 }> = ({ product, fetchProducts }) => {
   const [newName, setNewName] = useState(product.name);
-  const [priceIn, setPriceIn] = useState(product.pricein);
-  const [priceOut, setPriceOut] = useState(product.priceout);
+  const [priceIn, setPriceIn] = useState((product.pricein / 100).toFixed(2));
+  const [priceOut, setPriceOut] = useState((product.priceout / 100).toFixed(2));
   const [color, setColor] = useState(product.color);
   const [open, setOpen] = useState(false);
 
@@ -36,6 +36,24 @@ const EditProduct: React.FC<{
         {c}
       </MenuItem>
     ));
+  };
+  const priceFiltering = (price: string) => {
+    const match = price.match(/[0-9.]/g);
+    const float = Number.parseFloat(price);
+
+    if (!match || !float || float < 0) {
+      return "";
+    }
+
+    let result = match.join("");
+    const commaIndex = result.indexOf(".");
+
+    if (commaIndex !== -1) {
+      result = result.replace(/\./g, "");
+      result = result.slice(0, commaIndex) + "." + result.slice(commaIndex);
+    }
+
+    return result;
   };
 
   const handleNewColor = (event: SelectChangeEvent) => {
@@ -57,8 +75,8 @@ const EditProduct: React.FC<{
       body: JSON.stringify({
         name: product.name,
         newName,
-        pricein: priceIn,
-        priceout: priceOut,
+        pricein: Number.parseFloat(priceIn) * 100,
+        priceout: Number.parseFloat(priceOut) * 100,
         color: color,
       }),
     };
@@ -88,19 +106,17 @@ const EditProduct: React.FC<{
         onChange={({ target }) => setNewName(target.value)}
       />
       <CurrencyInput
-        decimalSeparator=","
-        groupSeparator=" "
-        value={Number((priceIn / 100).toFixed(2))}
+        decimalSeparator="."
+        value={priceIn}
         onValueChange={(_value, _name, values) => {
-          setPriceIn(values!.float ? values!.float * 100 : 0);
+          setPriceIn(priceFiltering(values!.value));
         }}
       />
       <CurrencyInput
-        decimalSeparator=","
-        groupSeparator=" "
-        value={Number((priceOut / 100).toFixed(2))}
+        decimalSeparator="."
+        value={priceOut}
         onValueChange={(_value, _name, values) => {
-          setPriceOut(values!.float ? values!.float * 100 : 0);
+          setPriceOut(priceFiltering(values!.value));
         }}
       />
       <FormControl fullWidth>
@@ -131,8 +147,12 @@ const EditProduct: React.FC<{
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="error" onClick={handleClose}>EI</Button>
-          <Button variant="contained" onClick={handleDelete}>KYLLÄ</Button>
+          <Button variant="contained" color="error" onClick={handleClose}>
+            EI
+          </Button>
+          <Button variant="contained" onClick={handleDelete}>
+            KYLLÄ
+          </Button>
         </DialogActions>
       </Dialog>
     </>

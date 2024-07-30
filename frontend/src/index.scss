@@ -55,6 +55,10 @@ body {
     padding: 14px;
   }
 
+  &--add {
+    display: grid;
+    grid-template-columns: 4fr 100px 100px 3fr 2fr;
+  }
 }
 
 input {
@@ -116,7 +120,7 @@ input {
 
 .product-grid {
   display: grid;
-  grid-template-columns: 4fr 100px 100px 2fr 1fr;
+  grid-template-columns: 4fr 100px 100px 3fr 2fr 1fr;
   gap: 1rem;
   margin-bottom: 2rem;
 

@@ -75,7 +75,7 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
     }
   };
   return (
-    <div className="box-container">
+    <div className="box-container box-container--add">
       <TextField
         label="Product name"
         placeholder="Product name"
@@ -108,13 +108,13 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         groupSeparator=" "
       />
 
-      <FormControl fullWidth>
+      <FormControl>
         <InputLabel id="demo-simple-select-label">Väri</InputLabel>
         <Select value={color} label={"Väri"} onChange={handleNewColor}>
           {colorMenuItems()}
         </Select>
       </FormControl>
-      <Button variant="contained" onClick={handleNewDrink}>
+      <Button variant="contained" onClick={handleNewDrink} fullWidth>
         Add product
       </Button>
     </div>

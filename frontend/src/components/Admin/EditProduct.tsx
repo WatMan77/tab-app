@@ -131,8 +131,8 @@ const EditProduct: React.FC<{
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>EI</Button>
-          <Button onClick={handleDelete}>KYLLÄ</Button>
+          <Button variant="contained" color="error" onClick={handleClose}>EI</Button>
+          <Button variant="contained" onClick={handleDelete}>KYLLÄ</Button>
         </DialogActions>
       </Dialog>
     </>

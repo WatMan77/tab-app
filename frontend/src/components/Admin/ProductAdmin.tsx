@@ -28,9 +28,15 @@ const ProductAdmin = () => {
         <span></span>
         <span></span>
         <span></span>
-      {products.map((p) => (
-        <EditProduct key={p.name} product={p} fetchProducts={fetchProducts} />
-      ))}
+        {[...products]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((p) => (
+            <EditProduct
+              key={p.name}
+              product={p}
+              fetchProducts={fetchProducts}
+            />
+          ))}
       </div>
     </div>
   );

@@ -62,7 +62,6 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
 
   const handleNewDrink = async () => {
     const token = JSON.parse(userInfo!).token;
-    console.log("Prices?", priceIn, priceOut);
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": token },
@@ -73,7 +72,6 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         color: color,
       }),
     };
-    console.log("New drink:", requestOptions.body);
 
     try {
       await fetch("http://localhost:3000/api/product", requestOptions);

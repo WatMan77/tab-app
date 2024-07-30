@@ -30,7 +30,7 @@ router.put("/", async (req, res) => {
             }
 
             // You must change the name the last
-            if (a.newName.trim() !== "") {
+            if (a.newName && a.newName.trim() !== "") {
                 await db.query("UPDATE account SET username=$1 WHERE username=$2", [a.newName, a.username])
             }
         })

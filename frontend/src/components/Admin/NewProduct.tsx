@@ -84,18 +84,25 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
         sx={{ m: 1, minWidth: 120, flexGrow: 1 }}
       />
       <CurrencyInput
-        label="Price in"
         placeholder="Price in"
+        min={0}
         onValueChange={(_value, _name, values) => {
-          handlePriceIn(Number.parseFloat(values!.float!.toFixed(2)));
+          const f = values!.float!;
+          f == null || f == 0
+            ? handlePriceIn(0)
+            : handlePriceIn(Number.parseFloat(f.toFixed(2)));
         }}
         decimalSeparator=","
         groupSeparator=" "
       />
       <CurrencyInput
         placeholder="Price out"
+        min={0}
         onValueChange={(_value, _name, values) => {
-          handlePriceOut(Number.parseFloat(values!.float!.toFixed(2)));
+          const f = values!.float!;
+          f == null || f == 0
+            ? handlePriceOut(0)
+            : handlePriceOut(Number.parseFloat(f.toFixed(2)));
         }}
         decimalSeparator=","
         groupSeparator=" "

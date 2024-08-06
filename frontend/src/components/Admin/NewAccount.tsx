@@ -41,10 +41,7 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         balance: Math.floor(balance), // Without this could casue some issues with decimals
       }),
     };
-    const request = await fetch(
-      "http://localhost:3000/api/newaccount",
-      requestOptions
-    );
+    const request = await fetch("/api/newaccount", requestOptions);
     if (request.ok) {
       fetchUsers();
     }
@@ -52,7 +49,7 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
 
   return (
     <div className="box-container">
-      <TextField 
+      <TextField
         label="Enter account name"
         value={username}
         onChange={({ target }) => setUsername(target.value)}
@@ -83,7 +80,9 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         decimalSeparator=","
         groupSeparator=" "
       />
-      <Button variant="contained" onClick={handleNewUser}>Create user</Button>
+      <Button variant="contained" onClick={handleNewUser}>
+        Create user
+      </Button>
     </div>
   );
 };

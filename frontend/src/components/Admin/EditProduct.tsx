@@ -80,7 +80,7 @@ const EditProduct: React.FC<{
         color: color,
       }),
     };
-    await fetch("http://localhost:3000/api/product", requestOptions);
+    await fetch("/api/product", requestOptions);
     fetchProducts();
   };
 
@@ -93,7 +93,7 @@ const EditProduct: React.FC<{
         name: product.name,
       }),
     };
-    await fetch("http://localhost:3000/api/product", requestOptions);
+    await fetch("/api/product", requestOptions);
     fetchProducts();
   };
 

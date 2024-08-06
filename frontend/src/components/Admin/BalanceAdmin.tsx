@@ -52,7 +52,7 @@ const BalanceAdmin = () => {
   };
 
   const fetchUsers = useCallback(() => {
-    fetch("http://localhost:3000/api/account")
+    fetch("/api/account")
       .then((res) => res.json())
       .then((data) => {
         data.sort(compareAccounts);
@@ -74,7 +74,7 @@ const BalanceAdmin = () => {
     };
 
     try {
-      await fetch("http://localhost:3000/api/account/closed", requestOptions);
+      await fetch("/api/account/closed", requestOptions);
       fetchUsers();
     } catch (e) {
       console.log(e);
@@ -99,7 +99,7 @@ const BalanceAdmin = () => {
       }),
     };
     try {
-      await fetch("http://localhost:3000/api/balance", requestOptions);
+      await fetch("/api/balance", requestOptions);
     } catch (e) {
       console.log(e);
     }

@@ -14,9 +14,9 @@ import { closeRouter } from './src/routes/closed';
 import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
+import cors from "cors"
 
 const app = express();
-import cors from "cors"
 
 app.use(express.json());
 app.use(cors())

@@ -7,7 +7,7 @@ const ProductAdmin = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = () => {
-    fetch("http://localhost:3000/api/product")
+    fetch("/api/product")
       .then((res) => res.json())
       .then((data) => {
         setProducts(data as Product[]);

@@ -74,7 +74,7 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
     };
 
     try {
-      await fetch("http://localhost:3000/api/product", requestOptions);
+      await fetch("/api/product", requestOptions);
       setName("");
       setPriceIn("");
       setPriceOut("");

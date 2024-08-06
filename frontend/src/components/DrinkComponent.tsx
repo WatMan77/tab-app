@@ -30,7 +30,7 @@ const Drink: React.FC<{
       <Box display="flex" gap={2}>
         <Box sx={{ flex: 1 }} className="drink-title">
           {drink.name}
-          <span class={drinkColor}></span>
+          <span className={drinkColor}></span>
         </Box>
 
         <Box>{drink.pricein / 100}€</Box>

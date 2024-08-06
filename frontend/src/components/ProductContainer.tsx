@@ -50,7 +50,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       }),
     };
     try {
-      await fetch("http://localhost:3000/api/transaction", requestOptions);
+      await fetch("/api/transaction", requestOptions);
       resetStates();
       setSum(0);
       setOther("");
@@ -85,7 +85,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
 
         <Other other={other} setOther={setOther} />
       </Stack>
-      <div class="aside-footer">
+      <div className="aside-footer">
         <span className="calculated">
           Yhteensä: <strong>{finalSum()} €</strong>
         </span>

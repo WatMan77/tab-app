@@ -2,12 +2,10 @@ import { UserType } from "./types";
 import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
-import { Stack, Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
+import { Stack } from "@mui/material";
 import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
 
 import "./App.scss";
 
@@ -43,7 +41,7 @@ const App = () => {
   };
 
   const fetchAccounts = (): void => {
-    fetch("http://localhost:3000/api/account/transactions")
+    fetch("/api/account/transactions")
       .then((response) => response.json())
       .then((data) => {
         const sorted = [...data].sort(
@@ -70,7 +68,7 @@ const App = () => {
 
   useEffect(() => {
     fetchAccounts();
-    fetch("http://localhost:3000/api/product")
+    fetch("/api/product")
       .then((response) => response.json())
       .then((data: Product[]) => {
         setDrinkStates(
@@ -89,7 +87,7 @@ const App = () => {
       alignItems="stretch"
       spacing={2}
     >
-      <div class="main-content">
+      <div className="main-content">
         <h2>Asukkaat</h2>
         <div className="account-grid">
           {users

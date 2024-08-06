@@ -2,7 +2,7 @@ import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styling/login.scss";
-import logo from'../../assets/joutomiehet_white.svg';
+import logo from "../../assets/joutomiehet_white.svg";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -21,10 +21,7 @@ const AdminLogin = () => {
     };
 
     try {
-      const response = await fetch(
-        "http://localhost:3000/api/login",
-        requestOptions
-      );
+      const response = await fetch("/api/login", requestOptions);
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -45,27 +42,25 @@ const AdminLogin = () => {
   };
   return (
     <>
-    <div className="login-container">
-    <img  src={logo} alt=""/>
-      <div className="login">
-        <TextField
-          label="Enter username"
-          variant="outlined"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-        <TextField
-          label="Enter password"
-          variant="outlined"
-          type="password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-        <Button 
-          onClick={logIn} 
-          variant="contained">
-          Log in
-        </Button>
+      <div className="login-container">
+        <img src={logo} alt="" />
+        <div className="login">
+          <TextField
+            label="Enter username"
+            variant="outlined"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+          <TextField
+            label="Enter password"
+            variant="outlined"
+            type="password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+          <Button onClick={logIn} variant="contained">
+            Log in
+          </Button>
+        </div>
       </div>
-    </div>
     </>
   );
 };

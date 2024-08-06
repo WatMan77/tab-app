@@ -8,7 +8,7 @@
     border-left: 1px solid rgba(255, 255, 255, 0.08);
     margin: 64px auto 0 !important;
     height: var(--content-height);
-    min-width: 500px;
+    min-width: 400px;
 
     >div {
         padding: 1rem;
@@ -17,11 +17,11 @@
 
 .drink {
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    padding-bottom: 0.5rem;
-    margin-top: 0.5rem !important;
+    padding-bottom: 0.25rem;
+    margin-top: 0.25rem !important;
 
     >div {
-        padding: 0.5rem;
+        padding: 0 0.5rem;
     }
 
     &.selected {
@@ -38,7 +38,7 @@
 
     .plus, 
     .minus {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         min-width: 4rem !important;
     }
 
@@ -91,6 +91,12 @@
     padding: 1rem;
     z-index: 10;
 
+    .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
     button {
         height: 56px;
         font-size: 1.25rem;
@@ -98,3 +104,4 @@
         font-weight: bold;
     }
 }
+

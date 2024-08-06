@@ -89,21 +89,23 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
         <span className="calculated">
           Yhteensä: <strong>{finalSum()} €</strong>
         </span>
-        <Button
-          disabled={users.length == 0 || finalSum() <= 0}
-          variant="contained"
-          onClick={() => confirm()}
-        >
-          Vahvista
-        </Button>
-        <Button
-          disabled={users.length == 0 || finalSum() <= 0}
-          variant="contained"
-          color="error"
-          onClick={resetStates}
-        >
-          Peruuta
-        </Button>
+        <div className="buttons">
+          <Button
+            disabled={users.length == 0 || finalSum() <= 0}
+            variant="contained"
+            onClick={() => confirm()}
+          >
+            Vahvista
+          </Button>
+          <Button
+            disabled={users.length == 0 || finalSum() <= 0}
+            variant="contained"
+            color="error"
+            onClick={resetStates}
+          >
+            Peruuta
+          </Button>
+        </div>
       </div>
     </div>
   );

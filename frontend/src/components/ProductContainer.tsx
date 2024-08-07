@@ -87,7 +87,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       </Stack>
       <div className="aside-footer">
         <span className="calculated">
-          Yhteensä: <strong>{finalSum()} €</strong>
+          Yhteensä: <strong>{finalSum().toFixed(2)} €</strong>
         </span>
         <div className="buttons">
           <Button

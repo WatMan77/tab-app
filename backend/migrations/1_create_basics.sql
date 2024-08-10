@@ -9,7 +9,8 @@ CREATE TABLE account (
     username VARCHAR(50) UNIQUE NOT NULL,
     category VARCHAR(50) CHECK (category IN ('ASUKAS', 'VANHA', 'HANGAROUND')),
     balance INTEGER DEFAULT 0,
-    closed BOOLEAN DEFAULT false
+    closed BOOLEAN DEFAULT false,
+    id SERIAL PRIMARY key
 );
 
 CREATE TABLE product (

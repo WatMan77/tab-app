@@ -85,7 +85,7 @@ router.delete("/", async (req, res) => {
             return res.status(400).json({ error: "'name' not found" })
         }
         await db.query("DELETE FROM product WHERE name=$1;", [name]);
-        res.status(204).send("Delete successful")
+        res.status(204).send("Delete successful");
     } catch (e) {
         console.log("Deletion failed", e)
     }

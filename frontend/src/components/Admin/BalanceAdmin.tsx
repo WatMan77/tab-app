@@ -106,6 +106,22 @@ const BalanceAdmin = () => {
     fetchUsers();
   };
 
+  const handleDelete = async (id: number) => {
+    const requestOptions = {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json", "Authorization": token },
+      body: JSON.stringify({
+        id,
+      }),
+    };
+    try {
+      await fetch("/api/account", requestOptions);
+      fetchUsers();
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
@@ -121,6 +137,7 @@ const BalanceAdmin = () => {
           handleBalanceChange={handleBalanceChange}
           changePiikkiStatus={changePiikkiStatus}
           handleNameChange={handleNameChange}
+          handleDelete={handleDelete}
         />
       ))}
 

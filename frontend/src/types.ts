@@ -16,7 +16,8 @@ interface Account {
     category: UserType,
     balance?: number,
     closed: boolean
-    recent: Date | null
+    recent: Date | null,
+    id?: number
 }
 
 interface UpdateAccount {

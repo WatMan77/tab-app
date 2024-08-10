@@ -5,8 +5,8 @@
     grid-row-gap: 1rem;
 
     button {
-        font-size: 22px;
-        padding: 10px !important;
+        font-size: 0.875rem;
+        padding: 0.5rem !important;
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
@@ -16,7 +16,7 @@
         font-weight: bold;
 
         >span {
-            font-size: 16px;
+            font-size: 0.75rem;
             margin-left: 0.5rem;
             font-weight: 500;
         }

@@ -44,10 +44,9 @@ router.post("/", async (req, res) => {
             const cost: number = transaction.items.reduce((totalCost, item) => {
                 return totalCost + item.amount * item.product.pricein
             }, 0)
-
             // Update the balances here
             await db.query(`
-                UPDATE account SET balance=balance - $1 WHERE username=$2`, [cost.toString(), user.username]);
+                UPDATE account SET balance=balance - $1 WHERE username=$2`, [cost.toFixed(0), user.username]);
             const currentAmount = await db.query("SELECT balance FROM account WHERE username=$1", [user.username])
             if (currentAmount.rows[0].balance <= -10000) {
                 await db.query("UPDATE account SET closed=true WHERE username=$1", [user.username])

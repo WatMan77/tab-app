@@ -27,6 +27,7 @@ const EditProduct: React.FC<{
   const [priceOut, setPriceOut] = useState((product.priceout / 100).toFixed(2));
   const [color, setColor] = useState(product.color);
   const [open, setOpen] = useState(false);
+  const [changed, setChanged] = useState(false); // If something changes, enable Update button
 
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 
@@ -58,6 +59,7 @@ const EditProduct: React.FC<{
 
   const handleNewColor = (event: SelectChangeEvent) => {
     setColor(event.target.value as Color);
+    setChanged(true);
   };
 
   const handleClickOpen = () => {
@@ -103,13 +105,17 @@ const EditProduct: React.FC<{
         variant="standard"
         className="product-name"
         value={newName}
-        onChange={({ target }) => setNewName(target.value)}
+        onChange={({ target }) => {
+          setNewName(target.value);
+          setChanged(true);
+        }}
       />
       <CurrencyInput
         decimalSeparator="."
         value={priceIn}
         onValueChange={(_value, _name, values) => {
           setPriceIn(priceFiltering(values!.value));
+          setChanged(true);
         }}
       />
       <CurrencyInput
@@ -117,6 +123,7 @@ const EditProduct: React.FC<{
         value={priceOut}
         onValueChange={(_value, _name, values) => {
           setPriceOut(priceFiltering(values!.value));
+          setChanged(true);
         }}
       />
       <FormControl fullWidth>
@@ -125,7 +132,12 @@ const EditProduct: React.FC<{
           {colorMenuItems()}
         </Select>
       </FormControl>
-      <Button variant="contained" color="secondary" onClick={handleUpdate}>
+      <Button
+        variant="contained"
+        color="secondary"
+        disabled={!changed}
+        onClick={handleUpdate}
+      >
         Update
       </Button>
 

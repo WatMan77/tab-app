@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Account } from "../../types";
 import CurrencyInput from "react-currency-input-field";
 import {
@@ -6,6 +7,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -14,7 +20,24 @@ const UpdateBalance: React.FC<{
   handleBalanceChange: (username: string, change: number) => void;
   changePiikkiStatus: (account: Account) => void;
   handleNameChange: (username: string, newName: string) => void;
-}> = ({ user, handleBalanceChange, changePiikkiStatus, handleNameChange }) => {
+  handleDelete: (id: number) => void;
+}> = ({
+  user,
+  handleBalanceChange,
+  changePiikkiStatus,
+  handleNameChange,
+  handleDelete,
+}) => {
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div className={"account " + (user.account.closed ? "closed" : "")}>
       <Accordion>
@@ -52,6 +75,35 @@ const UpdateBalance: React.FC<{
               {(user.account.balance! / 100).toFixed(2)} € + {user.change} € ={" "}
               {(user.account.balance! / 100 + user.change).toFixed(2)} €
             </>
+            <Button variant="contained" color="error" onClick={handleOpen}>
+              Delete user
+            </Button>
+            <Dialog
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {"Poistatko käyttäjän?"}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  Haluatko varmasti poistaa käyttäjän {user.account.username}
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" color="error" onClick={handleClose}>
+                  EI
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleDelete(user.account.id!)}
+                >
+                  KYLLÄ
+                </Button>
+              </DialogActions>
+            </Dialog>
             {user.account.closed ? (
               <Button
                 variant="contained"

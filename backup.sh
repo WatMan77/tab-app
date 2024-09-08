@@ -8,9 +8,9 @@ if [ -f .env ]; then
     export $(cat .env | xargs)
 fi
 
-# pg_dump -U postgres test-db > $BACKUP_FILE
 
-docker exec $DB_CONTAINER pg_dump -U postgres test-db > $BACKUP_FILE
+# The db is the POSTGRES_DB value in docker-compose.yml
+docker exec $DB_CONTAINER pg_dump -U postgres piikki_db > $BACKUP_FILE
 
 # Save backup in katiska
 

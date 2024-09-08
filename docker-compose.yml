@@ -10,7 +10,7 @@ services:
             POSTGRES_USERNAME: postgres
             POSTGRES_DB: piikki_db
             POSTGRES_PASSWORD: example
-            HOST: localhost
+            HOST: db
     test-db:
         image: postgres
         restart: always

@@ -8,7 +8,7 @@ services:
             - 5432:5432
         environment:
             POSTGRES_USERNAME: postgres
-            POSTGRES_DB: reform
+            POSTGRES_DB: piikki_db
             POSTGRES_PASSWORD: example
     test-db:
         image: postgres

@@ -22,12 +22,15 @@
     "dev": "NODE_ENV=dev bun --watch run ./index.ts",
     "lint": "eslint --ext .ts .",
     "tests": "jest --forceExit --runInBand",
-    "test": "NODE_ENV=test bun test"
+    "test": "NODE_ENV=test bun test",
+    "dev-prod": "bun --watch run ./index.ts"
   },
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
-  "trustedDependencies": ["bcrypt"],
+  "trustedDependencies": [
+    "bcrypt"
+  ],
   "dependencies": {
     "accepts": "^1.3.8",
     "array-flatten": "^1.1.1",

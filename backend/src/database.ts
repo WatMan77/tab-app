@@ -11,9 +11,9 @@ const test_variables = {
 
 
 const prod_variables = {
-    user: process.env["POSTGRES_USERNAME"],
-    password: process.env["POSTGRES_PASSWORD"],
-    host: process.env["HOST"],
+    user: process.env["POSTGRES_USERNAME"]!,
+    password: process.env["POSTGRES_PASSWORD"]!,
+    host: process.env["HOST"] ?? "localhost",
     port: 5432,
     database: process.env["POSTGRES_DB"]!
 }
@@ -25,7 +25,7 @@ const dbConfig = Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev"
 const pool = new pg.Pool(dbConfig)
 const initDb = async () => {
     try {
-        await migrate(test_variables, './migrations');
+        await migrate(dbConfig, './migrations');
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)
@@ -33,10 +33,13 @@ const initDb = async () => {
 }
 
 console.log("NODE_ENV?!?!?", Bun.env.NODE_ENV)
+console.log("db config?", dbConfig)
 
 if (Bun.env.NODE_ENV === "dev") {
     await initDb()
     console.log("DB initialized")
+} else {
+    await initDb()
 }
 
 export { pool as db, initDb }

@@ -31,9 +31,11 @@ afterAll(() => {
 
 describe("Accounts", () => {
     test("get all users", async () => {
+        console.log("GETTING ALL ACCOUNS!")
         const response = await request(app)
             .get("/api/account/transactions")
-        expect(response.body).toEqual(expect.arrayContaining(accounts));
+        const accs = response.body.map(({ id, ...rest }: (any)) => rest)
+        expect(accs).toEqual(expect.arrayContaining(accounts))
 
     })
 

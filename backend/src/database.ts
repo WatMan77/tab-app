@@ -2,11 +2,11 @@ import pg from "pg";
 import { migrate } from 'postgres-migrations';
 
 const test_variables = {
-    user: process.env["POSTGRES_USERNAME"] ?? "postgres",
-    password: process.env["POSTGRES_PASSWORD"] ?? "test",
-    host: process.env["HOST"]! || "localhost",
+    user: "postgres",
+    password: "test",
+    host: "localhost",
     port: 5432,
-    database: process.env["POSTGRES_DB"] ?? "test-db"
+    database: "test-db"
 }
 
 

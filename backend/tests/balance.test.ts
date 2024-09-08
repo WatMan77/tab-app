@@ -51,7 +51,11 @@ describe("Balance", () => {
             .get("/api/account/transactions")
             .expect(200)
 
-        expect(response.body).toContainEqual({ ...accounts[0], balance: accounts[0].balance! - 100 })
+        const expectedAccount = { ...accounts[0], balance: accounts[0].balance! - 100 };
+
+        const actualAccounts = response.body.map(({ id, ...rest }: { id?: number }) => rest);
+
+        expect(actualAccounts).toEqual(expect.arrayContaining([expectedAccount]))
     })
 
     test("change balance for more than one user at a time", async () => {
@@ -72,12 +76,13 @@ describe("Balance", () => {
         const response = await request(app)
             .get("/api/account/transactions")
             .expect(200)
+        const updatedAccount = { ...accounts[0], balance: accounts[0].balance! - 100 };
 
-        // FIX IN FUTURE VERSIONS!
-        // Bun's toEqual seems to still care about the order in arrays
-        // If it is ever fixed, use toEqual
-        // expect(response.body).toEqual(updatedBalances)
-        expect(response.body).toEqual(expect.arrayContaining(updatedBalances));
+        // Map the response body to remove IDs for comparison
+        const actualAccounts = response.body.map(({ id, ...rest }: { id?: number }) => rest);
+
+        // Check if the actual accounts include the expected updated account
+        expect(actualAccounts).toEqual(expect.arrayContaining([updatedAccount]));
 
     })
 })

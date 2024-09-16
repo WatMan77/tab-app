@@ -101,7 +101,10 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             disabled={users.length == 0 || finalSum() <= 0}
             variant="contained"
             color="error"
-            onClick={resetStates}
+            onClick={() => {
+              setSum(0);
+              resetStates();
+            }}
           >
             Peruuta
           </Button>

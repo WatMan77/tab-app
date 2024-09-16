@@ -1,6 +1,7 @@
 #!/bin/bash
 
-BACKUP_FILE="backup.sql"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="backup_$TIMESTAMP.sql"
 DESTINATION_DIR="db_backups"
 
 # Load the environment variables
@@ -15,3 +16,5 @@ docker exec $DB_CONTAINER pg_dump -U postgres piikki_db > $BACKUP_FILE
 # Save backup in katiska
 
 sshpass -p $SSHPASS scp -o StrictHostKeyChecking=no $BACKUP_FILE joutomies@katiska.dy.fi:~/$DESTINATION_DIR/$BACKUP_FILE
+
+rm -rf backup_*.sql

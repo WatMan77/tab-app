@@ -44,6 +44,9 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
     const request = await fetch("/api/newaccount", requestOptions);
     if (request.ok) {
       fetchUsers();
+      setCategory("");
+      setBalance(0);
+      setUsername("");
     }
   };
 

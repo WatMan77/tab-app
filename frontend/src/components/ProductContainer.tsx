@@ -103,6 +103,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             color="error"
             onClick={() => {
               setSum(0);
+              setOther("");
               resetStates();
             }}
           >

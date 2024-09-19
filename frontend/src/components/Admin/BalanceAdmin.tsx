@@ -37,10 +37,6 @@ const BalanceAdmin = () => {
   };
 
   const handleNameChange = (username: string, newName: string) => {
-    // Don't accidentally set an empty name!
-    if (newName.trim() === "") {
-      return;
-    }
     const newState = users.map((u) => {
       if (u.account.username === username) {
         return { ...u, newName };

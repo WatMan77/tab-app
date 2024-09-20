@@ -26,6 +26,8 @@ services:
         build: ./backend
         ports:
             - 3000:3000
+        environment:
+            - HOST=db
 
     frontend:
         build: ./frontend

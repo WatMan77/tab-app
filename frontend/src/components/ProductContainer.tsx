@@ -35,7 +35,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           name: "MUU",
           pricein: parseFloat(otherFixed) * 100,
           priceout: 0,
-          color: Color.WHITE, // Inserted as Color is required
+          color: Color.EMPTY, // Inserted as Color is required
         },
         amount: 1,
       };

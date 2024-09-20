@@ -1,5 +1,6 @@
 import { Button, Box, ButtonGroup } from "@mui/material";
 import type { Product } from "../types";
+import { Color } from "../types";
 
 const Drink: React.FC<{
   drink: Product;
@@ -30,7 +31,7 @@ const Drink: React.FC<{
       <Box display="flex" gap={2}>
         <Box sx={{ flex: 1 }} className="drink-title">
           {drink.name}
-          <span className={drinkColor}></span>
+          {drink.color !== Color.EMPTY && <span className={drinkColor}></span>}
         </Box>
 
         <Box>{drink.pricein / 100}€</Box>

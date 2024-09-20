@@ -17,7 +17,7 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   const [name, setName] = useState("");
   const [priceIn, setPriceIn] = useState("");
   const [priceOut, setPriceOut] = useState("");
-  const [color, setColor] = useState<Color>(Color.WHITE);
+  const [color, setColor] = useState<Color>(Color.EMPTY);
 
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 

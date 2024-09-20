@@ -31,6 +31,7 @@ router.post("/", async (req, res) => {
         }
 
         const product: Product = toNewProduct(req.body)
+        console.log(product);
         await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES($1, $2, $3, $4) RETURNING *", [product.name, product.pricein.toString(), product.priceout.toString(), product.color])
         res.status(200).send("OK")
     } catch (e) {

@@ -48,7 +48,8 @@ export enum Color {
     YELLOW = "YELLOW",
     REDBLUE = "REDBLUE",
     YELLOWBLACK = "YELLOWBLACK",
-    BLACK = "BLACK"
+    BLACK = "BLACK",
+    EMPTY = "EMPTY"
 }
 
 export { UserType }

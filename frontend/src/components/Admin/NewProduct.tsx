@@ -78,7 +78,7 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
       setName("");
       setPriceIn("");
       setPriceOut("");
-      setColor(Color.WHITE);
+      setColor(Color.EMPTY);
       fetchProducts();
     } catch (e) {
       console.log(e);

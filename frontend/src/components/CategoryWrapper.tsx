@@ -50,7 +50,7 @@ const CategoryWrapper: React.FC<{
       pressed: boolean;
     }> = new Set();
     if (nameFilter.trim() === "" || nameFilter.trim().length < 3) {
-      fu = new Set(f.slice(0, 8));
+      fu = new Set(f.slice(0, 20));
     } else {
       fu = new Set(filteredByName(nameFilter));
     }

@@ -16,6 +16,16 @@ router.get("/", async (_req, res) => {
     }
 })
 
+router.get("/recent", async (_req, res) => {
+    try {
+        const transactions: Log[] = (await db.query("SELECT * FROM transaction ORDER BY transaction_date DESC limit 10")).rows;
+        res.status(200).send(transactions)
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+})
+
 router.post("/", async (req, res) => {
     /*
     * The object received is

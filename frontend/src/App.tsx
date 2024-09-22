@@ -1,5 +1,5 @@
 import { UserType } from "./types";
-import type { Account, Product } from "./types";
+import type { Account, Product, Log } from "./types";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
@@ -17,6 +17,7 @@ const App = () => {
   const [drinkStates, setDrinkStates] = useState<
     { product: Product; amount: number }[]
   >([]);
+  const [recentTrans, setRecentTrans] = useState<Log[]>([]);
 
   const [vanhatNameFilter, setVanhatNameFilter] = useState("");
   const [hangNameFilter, setHangNameFilter] = useState("");
@@ -55,6 +56,14 @@ const App = () => {
       });
   };
 
+  const fetchRecentTransactions = () => {
+    fetch("/api/transaction/recent")
+      .then((response) => response.json())
+      .then((data: Log[]) => {
+        setRecentTrans(data);
+      });
+  };
+
   const resetStates = (): void => {
     const updatedProducts = drinkStates.map((p) => {
       return { ...p, amount: 0 };
@@ -78,9 +87,9 @@ const App = () => {
       socket.off("accounts-updated");
     };
   }, []);
-
   useEffect(() => {
     fetchAccounts();
+    fetchRecentTransactions();
     fetch("/api/product")
       .then((response) => response.json())
       .then((data: Product[]) => {
@@ -129,13 +138,14 @@ const App = () => {
           setNameFilter={setHangNameFilter}
         />
       </div>
-      <ProductContainer
-        className="product-column"
-        drinkState={drinkStates}
-        updateAmount={updateAmount}
-        users={users.filter((u) => u.pressed)}
-        resetStates={resetStates}
-      />
+      <div className="product-column">
+        <ProductContainer
+          drinkState={drinkStates}
+          updateAmount={updateAmount}
+          users={users.filter((u) => u.pressed)}
+          resetStates={resetStates}
+        />
+      </div>
     </Stack>
   );
 };

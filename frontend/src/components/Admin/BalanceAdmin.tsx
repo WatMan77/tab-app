@@ -25,27 +25,27 @@ const BalanceAdmin = () => {
     return 0;
   };
 
-  const handleBalanceChange = (username: string, change: number) => {
-    const newState = users.map((u) => {
-      if (u.account.username === username) {
-        return { ...u, change };
-      } else {
-        return u;
-      }
-    });
-    setUsers(newState);
-  };
+  const handleBalanceChange = useCallback(
+    (username: string, change: number) => {
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u.account.username === username ? { ...u, change } : u
+        )
+      );
+    },
+    [setUsers]
+  );
 
-  const handleNameChange = (username: string, newName: string) => {
-    const newState = users.map((u) => {
-      if (u.account.username === username) {
-        return { ...u, newName };
-      } else {
-        return u;
-      }
-    });
-    setUsers(newState);
-  };
+  const handleNameChange = useCallback(
+    (username: string, newName: string) => {
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u.account.username === username ? { ...u, newName } : u
+        )
+      );
+    },
+    [setUsers]
+  );
 
   const fetchUsers = useCallback(() => {
     fetch("/api/account")

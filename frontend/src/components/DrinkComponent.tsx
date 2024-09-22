@@ -42,20 +42,20 @@ const Drink: React.FC<{
           aria-label="outlined primary button group"
         >
           <Button
-            className="plus"
-            color="secondary"
-            onClick={addDrink}
-            variant="contained"
-          >
-            +
-          </Button>
-          <Button
             className="minus"
             color="secondary"
             onClick={removeDrink}
             variant="contained"
           >
             -
+          </Button>{" "}
+          <Button
+            className="plus"
+            color="secondary"
+            onClick={addDrink}
+            variant="contained"
+          >
+            +
           </Button>
         </ButtonGroup>
         <Box sx={{ minWidth: "20px", fontWeight: "bold" }}>{amount}</Box>

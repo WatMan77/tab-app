@@ -16,8 +16,24 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import cors from "cors"
 import './src/cron-jobs';
+import { Server } from 'socket.io';
 
 const app = express();
+const server = require('http').createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["*"],
+        allowedHeaders: ["Content-Type"]
+    }
+});
+
+io.on('connection', (socket) => {
+    console.log("New client connected!");
+    socket.on('disconnect', () => {
+        console.log('client disconnected')
+    })
+})
 
 app.use(express.json());
 app.use(cors())
@@ -96,10 +112,11 @@ app.post("/api/newaccount", async (req, res) => {
 })
 
 if (Bun.env.NODE_ENV !== "test") {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
         return console.log("Server running on port " + PORT);
     });
 }
 
 
-export default app
+export default server
+export { io }

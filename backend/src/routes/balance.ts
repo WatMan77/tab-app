@@ -25,10 +25,6 @@ router.put("/", async (req, res) => {
         confirmedAccounts.forEach(async a => {
             await db.query("UPDATE account SET balance=$1 WHERE username=$2;", [a.balance!.toString(), a.username])
 
-            if (a.balance! <= -100 * 100) {
-                await db.query("UPDATE account SET closed=true WHERE username=$1", [a.username])
-            }
-
             // You must change the name the last
             if (a.newName && a.newName.trim() !== "") {
                 await db.query("UPDATE account SET username=$1 WHERE username=$2", [a.newName, a.username])

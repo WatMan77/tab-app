@@ -6,8 +6,11 @@ import { Stack } from "@mui/material";
 import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
+import { io } from "socket.io-client";
 
 import "./App.scss";
+
+const socket = io(import.meta.env["VITE_API_URL"] || "http://localhost:3000");
 
 const App = () => {
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
@@ -65,6 +68,16 @@ const App = () => {
     setVanhatNameFilter("");
     setHangNameFilter("");
   };
+
+  useEffect(() => {
+    socket.on("accounts-updated", () => {
+      fetchAccounts();
+    });
+
+    return () => {
+      socket.off("accounts-updated");
+    };
+  }, []);
 
   useEffect(() => {
     fetchAccounts();

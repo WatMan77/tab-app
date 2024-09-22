@@ -15,11 +15,14 @@
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.3",
     "@types/react-router-dom": "^5.3.3",
+    "@types/socket.io-client": "^3.0.0",
     "react": "^18.2.0",
     "react-currency-input-field": "^3.6.14",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
-    "sass": "^1.77.2"
+    "sass": "^1.77.2",
+    "socket.io": "^4.8.0",
+    "socket.io-client": "^4.8.0"
   },
   "devDependencies": {
     "@types/bun": "^1.0.12",

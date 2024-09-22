@@ -15,6 +15,7 @@ import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
 import cors from "cors"
+import './src/cron-jobs';
 
 const app = express();
 

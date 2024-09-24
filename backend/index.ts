@@ -28,13 +28,6 @@ const io = new Server(server, {
     }
 });
 
-io.on('connection', (socket) => {
-    console.log("New client connected!");
-    socket.on('disconnect', () => {
-        console.log('client disconnected')
-    })
-})
-
 app.use(express.json());
 app.use(cors())
 
@@ -71,11 +64,11 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
     app.get("/api/testdb", async (_req, res) => {
 
         for (const a of testValues.accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toFixed(0)])
         }
 
         for (const p of testValues.products) {
-            await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toString(), p.priceout.toString()])
+            await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toFixed(0), p.priceout.toFixed(0)])
         }
 
         res.status(201).send("OK")

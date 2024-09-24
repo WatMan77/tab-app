@@ -99,7 +99,7 @@ const BalanceAdmin = () => {
     } catch (e) {
       console.log(e);
     }
-    fetchUsers();
+    window.location.reload();
   };
 
   const handleDelete = async (id: number) => {

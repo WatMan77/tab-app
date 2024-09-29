@@ -137,3 +137,37 @@ input {
 
   }
 }
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--dark-grey);
+  color: var(--white);
+
+  th,
+  td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  th {
+    background-color: var(--blue);
+    color: var(--white);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  td {
+    white-space: nowrap; // Prevents text from wrapping
+  }
+}

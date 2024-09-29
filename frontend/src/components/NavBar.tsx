@@ -38,6 +38,9 @@ const NavBar = () => {
       <MenuItem key="home" onClick={() => navigate("/")}>
         Home
       </MenuItem>
+      <MenuItem key="transactions" onClick={() => navigate("/transactions")}>
+        Transactions
+      </MenuItem>
       <MenuItem key="pricelist" onClick={() => navigate("/pricelist")}>
         Hinnasto
       </MenuItem>

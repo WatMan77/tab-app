@@ -41,6 +41,13 @@ interface Admin {
     token: string
 }
 
+interface Log {
+    username: string,
+    product_name: string,
+    transaction_date: Date,
+    amount: number
+}
+
 export enum Color {
     WHITE = "WHITE",
     RED = "RED",
@@ -53,4 +60,4 @@ export enum Color {
 }
 
 export { UserType }
-export type { User, Product, Account, Admin, UpdateAccount }
+export type { User, Product, Account, Admin, UpdateAccount, Log }

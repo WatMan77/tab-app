@@ -29,7 +29,6 @@ const PriceList: React.FC = () => {
     return `drink-color drink-color--${color.toLowerCase()}`;
   };
 
-  console.log("We have data!", data);
   return (
     <div className="product-table-container">
       <table className="product-table">

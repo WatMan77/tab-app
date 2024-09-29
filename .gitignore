@@ -28,3 +28,6 @@ backup_*.sql
 .env
 
 .package-lock.json
+
+
+virheet.txt

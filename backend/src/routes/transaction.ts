@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/", async (_req, res) => {
     try {
-        const transactions: Log[] = (await db.query("SELECT * FROM transaction;")).rows
+        const transactions: Log[] = (await db.query("SELECT * FROM transaction ORDER BY transaction_date DESC;")).rows
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)

@@ -1,14 +1,12 @@
 import { UserType } from "./types";
-import type { Account, Product, Log } from "./types";
+import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Stack } from "@mui/material";
 import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
 import { io } from "socket.io-client";
-
-import "./App.scss";
 
 const socket = io(import.meta.env["VITE_API_URL"] || "http://localhost:3000");
 
@@ -17,20 +15,15 @@ const App = () => {
   const [drinkStates, setDrinkStates] = useState<
     { product: Product; amount: number }[]
   >([]);
-  const [recentTrans, setRecentTrans] = useState<Log[]>([]);
-
   const [vanhatNameFilter, setVanhatNameFilter] = useState("");
   const [hangNameFilter, setHangNameFilter] = useState("");
 
-  const changePress = (username: string) => {
-    const updatedUsers = users.map((x) => {
-      if (x.user.username === username) {
-        return { ...x, pressed: !x.pressed };
-      } else {
-        return x;
-      }
-    });
-    setUsers(updatedUsers);
+  const changePress = (id: number) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.user.id! === id ? { ...user, pressed: !user.pressed } : user
+      )
+    );
   };
 
   const updateAmount = (product: string, increase: number) => {
@@ -53,14 +46,6 @@ const App = () => {
             a.username.localeCompare(b.username)
         );
         setUsers(sorted.map((user: Account) => ({ user, pressed: false })));
-      });
-  };
-
-  const fetchRecentTransactions = () => {
-    fetch("/api/transaction/recent")
-      .then((response) => response.json())
-      .then((data: Log[]) => {
-        setRecentTrans(data);
       });
   };
 
@@ -89,7 +74,6 @@ const App = () => {
   }, []);
   useEffect(() => {
     fetchAccounts();
-    fetchRecentTransactions();
     fetch("/api/product")
       .then((response) => response.json())
       .then((data: Product[]) => {
@@ -100,6 +84,21 @@ const App = () => {
         );
       });
   }, []);
+
+  const asukasUsers = useMemo(
+    () => users.filter((x) => x.user.category === UserType.ASUKAS),
+    [users]
+  );
+
+  const vanhatUsers = useMemo(
+    () => users.filter((x) => x.user.category === UserType.VANHA),
+    [users]
+  );
+
+  const hangaroundUsers = useMemo(
+    () => users.filter((x) => x.user.category === UserType.HANGAROUND),
+    [users]
+  );
 
   return (
     <Stack
@@ -112,28 +111,26 @@ const App = () => {
       <div className="main-content">
         <h2>Asukkaat</h2>
         <div className="account-grid">
-          {users
-            .filter((x) => x.user.category === UserType.ASUKAS)
-            .map((u) => (
-              <UserBlock
-                user={u}
-                changePress={changePress}
-                key={u.user.username}
-              />
-            ))}
+          {asukasUsers.map((u) => (
+            <UserBlock
+              user={u}
+              changePress={changePress}
+              key={u.user.username}
+            />
+          ))}
         </div>
 
         <h2>Vanhat</h2>
         <CategoryWrapper
           changePress={changePress}
-          users={users.filter((x) => x.user.category === UserType.VANHA)}
+          users={vanhatUsers}
           nameFilter={vanhatNameFilter}
           setNameFilter={setVanhatNameFilter}
         />
         <h2>Hangaroundit</h2>
         <CategoryWrapper
           changePress={changePress}
-          users={users.filter((x) => x.user.category === UserType.HANGAROUND)}
+          users={hangaroundUsers}
           nameFilter={hangNameFilter}
           setNameFilter={setHangNameFilter}
         />

@@ -8,6 +8,11 @@ jobs:
   tests:
     name: backend-tests
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        attempt: [1, 2]
 
     services:
       test-db:
@@ -32,7 +37,11 @@ jobs:
       - name: Setup tables
         working-directory: ./backend
         run: psql "postgresql://postgres:test@localhost/test-db" -f migrations/1_create_basics.sql
-      - run: bun run test
+      - name: Run knex migrations
+        working-directory: ./backend
+        run: bun install knex && bunx knex migrate:latest
+      - name: Run tests (attempt ${{ matrix.attempt }})
+        run: bun run test
         working-directory: ./backend
         env:
           CI: true

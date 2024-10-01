@@ -8,7 +8,12 @@ const router = express.Router();
 
 router.get("/", async (_req, res) => {
     try {
-        const transactions: Log[] = (await db.query("SELECT * FROM transaction ORDER BY transaction_date DESC;")).rows
+        const query =
+            `SELECT t.*, a.*
+         FROM transaction AS t
+         JOIN account a ON a.id=t.user_id
+         ORDER BY transaction_date DESC;`;
+        const transactions: Log[] = (await db.query(query)).rows
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)
@@ -18,11 +23,32 @@ router.get("/", async (_req, res) => {
 
 router.get("/recent", async (_req, res) => {
     try {
-        const transactions: Log[] = (await db.query("SELECT * FROM transaction ORDER BY transaction_date DESC limit 10")).rows;
+        const query = `SELECT t.*, a.*
+         FROM transaction AS t
+         JOIN account a ON a.id=t.user_id
+         ORDER BY transaction_date DESC LIMIT 10;`
+        const transactions: Log[] = (await db.query(query)).rows;
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
+    }
+})
+
+router.get("/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        const query =
+            `SELECT t.*, a.*
+         FROM transaction AS t
+         JOIN account a ON a.id=t.user_id
+         WHERE a.id=$1
+         ORDER BY transaction_date DESC;`;
+        const transactions: Log[] = (await db.query(query, [id])).rows;
+        res.status(200).send(transactions);
+    } catch (e) {
+        console.log(e);
+        res.status(400).send(e);
     }
 })
 
@@ -38,11 +64,12 @@ router.post("/", async (req, res) => {
 
         transaction.users.forEach((user) => {
             transaction.items.forEach((item) => {
+                const sum = (item.amount * item.product.pricein).toFixed(0);
                 const addTransaction = db.query(`
                         INSERT INTO transaction
-                        (username, product_name, amount)
-                        VALUES ($1, $2, $3) RETURNING *;`,
-                    [user.username, item.product.name, item.amount.toString()]);
+                        (user_id, product_name, amount, sum)
+                        VALUES ($1, $2, $3, $4) RETURNING *;`,
+                    [user.id!.toString(), item.product.name, item.amount.toString(), sum]);
                 transactionPromises.push(addTransaction)
             });
         });

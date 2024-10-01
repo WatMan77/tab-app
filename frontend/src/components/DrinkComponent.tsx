@@ -34,7 +34,7 @@ const Drink: React.FC<{
           {drink.color !== Color.EMPTY && <span className={drinkColor}></span>}
         </Box>
 
-        <Box>{drink.pricein / 100}€</Box>
+        <Box>{drink.pricein / 100}</Box>
 
         <ButtonGroup
           variant="contained"

@@ -54,4 +54,4 @@ needs to have the same name as the service name of the database.
 In case there changes have to be made to the structure of the database, use knex.
 To run all newest migrations run while Database is running
 
-bunx knex migrate:lates --env prod
+bunx knex migrate:latest --env prod

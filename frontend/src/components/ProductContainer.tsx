@@ -1,4 +1,5 @@
-import { type Product, type Account, Color } from "../types";
+import type { Product, Account, Log } from "../types";
+import { Color } from "../types";
 import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button } from "@mui/material";
@@ -24,6 +25,21 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
 }) => {
   const [sum, setSum] = useState(0);
   const [other, setOther] = useState<string>("");
+  const [, setRecentTrans] = useState<Log[]>([]);
+
+  const fetchRecentTransactions = () => {
+    fetch("/api/transaction/recent")
+      .then((response) => response.json())
+      .then((data: Log[]) => {
+        setRecentTrans(data);
+      });
+  };
+
+  // Recent transactions left for now
+  // useEffect(() => {
+  //   console.log("Fetching recent...");
+  //   fetchRecentTransactions();
+  // }, []);
 
   const confirm = async () => {
     const items = drinkState.filter((x) => x.amount >= 1);
@@ -54,6 +70,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       resetStates();
       setSum(0);
       setOther("");
+      fetchRecentTransactions();
     } catch (e) {
       console.log(e);
     }
@@ -87,7 +104,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       </Stack>
       <div className="aside-footer">
         <span className="calculated">
-          Yhteensä: <strong>{finalSum().toFixed(2)} €</strong>
+          Yhteensä: <strong>{finalSum().toFixed(2)} </strong>
         </span>
         <div className="buttons">
           <Button
@@ -111,6 +128,40 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           </Button>
         </div>
       </div>
+      {/*
+      <div className="transactions-table-container">
+        <table className="transactions-table">
+          <thead>
+            <tr>
+              <th>Käyttäjä</th>
+              <th>Tuote</th>
+              <th>Määrä</th>
+              <th>Summa</th>
+              <th>Päivämäärä</th>
+            </tr>
+          </thead>
+          <tbody>
+            {recentTrans.map((tran, index) => (
+              <tr key={index}>
+                <td>{tran.username}</td>
+                <td>{tran.product_name}</td>
+                <td>{tran.amount}</td>
+                <td>{(tran.sum / 100).toFixed(2)}</td>
+                <td>
+                  {new Date(tran.transaction_date).toLocaleString("fi-FI", {
+                    year: "numeric",
+                    month: "numeric",
+                    day: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      */}
     </div>
   );
 };

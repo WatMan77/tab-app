@@ -32,14 +32,9 @@ const initDb = async () => {
     }
 }
 
-console.log("NODE_ENV?!?!?", Bun.env.NODE_ENV)
-console.log("db config?", dbConfig)
-
 if (Bun.env.NODE_ENV === "dev") {
     await initDb()
     console.log("DB initialized")
-} else {
-    await initDb()
 }
 
 export { pool as db, initDb }

@@ -36,13 +36,13 @@ const NavBar = () => {
   const home = (
     <>
       <MenuItem key="home" onClick={() => navigate("/")}>
-        Home
+        Koti
       </MenuItem>
       <MenuItem key="transactions" onClick={() => navigate("/transactions")}>
-        Transactions
+        Tapahtumat
       </MenuItem>
       <MenuItem key="pricelist" onClick={() => navigate("/pricelist")}>
-        Hinnasto
+        Viivat
       </MenuItem>
     </>
   );

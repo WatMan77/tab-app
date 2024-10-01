@@ -2,11 +2,11 @@ import type { Account } from "../types";
 import { useState, useEffect, useCallback } from "react";
 import UserBlock from "./UserBlock";
 import { TextField, InputAdornment } from "@mui/material";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 
 const CategoryWrapper: React.FC<{
   users: { user: Account; pressed: boolean }[];
-  changePress: (username: string) => void;
+  changePress: (id: number) => void;
   nameFilter: string;
   setNameFilter: (name: string) => void;
 }> = ({ users, changePress, nameFilter, setNameFilter }) => {

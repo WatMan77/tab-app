@@ -19,7 +19,9 @@ interface UpdateAccount {
     balance?: number,
     closed: boolean,
     recent: Date | null,
-    newName: string
+    newName: string,
+    id: number,
+    newCategory: UserType
 }
 
 interface Product {

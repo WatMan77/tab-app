@@ -48,8 +48,8 @@ const PriceList: React.FC = () => {
                   <span className={getColorClass(p.color)}></span>
                 )}
               </td>
-              <td>{(p.pricein / 100).toFixed(2)}€</td>
-              <td>{(p.priceout / 100).toFixed(2)}€ </td>
+              <td>{(p.pricein / 100).toFixed(2)}</td>
+              <td>{(p.priceout / 100).toFixed(2)} </td>
             </tr>
           ))}
         </tbody>

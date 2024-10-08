@@ -9,7 +9,7 @@ const ShopList: React.FC<{
     <ul>
       {cart.map((d) => (
         <li key={d.product.name}>
-          {d.product.name} (x{d.amount}) {(d.product.pricein * d.amount) / 100}€
+          {d.product.name} (x{d.amount}) {(d.product.pricein * d.amount) / 100}
         </li>
       ))}
     </ul>

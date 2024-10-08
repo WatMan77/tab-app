@@ -14,7 +14,7 @@ router.get("/transactions", async (_req, res) => {
         const accounts: Account[] = (await db.query(`
         SELECT u.*, MAX(t.transaction_date) AS recent
         FROM account AS u
-        LEFT JOIN transaction t ON u.username=t.username
+        LEFT JOIN transaction t ON u.id=t.user_id
         GROUP BY u.username, u.category, u.balance, u.closed, u.id
         ORDER BY recent DESC;`)).rows
         res.status(200).send(accounts)

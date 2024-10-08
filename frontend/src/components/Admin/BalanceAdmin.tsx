@@ -1,13 +1,22 @@
 import UpdateBalance from "./UpdateBalance";
-import { useState, useEffect, useCallback } from "react";
-import type { Account, UpdateAccount } from "../../types";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import type { Account, UpdateAccount, UserType } from "../../types";
 import NewUser from "./NewAccount";
-import { Button } from "@mui/material";
+import { Button, TextField } from "@mui/material";
+import { debounce } from "lodash";
+import "../../styling/balanceadmin.scss";
 
 const BalanceAdmin = () => {
   const [users, setUsers] = useState<
-    { account: Account; change: number; newName: string }[]
+    {
+      account: Account;
+      change: number;
+      newName: string;
+      newCategory: UserType;
+    }[]
   >([]);
+  const [userFilter, setUserFilter] = useState("");
+  const [showClosed, setShowClosed] = useState(false);
 
   const userData = window.localStorage.getItem("loggedPiikkiAdmin");
   const token = JSON.parse(userData!).token;
@@ -25,27 +34,23 @@ const BalanceAdmin = () => {
     return 0;
   };
 
-  const handleBalanceChange = useCallback(
-    (username: string, change: number) => {
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.account.username === username ? { ...u, change } : u
-        )
-      );
-    },
-    [setUsers]
-  );
+  const handleBalanceChange = useCallback((id: number, change: number) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.account.id! === id ? { ...u, change } : u))
+    );
+  }, []);
 
-  const handleNameChange = useCallback(
-    (username: string, newName: string) => {
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u.account.username === username ? { ...u, newName } : u
-        )
-      );
-    },
-    [setUsers]
-  );
+  const handleNameChange = useCallback((id: number, newName: string) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.account.id! === id ? { ...u, newName } : u))
+    );
+  }, []);
+
+  const handleCategoryChange = (id: number, newCategory: UserType) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.account.id! === id ? { ...u, newCategory } : u))
+    );
+  };
 
   const fetchUsers = useCallback(() => {
     fetch("/api/account")
@@ -54,7 +59,12 @@ const BalanceAdmin = () => {
         data.sort(compareAccounts);
         setUsers(
           (data as Account[]).map((u: Account) => {
-            return { account: u, change: 0, newName: "" };
+            return {
+              account: u,
+              change: 0,
+              newName: "",
+              newCategory: u.category,
+            };
           })
         );
       });
@@ -79,12 +89,16 @@ const BalanceAdmin = () => {
 
   const handleChangeConfirm = async () => {
     const filteredUsers = users.filter(
-      (u) => u.change !== 0 || u.newName !== ""
+      (u) =>
+        u.change !== 0 ||
+        u.newName !== "" ||
+        u.newCategory !== u.account.category
     );
     const updatedChangeUsers: UpdateAccount[] = filteredUsers.map((u) => ({
       ...u.account,
       balance: u.account.balance! + u.change * 100,
       newName: u.newName,
+      newCategory: u.newCategory,
     }));
 
     const requestOptions = {
@@ -122,11 +136,46 @@ const BalanceAdmin = () => {
     fetchUsers();
   }, [fetchUsers]);
 
+  const debouncedFilterChange = useMemo(
+    () =>
+      debounce((filter: string) => {
+        setUserFilter(filter);
+      }, 300),
+    []
+  );
+
+  const filteredUsers = useMemo(() => {
+    let filtered = [...users];
+    if (showClosed) {
+      filtered = filtered.filter((u) => u.account.closed);
+    }
+    if (userFilter !== null && userFilter.length >= 3) {
+      filtered = filtered.filter((u) =>
+        u.account.username.toLowerCase().includes(userFilter.toLowerCase())
+      );
+    }
+    return filtered;
+  }, [userFilter, users, showClosed]);
+
   return (
     <div className="container container--balance">
       <NewUser fetchUsers={fetchUsers} />
 
-      {users.map((u) => (
+      <div className="filter">
+        <TextField
+          label="Filter name"
+          onChange={({ target }) => debouncedFilterChange(target.value)}
+        />
+        <Button
+          className={showClosed ? "closed" : ""}
+          variant="contained"
+          onClick={() => setShowClosed(!showClosed)}
+        >
+          Closed
+        </Button>
+      </div>
+
+      {filteredUsers.map((u) => (
         <UpdateBalance
           key={u.account.username}
           user={u}
@@ -134,13 +183,14 @@ const BalanceAdmin = () => {
           changePiikkiStatus={changePiikkiStatus}
           handleNameChange={handleNameChange}
           handleDelete={handleDelete}
+          handleCategoryChange={handleCategoryChange}
         />
       ))}
 
       <div className="balance-footer">
         <div className="container">
           <p>
-            Piikin tilanne: <strong>{balanceSum.toFixed(2)}€</strong>
+            Piikin tilanne: <strong>{balanceSum.toFixed(2)}</strong>
           </p>
 
           <Button variant="contained" onClick={handleChangeConfirm}>

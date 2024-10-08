@@ -42,10 +42,13 @@ interface Admin {
 }
 
 interface Log {
-    username: string,
+    id: number,
     product_name: string,
     transaction_date: Date,
-    amount: number
+    amount: number,
+    user_id: number,
+    sum: number,
+    username: string
 }
 
 export enum Color {

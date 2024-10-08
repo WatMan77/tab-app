@@ -11,9 +11,9 @@ beforeAll(async () => {
 
     await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
 
-    for (const a of accounts) {
-        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
-    }
+    // for (const a of accounts) {
+    //     await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+    // }
 
     for (const p of products) {
         await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
@@ -32,11 +32,13 @@ afterAll(() => {
 describe("Transaction", () => {
     test("correct transaction for single user", async () => {
 
-        const account = accounts[0]
+        // Add users first
+        let account: Account = accounts[0]
+        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product: product, amount: 1 }],
-            users: [account]
+            users: [{ ...account, id: res.id }]
         }
         await request(app)
             .post("/api/transaction")
@@ -70,9 +72,12 @@ describe("Transaction", () => {
     test("many users, many different products", async () => {
 
         // Reset data for this database
+        let ids: Map<string, number> = new Map();
         await db.query("DELETE FROM account;")
         for (const a of accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+            const moi = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [a.username, a.category, a.balance!.toString()])
+            const user: { id: number, username: string } = moi.rows[0];
+            ids.set(user.username, user.id);
         }
 
         const product1 = { product: products[0], amount: 1 }
@@ -80,7 +85,9 @@ describe("Transaction", () => {
         const product3 = { product: products[2], amount: 5 }
         const transaction: Transaction = {
             items: [product1, product2, product3],
-            users: accounts
+            users: accounts.map((a) => {
+                return { ...a, id: ids.get(a.username) }
+            })
         }
 
         await request(app)

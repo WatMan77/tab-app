@@ -7,10 +7,10 @@ const Other: React.FC<{
     <>
       <TextField
         label="Muu määrä"
-        placeholder="0"   
+        placeholder="0"
         color="secondary"
         InputProps={{
-          startAdornment: <InputAdornment position="start">€</InputAdornment>,
+          startAdornment: <InputAdornment position="start"></InputAdornment>,
         }}
         type="number"
         onChange={({ target }) => {

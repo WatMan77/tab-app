@@ -19,7 +19,7 @@ body {
   flex-grow: 1;
   margin: 64px auto 0 !important;
   height: var(--content-height);
-  overflow-y: scroll;
+  overflow-y: hidden;
 
   h2 {
     font-size: 1.25rem !important;

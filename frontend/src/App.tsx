@@ -64,12 +64,19 @@ const App = () => {
   };
 
   useEffect(() => {
+    // Disable scrolling for this page;
+    if (process.env.NODE_ENV !== "dev") {
+      document.body.style.overflow = "hidden";
+    }
     socket.on("accounts-updated", () => {
       fetchAccounts();
     });
 
     return () => {
       socket.off("accounts-updated");
+      if (process.env.NODE_ENV !== "dev") {
+        document.body.style.overflow = "auto";
+      }
     };
   }, []);
   useEffect(() => {

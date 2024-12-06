@@ -16,6 +16,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import PriceList from "./components/PricesList.tsx";
+import Changes from "./components/Changes.tsx";
 
 const router = createBrowserRouter([
   {
@@ -69,6 +70,15 @@ const router = createBrowserRouter([
       <>
         <NavBar />
         <PriceList />
+      </>
+    ),
+  },
+  {
+    path: "/changes",
+    element: (
+      <>
+        <NavBar />
+        <Changes />
       </>
     ),
   },

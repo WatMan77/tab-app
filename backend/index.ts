@@ -11,6 +11,7 @@ import { adminRouter } from "./src/routes/admin"
 import { loginRouter } from "./src/routes/login"
 import { balanceRouter } from "./src/routes/balance"
 import { closeRouter } from './src/routes/closed';
+import { changeRouter } from './src/routes/change';
 import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"
@@ -40,6 +41,7 @@ app.use("/api/transaction", transactionRouter)
 app.use("/api/admin", adminRouter)
 app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
+app.use("/api/changes", changeRouter)
 
 if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
     app.delete("/api/reset", async (_req, res) => {

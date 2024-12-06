@@ -41,6 +41,9 @@ const NavBar = () => {
       <MenuItem key="transactions" onClick={() => navigate("/transactions")}>
         Tapahtumat
       </MenuItem>
+      <MenuItem key="changes" onClick={() => navigate("/changes")}>
+        Muutokset
+      </MenuItem>
       <MenuItem key="pricelist" onClick={() => navigate("/pricelist")}>
         Viivat
       </MenuItem>

@@ -51,6 +51,12 @@ interface Log {
     username: string
 }
 
+interface BalanceChange {
+    username: string,
+    change_date: Date,
+    change: number
+}
+
 export enum Color {
     WHITE = "WHITE",
     RED = "RED",
@@ -63,4 +69,4 @@ export enum Color {
 }
 
 export { UserType }
-export type { User, Product, Account, Admin, UpdateAccount, Log }
+export type { User, Product, Account, Admin, UpdateAccount, Log, BalanceChange }

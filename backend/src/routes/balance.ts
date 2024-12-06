@@ -25,6 +25,10 @@ router.put("/", async (req, res) => {
         confirmedAccounts.forEach(async a => {
             await db.query("UPDATE account SET balance=$1, category=$2 WHERE id=$3;", [a.balance!.toFixed(0), a.newCategory, a.id.toFixed(0)])
 
+            // Insert the change into admin_change
+            await db.query("INSERT INTO admin_change (change, id) VALUES ($1, $2)", [a.change!.toFixed(0), a.id.toString()]);
+            console.log("INSERTING INTO admin_change")
+
             // You must change the name the last
             if (a.newName && a.newName.trim() !== "") {
                 await db.query("UPDATE account SET username=$1 WHERE id=$2", [a.newName, a.id.toFixed(0)])

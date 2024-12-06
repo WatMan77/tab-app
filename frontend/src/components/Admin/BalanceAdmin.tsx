@@ -99,6 +99,7 @@ const BalanceAdmin = () => {
       balance: u.account.balance! + u.change * 100,
       newName: u.newName,
       newCategory: u.newCategory,
+      change: u.change * 100,
     }));
 
     const requestOptions = {

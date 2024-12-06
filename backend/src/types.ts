@@ -21,7 +21,8 @@ interface UpdateAccount {
     recent: Date | null,
     newName: string,
     id: number,
-    newCategory: UserType
+    newCategory: UserType,
+    change: number
 }
 
 interface Product {

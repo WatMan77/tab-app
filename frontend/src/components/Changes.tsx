@@ -92,7 +92,7 @@ const Changes = () => {
             {changes.map((change) => (
               <tr key={change.username + " " + change.change_date}>
                 <td>{change.username}</td>
-                <td>{(change.change / 100).toFixed(0)}</td>
+                <td>{(change.change / 100).toFixed(2)}</td>
                 <td>
                   {new Date(change.change_date).toLocaleString("fi-FI", {
                     year: "numeric",

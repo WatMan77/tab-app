@@ -34,12 +34,12 @@ jobs:
       # run any `bun` or `bunx` command
       - run: bun install
         working-directory: ./backend
-      - name: Setup tables
-        working-directory: ./backend
-        run: psql "postgresql://postgres:test@localhost/test-db" -f migrations/1_create_basics.sql
-      - name: Run knex migrations
-        working-directory: ./backend
-        run: bun install knex && bunx knex migrate:latest
+      #- name: Setup tables
+      #  working-directory: ./backend
+      #  run: psql "postgresql://postgres:test@localhost/test-db" -f migrations/1_create_basics.sql
+      #- name: Run knex migrations
+      ##  working-directory: ./backend
+      # run: bun install knex && bunx knex migrate:latest
       - name: Run tests (attempt ${{ matrix.attempt }})
         run: bun run test
         working-directory: ./backend

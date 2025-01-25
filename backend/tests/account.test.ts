@@ -6,6 +6,8 @@ import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { type Account, UserType } from "../src/types"
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 beforeEach(async () => {
     await initDb()
     await clearDatabase()
@@ -21,6 +23,8 @@ beforeEach(async () => {
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+
+    await delay(2000)
 })
 
 afterAll(() => {

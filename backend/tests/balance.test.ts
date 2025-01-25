@@ -4,7 +4,7 @@ import app from "../index"
 import { db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
-import { type Account } from "../src/types"
+import { UserType, type Account } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
@@ -12,7 +12,8 @@ beforeAll(async () => {
     await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
 
     for (const a of accounts) {
-        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+        const id = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING id", [a.username, a.category, a.balance!.toString()]);
+        a.id = id.rows[0].id;
     }
 
     for (const p of products) {
@@ -43,7 +44,7 @@ describe("Balance", () => {
         await request(app)
             .put("/api/balance")
             .set("Authorization", "Bearer " + token)
-            .send({ accounts: [{ ...accounts[0], balance: accounts[0].balance! - 100 }] })
+            .send({ accounts: [{ ...accounts[0], balance: accounts[0].balance! - 100, change: -100, newCategory: accounts[0].category }] })
             .expect(201)
 
         // Check that the balance in the database is correct
@@ -52,9 +53,9 @@ describe("Balance", () => {
             .expect(200)
 
         const expectedAccount = { ...accounts[0], balance: accounts[0].balance! - 100 };
+        delete expectedAccount.id;
 
         const actualAccounts = response.body.map(({ id, ...rest }: { id?: number }) => rest);
-
         expect(actualAccounts).toEqual(expect.arrayContaining([expectedAccount]))
     })
 
@@ -62,10 +63,11 @@ describe("Balance", () => {
         // Reset the accounts just for this test
         await db.query("DELETE FROM account;");
         for (const a of accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+            const id = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING ID", [a.username, a.category, a.balance!.toString()]);
+            a.id = id.rows[0].id;
         }
 
-        const updatedBalances: Account[] = accounts.map(a => ({ ...a, balance: a.balance! - 100 }))
+        const updatedBalances: Account[] = accounts.map(a => ({ ...a, balance: a.balance! - 100, change: -100, newCategory: a.category }))
 
         await request(app)
             .put("/api/balance")
@@ -73,16 +75,29 @@ describe("Balance", () => {
             .send({ accounts: updatedBalances })
             .expect(201)
 
-        const response = await request(app)
-            .get("/api/account/transactions")
-            .expect(200)
         const updatedAccount = { ...accounts[0], balance: accounts[0].balance! - 100 };
+        delete updatedAccount.id
+
+        const response = await request(app)
+            .get("/api/account")
+            .expect(200)
 
         // Map the response body to remove IDs for comparison
-        const actualAccounts = response.body.map(({ id, ...rest }: { id?: number }) => rest);
+        const actualAccounts = response.body.map(({ username, category, balance, closed }: { username: string, category: UserType, balance: number, closed: boolean }) => ({
+            username,
+            category,
+            balance,
+            closed
+        }));
+        const expectedAccounts = updatedBalances.map(({ username, category, balance, closed }) => ({
+            username,
+            category,
+            balance,
+            closed
+        }));
 
         // Check if the actual accounts include the expected updated account
-        expect(actualAccounts).toEqual(expect.arrayContaining([updatedAccount]));
+        expect(actualAccounts).toEqual(expect.arrayContaining(expectedAccounts));
 
     })
 })

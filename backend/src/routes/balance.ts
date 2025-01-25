@@ -2,38 +2,27 @@ import express from "express"
 import { db } from "../database"
 import type { UpdateAccount } from "../types";
 import { toNewAccount } from "../utils";
-import jwt from "jsonwebtoken"
+import { validateToken } from "../middlewares";
 
 const router = express.Router();
 
-router.put("/", async (req, res) => {
-
+router.put("/", validateToken, async (req, res) => {
 
     const { accounts } = req.body
     try {
         const confirmedAccounts: UpdateAccount[] = accounts.map((o: unknown) => toNewAccount(o))
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
-        if (!decodedToken) {
-            return res.status(401).json({ error: 'token invalid' })
-        }
 
         confirmedAccounts.forEach(async a => {
-            await db.query("UPDATE account SET balance=$1, category=$2 WHERE id=$3;", [a.balance!.toFixed(0), a.newCategory, a.id.toFixed(0)])
+            await db.query("UPDATE account SET balance=$1, category=$2 WHERE id=$3;", [a.balance!.toFixed(0), a.newCategory, a.id.toString()])
 
             // Insert the change into admin_change
             await db.query("INSERT INTO admin_change (change, id) VALUES ($1, $2)", [a.change!.toFixed(0), a.id.toString()]);
-            console.log("INSERTING INTO admin_change")
 
             // You must change the name the last
             if (a.newName && a.newName.trim() !== "") {
                 await db.query("UPDATE account SET username=$1 WHERE id=$2", [a.newName, a.id.toFixed(0)])
             }
-        })
+        });
         res.status(201).send("OK")
     } catch (e) {
         console.log(e)

@@ -14,10 +14,10 @@ import { closeRouter } from './src/routes/closed';
 import { changeRouter } from './src/routes/change';
 import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
 import cors from "cors"
 import './src/cron-jobs';
 import { Server } from 'socket.io';
+import { validateToken } from './src/middlewares';
 
 const app = express();
 const server = require('http').createServer(app);
@@ -79,23 +79,10 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
 
 
 // New user has been added
-app.post("/api/newaccount", async (req, res) => {
+app.post("/api/newaccount", validateToken, async (req, res) => {
     try {
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env['SECRET']!)
-        if (!decodedToken) {
-            console.log("Token invalid!")
-            return res.status(401).json({ error: 'token invalid' })
-        }
-        // Token is ok. Now create the new user.
         const account: Account = toNewAccount(req.body)
         // There is a chance the amount has a decimal at the very end
-
         const balance = Math.floor(account.balance!)
 
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])

@@ -6,8 +6,6 @@ import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { type Account, UserType } from "../src/types"
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 beforeEach(async () => {
     await initDb()
     await clearDatabase()
@@ -24,7 +22,6 @@ beforeEach(async () => {
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
 
-    await delay(2000)
 })
 
 afterAll(() => {
@@ -38,7 +35,13 @@ describe("Accounts", () => {
             .get("/api/account/transactions")
         const accs = response.body.map(({ id, ...rest }: (any)) => rest)
         accs.sort((a: any, b: any) => a.username.localeCompare(b.username));
-        const accCopy = [...accounts];
+        const accCopy = [...accounts].map(({ balance, category, closed, username, recent }) => ({
+            balance,
+            category,
+            closed,
+            recent,
+            username
+        }))
         accCopy.sort((a, b) => a.username.localeCompare(b.username));
         expect(accs).toEqual(accCopy)
 

@@ -9,7 +9,7 @@ import { UserType, type Account } from "../src/types"
 beforeAll(async () => {
     await initDb()
 
-    await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
+    await db.query("DELETE FROM admin_change; DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
 
     for (const a of accounts) {
         const id = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING id", [a.username, a.category, a.balance!.toString()]);
@@ -61,7 +61,7 @@ describe("Balance", () => {
 
     test("change balance for more than one user at a time", async () => {
         // Reset the accounts just for this test
-        await db.query("DELETE FROM account;");
+        await db.query("DELETE FROM admin_change; DELETE FROM account;");
         for (const a of accounts) {
             const id = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING ID", [a.username, a.category, a.balance!.toString()]);
             a.id = id.rows[0].id;

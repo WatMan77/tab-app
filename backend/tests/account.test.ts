@@ -9,7 +9,7 @@ import { type Account, UserType } from "../src/types"
 beforeAll(async () => {
     await initDb()
 
-    await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
+    await db.query("DELETE FROM admin_change; DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
 
     for (const a of accounts) {
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])

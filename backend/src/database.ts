@@ -1,5 +1,8 @@
 import pg from "pg";
 import { migrate } from 'postgres-migrations';
+import knexConfig from "../knexfile";
+import Knex from "knex";
+const knex = Knex(knexConfig.development);
 
 const test_variables = {
     user: "postgres",
@@ -26,6 +29,7 @@ const pool = new pg.Pool(dbConfig)
 const initDb = async () => {
     try {
         await migrate(dbConfig, './migrations');
+        await knex.migrate.latest();
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)

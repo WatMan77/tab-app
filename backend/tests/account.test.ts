@@ -1,4 +1,4 @@
-import { describe, test, expect, afterAll, beforeAll } from "bun:test"
+import { describe, test, expect, afterAll, beforeEach } from "bun:test"
 import request from "supertest"
 import app from "../index"
 import { clearDatabase, db, initDb } from "../src/database"
@@ -6,7 +6,7 @@ import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { type Account, UserType } from "../src/types"
 
-beforeAll(async () => {
+beforeEach(async () => {
     await initDb()
     await clearDatabase()
 

@@ -12,7 +12,7 @@ router.put("/", validateToken, async (req, res) => {
     try {
         const confirmedAccounts: UpdateAccount[] = accounts.map((o: unknown) => toNewAccount(o))
 
-        confirmedAccounts.forEach(async a => {
+        for (const a of confirmedAccounts) {
             await db.query("UPDATE account SET balance=$1, category=$2 WHERE id=$3;", [a.balance!.toFixed(0), a.newCategory, a.id.toString()])
 
             // Insert the change into admin_change
@@ -22,7 +22,7 @@ router.put("/", validateToken, async (req, res) => {
             if (a.newName && a.newName.trim() !== "") {
                 await db.query("UPDATE account SET username=$1 WHERE id=$2", [a.newName, a.id.toFixed(0)])
             }
-        });
+        };
         res.status(201).send("OK")
     } catch (e) {
         console.log(e)

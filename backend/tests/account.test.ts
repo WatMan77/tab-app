@@ -33,7 +33,10 @@ describe("Accounts", () => {
         const response = await request(app)
             .get("/api/account/transactions")
         const accs = response.body.map(({ id, ...rest }: (any)) => rest)
-        expect(accs).toEqual(expect.arrayContaining(accounts))
+        accs.sort((a: any, b: any) => a.username.localeCompare(b.username));
+        const accCopy = [...accounts];
+        accCopy.sort((a, b) => a.username.localeCompare(b.username));
+        expect(accs).toEqual(accCopy)
 
     })
 

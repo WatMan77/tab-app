@@ -26,6 +26,16 @@ const dbConfig = Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev"
     : prod_variables
 
 const pool = new pg.Pool(dbConfig)
+
+const clearDatabase = async () => {
+    if (Bun.env.NODE_ENV === "prod") {
+        throw Error(`NODE_ENV is set to ${Bun.env.NODE_ENV}. Clearing database not allowed`)
+    }
+    const tables = ["admin_change", "account", "transaction", "admin", "product"];
+    const query = tables.map((table) => `TRUNCATE ${table} RESTART IDENTITY CASCADE`).join("; ");
+    await pool.query(query);
+}
+
 const initDb = async () => {
     try {
         await migrate(dbConfig, './migrations');
@@ -41,4 +51,4 @@ if (Bun.env.NODE_ENV === "dev") {
     console.log("DB initialized")
 }
 
-export { pool as db, initDb }
+export { pool as db, initDb, clearDatabase }

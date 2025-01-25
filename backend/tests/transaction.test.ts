@@ -1,19 +1,18 @@
-import { describe, test, expect, afterAll, beforeAll } from "bun:test"
+import { describe, test, expect, afterAll, beforeAll, beforeEach } from "bun:test"
 import request from "supertest"
 import app from "../index"
-import { db, initDb } from "../src/database"
+import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Transaction, Log, Account } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
+    await clearDatabase()
 
-    await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
-
-    // for (const a of accounts) {
-    //     await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
-    // }
+    for (const a of accounts) {
+        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+    }
 
     for (const p of products) {
         await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
@@ -22,6 +21,9 @@ beforeAll(async () => {
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+})
+beforeEach(async () => {
+    await clearDatabase()
 })
 
 afterAll(() => {

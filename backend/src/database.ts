@@ -4,31 +4,19 @@ import knexConfig from "../knexfile";
 import Knex from "knex";
 const knex = Knex(knexConfig.development);
 
-const test_variables = {
-    user: "postgres",
-    password: "test",
-    host: "localhost",
-    port: 5432,
-    database: "test-db"
-}
-
-
-const prod_variables = {
+const dbConfig = {
     user: process.env["POSTGRES_USERNAME"]!,
     password: process.env["POSTGRES_PASSWORD"]!,
     host: process.env["HOST"] ?? "localhost",
     port: 5432,
     database: process.env["POSTGRES_DB"]!
 }
-
-const dbConfig = Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev"
-    ? test_variables
-    : prod_variables
-
+console.log("db Config?")
+console.log(dbConfig)
 const pool = new pg.Pool(dbConfig)
 
 const clearDatabase = async () => {
-    if (Bun.env.NODE_ENV === "prod") {
+    if (!(Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development")) {
         throw Error(`NODE_ENV is set to ${Bun.env.NODE_ENV}. Clearing database not allowed`)
     }
     const tables = ["admin_change", "account", "transaction", "admin", "product"];
@@ -46,7 +34,7 @@ const initDb = async () => {
     }
 }
 
-if (Bun.env.NODE_ENV === "dev") {
+if (Bun.env.NODE_ENV === "development") {
     await initDb()
     console.log("DB initialized")
 }

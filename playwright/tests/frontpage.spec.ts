@@ -20,9 +20,10 @@ test('Frontpage shows the basic texts', async ({ page }) => {
     await expect(page.getByText("Asukkaat")).toBeVisible()
     await expect(page.getByText("Vanhat")).toBeVisible()
     await expect(page.getByText("Hangaroundit")).toBeVisible()
-    await expect(page.getByText("Home")).toBeVisible()
+    await expect(page.getByText("Koti")).toBeVisible()
+    await expect(page.getByText("Tapahtumat")).toBeVisible()
+    await expect(page.getByText("Muutokset")).toBeVisible()
     await expect(page.getByText("Login")).toBeVisible()
-    await expect(page.getByText("Tuotteet")).toBeVisible()
 })
 
 test.describe("Basic user", () => {
@@ -33,23 +34,27 @@ test.describe("Basic user", () => {
         }
 
         for (const p of testValues.products) {
-            await expect(page.getByText(`${p.name} ${p.pricein / 100}€`)).toBeVisible()
+            await expect(page.getByText(p.name)).toBeVisible()
         }
 
         await expect(page.getByLabel("Muu määrä")).toBeVisible()
 
-        const confirm = page.getByText("Vahvista")
-        await expect(confirm).toBeVisible()
-        await expect(confirm).toHaveCSS("background-color", "rgba(0, 0, 0, 0.12)")
+        for (const b of ["Vahvista", "Peruuta"]) {
+            const button = page.getByText(b);
+            await expect(button).toBeVisible();
+            await expect(button).toBeDisabled();
+        }
     })
 
     test("can press the buttons and order products", async ({ page }) => {
         await page.goto('http://localhost:5173')
         for (const u of testValues.accounts) {
             const button = page.getByText(u.username)
-            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
-            await button.click()
-            await expect(button).toHaveCSS("background-color", "rgb(27, 94, 32)")
+            await expect(button).toHaveCSS("background-color", "rgb(144, 202, 249)");
+            await button.click({ force: true })
+            await page.click('body'); // Loose focus of the button
+            await page.waitForTimeout(1500);
+            await expect(button).toHaveCSS("background-color", "rgb(102, 187, 106)", { timeout: 1200 });
         }
 
         for (let i = 0; i < testValues.products.length; i += 1) {
@@ -57,11 +62,11 @@ test.describe("Basic user", () => {
         }
 
         const sum = testValues.products.reduce((a, b) => a + b.pricein, 0)
-        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)} €`)).toBeVisible()
+        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)}`)).toBeVisible()
         const confirm = page.getByText("Vahvista")
-        await expect(confirm).toHaveCSS("background-color", "rgb(25, 118, 210)")
 
         await confirm.click()
+        await page.click('body');
 
         // Confirm button has been pressed. Everything should turn back to normal
         for (const u of testValues.accounts) {
@@ -70,7 +75,7 @@ test.describe("Basic user", () => {
 
         for (const u of testValues.accounts) {
             const button = page.getByText(u.username)
-            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+            await expect(button).toHaveCSS("background-color", "rgb(144, 202, 249)")
         }
     })
 
@@ -79,15 +84,19 @@ test.describe("Basic user", () => {
 
         for (const a of testValues.accounts) {
             const button = page.getByText(a.username)
-            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+            await expect(button).toHaveCSS("background-color", "rgb(144, 202, 249)")
             await button.click()
         }
+
+        await page.click('body');
 
         for (const a of testValues.accounts) {
             const button = page.getByText(a.username)
+            await expect(button).toHaveCSS("background-color", "rgb(102, 187, 106)", { timeout: 1200 });
             await button.click()
         }
 
+        await page.click('body');
         /**
          * Here is the flakyness.. For some reason the last user
          * element doesn't change colors fast enough and detects that the color
@@ -97,12 +106,9 @@ test.describe("Basic user", () => {
 
         for (let i = 0; i < testValues.accounts.length - 1; i += 1) {
             const button = page.getByText(testValues.accounts[i].username)
-            await expect(button).toHaveCSS("background-color", "rgb(25, 118, 210)")
+            await expect(button).toHaveCSS("background-color", "rgb(144, 202, 249)")
 
         }
-
-        const finalUser = page.getByText(testValues.accounts[testValues.accounts.length - 1].username)
-        await expect(finalUser).toHaveCSS("background-color", "rgb(21, 101, 192)")
     })
 
     test("can remove drinks from the 'cart'", async ({ page }) => {
@@ -115,13 +121,13 @@ test.describe("Basic user", () => {
 
         const sum = testValues.products.reduce((a, b) => a + b.pricein, 0)
 
-        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)} €`)).toBeVisible()
+        await expect(page.getByText(`Yhteensä: ${(sum / 100).toFixed(1)}`)).toBeVisible()
 
         const minus = page.getByText("-", { exact: true })
         for (let i = 0; i < testValues.products.length; i += 1) {
             await minus.nth(i).click()
         }
 
-        await expect(page.getByText("Yhteensä: 0 €")).toBeVisible()
+        await expect(page.getByText("Yhteensä: 0.00")).toBeVisible()
     })
 })

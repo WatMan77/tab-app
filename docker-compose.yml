@@ -28,6 +28,7 @@ services:
             - 3000:3000
         environment:
             - HOST=db
+            - NODE_ENV=production
 
     frontend:
         build: ./frontend

@@ -1,7 +1,7 @@
 import express from 'express';
 import "express-async-errors"
 import 'dotenv/config';
-import { db } from "./src/database";
+import { db, clearDatabase, initDb } from "./src/database";
 import { toNewAccount } from "./src/utils";
 import type { Account } from "./src/types";
 import { accountRouter } from "./src/routes/account"
@@ -43,10 +43,11 @@ app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
 app.use("/api/changes", changeRouter)
 
-if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
+if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
     app.delete("/api/reset", async (_req, res) => {
         try {
-            await db.query("TRUNCATE transaction, account, product, transaction, admin;")
+            await initDb();
+            await clearDatabase();
             res.status(204).send("OK")
         } catch (e) {
             console.log(e)
@@ -66,11 +67,11 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
     app.get("/api/testdb", async (_req, res) => {
 
         for (const a of testValues.accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toFixed(0)])
+            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
         }
 
         for (const p of testValues.products) {
-            await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toFixed(0), p.priceout.toFixed(0)])
+            await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
         }
 
         res.status(201).send("OK")

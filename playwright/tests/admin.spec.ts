@@ -123,16 +123,6 @@ test.describe("Admin can", () => {
         for (const u of users) {
             expect(tableTexts).toEqual(expect.arrayContaining([u.name, "10.00"]))
         }
-
-
-        /*for (const row of rows) {
-            const columns = await row.locator('td').allTextContents();
-            for (const u of users) {
-                expect(columns[0]).toContain(u.name);
-                expect(columns[1]).toContain(10)
-            }
-        }*/
-
     })
 
     test("Add new products, edit and delete them", async ({ page }) => {
@@ -213,5 +203,24 @@ test.describe("Admin can", () => {
 
             await expect(page.getByText(user.username)).toBeEnabled();
         }
+    })
+
+    test("Use filter in 'Balances'", async ({ page, request }) => {
+        await request.delete("http://localhost:3000/api/reset")
+        await request.get("http://localhost:3000/api/testdb")
+        await request.get("http://localhost:3000/api/testadmin")
+        await page.goto(baseUrl);
+        await login(page);
+
+        await page.getByText("Balances").click()
+
+        expect(await page.locator('.account').count()).toBe(testvalues.accounts.length)
+
+        for (const u of testvalues.accounts) {
+            await page.getByRole('textbox').nth(2).fill(u.username)
+            await page.waitForTimeout(1000);
+            expect(await page.locator('.account').count()).toBe(1)
+        }
+
     })
 })

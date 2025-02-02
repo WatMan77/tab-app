@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
-
+import * as testvalues from "../../backend/tests/db_values";
 const baseUrl = "http://localhost:5173"
+
 
 const admin = "admin"
 const password = "password123"
@@ -109,6 +110,29 @@ test.describe("Admin can", () => {
             await page.getByText(users[i].name).click(); // Open user info
             await expect(page.getByText(`${users[i].name} ${parseFloat(users[i].amount) + 10}`)).toBeVisible()
         }
+
+        // Check that the change is visible in "Muutokset" page
+        await page.getByText("Muutokset").click();
+
+        const table = page.locator('table');
+
+        const firstRow = await table.locator('tr').first().locator('td, th').allTextContents();
+        expect(firstRow).toEqual(["Käyttäjä", "Määrä", "Päivämäärä"]);
+
+        const tableTexts = await table.locator('tr td').allTextContents();
+        for (const u of users) {
+            expect(tableTexts).toEqual(expect.arrayContaining([u.name, "10.00"]))
+        }
+
+
+        /*for (const row of rows) {
+            const columns = await row.locator('td').allTextContents();
+            for (const u of users) {
+                expect(columns[0]).toContain(u.name);
+                expect(columns[1]).toContain(10)
+            }
+        }*/
+
     })
 
     test("Add new products, edit and delete them", async ({ page }) => {
@@ -164,5 +188,30 @@ test.describe("Admin can", () => {
         }
 
         expect(await page.getByTestId("DeleteIcon").count()).toBe(0)
+    })
+
+    test("Close and open piikki for a user", async ({ page, request }) => {
+        await request.delete("http://localhost:3000/api/reset")
+        await request.get("http://localhost:3000/api/testdb")
+        await request.get("http://localhost:3000/api/testadmin")
+        await page.goto(baseUrl);
+        await login(page);
+
+        for (const user of testvalues.accounts) {
+            await page.getByText("Balances").click();
+            await page.getByText(user.username).click();
+            await page.getByText('Sulje piikki', { exact: true }).filter({ has: page.locator(':visible') }).click();
+            await page.getByText("Koti").click();
+
+            await expect(page.getByText(user.username)).toBeDisabled();
+
+            await page.getByText("Balances").click();
+            await page.getByText(user.username).click();
+            await page.getByText("AVAA PIIKKI").click();
+
+            await page.getByText("Koti").click();
+
+            await expect(page.getByText(user.username)).toBeEnabled();
+        }
     })
 })

@@ -111,7 +111,7 @@ test.describe("Admin can", () => {
         }
     })
 
-    test("Add new products and edit them", async ({ page }) => {
+    test("Add new products, edit and delete them", async ({ page }) => {
         await page.goto(baseUrl)
         await login(page)
 
@@ -121,8 +121,22 @@ test.describe("Admin can", () => {
                 pricein: "1",
                 priceout: "1.5",
                 color: "WHITE"
+            },
+            {
+                name: "Lonkero",
+                pricein: "1.4",
+                priceout: "2",
+                color: "BLUE"
+            },
+            {
+                name: "Kokis",
+                pricein: "0.50",
+                priceout: "1.25",
+                color: "RED"
             }
         ]
+
+        products.sort((a, b) => a.name.localeCompare(b.name))
 
         await page.getByText("Products").click()
         for (let i = 0; i < products.length; i += 1) {
@@ -136,9 +150,19 @@ test.describe("Admin can", () => {
 
             // Skip text inputs of new product: 1
             // Skip new product price inputs offset: 2
-            await expect(page.locator('input.MuiInputBase-input').nth(1 + i * 3)).toHaveValue(p.name)
-            await expect(page.locator('input[inputmode="decimal"]').nth(2 + i * 3)).toHaveValue(parseFloat(p.pricein).toFixed(2))
-            await expect(page.locator('input[inputmode="decimal"]').nth(3 + i * 3)).toHaveValue(parseFloat(p.priceout).toFixed(2))
+            await expect(page.locator('input.MuiInputBase-input').nth(1 + i)).toHaveValue(p.name)
+            const decimalInputs = page.locator('input[inputmode="decimal"]')
+            await expect(decimalInputs.nth(2 + i * 2)).toHaveValue(parseFloat(p.pricein).toFixed(2))
+            await expect(decimalInputs.nth(3 + i * 2)).toHaveValue(parseFloat(p.priceout).toFixed(2))
         }
+
+        // Delete the items
+
+        for (let i = 0; i < products.length; i += 1) {
+            await page.locator('[data-testid="DeleteIcon"]').first().click();
+            await page.getByText("Kyllä").click();
+        }
+
+        expect(await page.getByTestId("DeleteIcon").count()).toBe(0)
     })
 })

@@ -68,6 +68,10 @@ jobs:
         env:
           CI: true
           SECRET: ${{ secrets.SECRET }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          HOST: ${{ secrets.HOST }}
 
       - run: bun install && bun run dev &
         working-directory: ./frontend

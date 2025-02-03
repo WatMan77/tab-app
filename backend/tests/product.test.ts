@@ -1,7 +1,7 @@
 import { describe, test, expect, afterAll, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
-import { db, initDb } from "../src/database"
+import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Product } from "../src/types"
@@ -9,8 +9,7 @@ import { Color } from "../src/types"
 
 beforeAll(async () => {
     await initDb()
-
-    await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
+    await clearDatabase()
 
     for (const a of accounts) {
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])

@@ -1,40 +1,42 @@
 import pg from "pg";
 import { migrate } from 'postgres-migrations';
+import knexConfig from "../knexfile";
+import Knex from "knex";
+const knex = Knex(knexConfig.development);
 
-const test_variables = {
-    user: "postgres",
-    password: "test",
-    host: "localhost",
+const dbConfig = {
+    user: Bun.env["POSTGRES_USER"]!,
+    password: Bun.env["POSTGRES_PASSWORD"]!,
+    host: Bun.env["HOST"] ?? "localhost",
     port: 5432,
-    database: "test-db"
+    database: Bun.env["POSTGRES_DB"]!
 }
-
-
-const prod_variables = {
-    user: process.env["POSTGRES_USERNAME"]!,
-    password: process.env["POSTGRES_PASSWORD"]!,
-    host: process.env["HOST"] ?? "localhost",
-    port: 5432,
-    database: process.env["POSTGRES_DB"]!
-}
-
-const dbConfig = Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev"
-    ? test_variables
-    : prod_variables
-
+console.log("db Config?")
+console.log(dbConfig)
 const pool = new pg.Pool(dbConfig)
+
+const clearDatabase = async () => {
+    if (!(Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development")) {
+        throw Error(`NODE_ENV is set to ${Bun.env.NODE_ENV}. Clearing database not allowed`)
+    }
+    const tables = ["admin_change", "account", "transaction", "admin", "product"];
+    const query = tables.map((table) => `TRUNCATE ${table} RESTART IDENTITY CASCADE`).join("; ");
+    await pool.query(query);
+}
+
 const initDb = async () => {
     try {
         await migrate(dbConfig, './migrations');
+        await knex.migrate.latest();
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)
     }
 }
 
-if (Bun.env.NODE_ENV === "dev") {
+if (Bun.env.NODE_ENV === "development") {
     await initDb()
     console.log("DB initialized")
 }
 
-export { pool as db, initDb }
+export { pool as db, initDb, clearDatabase }

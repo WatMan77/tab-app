@@ -26,7 +26,8 @@ interface UpdateAccount {
     balance?: number,
     closed: boolean
     recent: Date | null,
-    newName: string
+    newName: string,
+    change: number
 }
 
 interface Product {

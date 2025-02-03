@@ -1,15 +1,14 @@
-import { describe, test, expect, afterAll, beforeAll } from "bun:test"
+import { describe, test, expect, afterAll, beforeEach } from "bun:test"
 import request from "supertest"
 import app from "../index"
-import { db, initDb } from "../src/database"
+import { clearDatabase, db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { type Account, UserType } from "../src/types"
 
-beforeAll(async () => {
+beforeEach(async () => {
     await initDb()
-
-    await db.query("DELETE FROM account; DELETE FROM product; DELETE FROM transaction; DELETE FROM admin;")
+    await clearDatabase()
 
     for (const a of accounts) {
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
@@ -22,6 +21,7 @@ beforeAll(async () => {
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+
 })
 
 afterAll(() => {
@@ -31,11 +31,19 @@ afterAll(() => {
 
 describe("Accounts", () => {
     test("get all users", async () => {
-        console.log("GETTING ALL ACCOUNS!")
         const response = await request(app)
             .get("/api/account/transactions")
         const accs = response.body.map(({ id, ...rest }: (any)) => rest)
-        expect(accs).toEqual(expect.arrayContaining(accounts))
+        accs.sort((a: any, b: any) => a.username.localeCompare(b.username));
+        const accCopy = [...accounts].map(({ balance, category, closed, username, recent }) => ({
+            balance,
+            category,
+            closed,
+            recent,
+            username
+        }))
+        accCopy.sort((a, b) => a.username.localeCompare(b.username));
+        expect(accs).toEqual(accCopy)
 
     })
 

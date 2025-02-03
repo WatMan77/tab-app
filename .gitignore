@@ -25,9 +25,12 @@ dist-ssr
 *.sw?
 backup_*.sql
 
-.env
+.env*
 
 .package-lock.json
 
+
+# playwright unnecessary files
+playwright/test-results/*
 
 virheet.txt

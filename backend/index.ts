@@ -1,7 +1,7 @@
 import express from 'express';
 import "express-async-errors"
 import 'dotenv/config';
-import { db } from "./src/database";
+import { db, clearDatabase, initDb } from "./src/database";
 import { toNewAccount } from "./src/utils";
 import type { Account } from "./src/types";
 import { accountRouter } from "./src/routes/account"
@@ -14,10 +14,10 @@ import { closeRouter } from './src/routes/closed';
 import { changeRouter } from './src/routes/change';
 import * as testValues from "./tests/db_values"
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
 import cors from "cors"
 import './src/cron-jobs';
 import { Server } from 'socket.io';
+import { validateToken } from './src/middlewares';
 
 const app = express();
 const server = require('http').createServer(app);
@@ -43,10 +43,11 @@ app.use("/api/login", loginRouter)
 app.use("/api/balance", balanceRouter)
 app.use("/api/changes", changeRouter)
 
-if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
+if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
     app.delete("/api/reset", async (_req, res) => {
         try {
-            await db.query("TRUNCATE transaction, account, product, transaction, admin;")
+            await initDb();
+            await clearDatabase();
             res.status(204).send("OK")
         } catch (e) {
             console.log(e)
@@ -66,11 +67,11 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
     app.get("/api/testdb", async (_req, res) => {
 
         for (const a of testValues.accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toFixed(0)])
+            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
         }
 
         for (const p of testValues.products) {
-            await db.query("INSERT INTO product (name, pricein, priceout) VALUES ($1, $2, $3)", [p.name, p.pricein.toFixed(0), p.priceout.toFixed(0)])
+            await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
         }
 
         res.status(201).send("OK")
@@ -79,23 +80,10 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "dev") {
 
 
 // New user has been added
-app.post("/api/newaccount", async (req, res) => {
+app.post("/api/newaccount", validateToken, async (req, res) => {
     try {
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env['SECRET']!)
-        if (!decodedToken) {
-            console.log("Token invalid!")
-            return res.status(401).json({ error: 'token invalid' })
-        }
-        // Token is ok. Now create the new user.
         const account: Account = toNewAccount(req.body)
         // There is a chance the amount has a decimal at the very end
-
         const balance = Math.floor(account.balance!)
 
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])

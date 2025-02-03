@@ -10,6 +10,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "test": "bunx playwright test --workers=1"
+    "test": "bunx playwright test --workers=1",
+    "test:ui": "bunx playwright test --ui --workers=1"
   }
 }

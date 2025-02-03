@@ -2,7 +2,7 @@ import express from "express"
 import { db } from "../database"
 import type { Product } from '../types'
 import { toNewProduct } from '../utils'
-import jwt from "jsonwebtoken"
+import { validateToken } from "../middlewares";
 
 const router = express.Router();
 
@@ -16,20 +16,8 @@ router.get("/", async (_req, res) => {
     }
 })
 
-router.post("/", async (req, res) => {
+router.post("/", validateToken, async (req, res) => {
     try {
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
-        if (!decodedToken) {
-            console.log("Token invalid!")
-            return res.status(401).json({ error: 'token invalid' })
-        }
-
         const product: Product = toNewProduct(req.body)
         await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES($1, $2, $3, $4) RETURNING *", [product.name, product.pricein.toFixed(0), product.priceout.toFixed(0), product.color])
         res.status(200).send("OK")
@@ -39,20 +27,8 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.put("/", async (req, res) => {
+router.put("/", validateToken, async (req, res) => {
     try {
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
-        if (!decodedToken) {
-            console.log("Token invalid!")
-            return res.status(401).json({ error: 'token invalid' })
-        }
-
         const product: Product = toNewProduct(req.body);
         const newName = req.body.newName
         if (!newName || typeof newName !== 'string') {
@@ -66,20 +42,8 @@ router.put("/", async (req, res) => {
     }
 })
 
-router.delete("/", async (req, res) => {
+router.delete("/", validateToken, async (req, res) => {
     try {
-        const authorization = req.get("authorization");
-        if (!authorization || !authorization.startsWith("Bearer ")) {
-            return res.status(400).send({ error: "Token not found" })
-        }
-
-        const token = authorization.replace("Bearer ", "");
-        const decodedToken = jwt.verify(token, process.env["SECRET"]!)
-        if (!decodedToken) {
-            console.log("Token invalid!")
-            return res.status(401).json({ error: 'token invalid' })
-        }
-
         const name = req.body.name;
         if (!name) {
             return res.status(400).json({ error: "'name' not found" })

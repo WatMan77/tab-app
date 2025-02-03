@@ -176,7 +176,7 @@ test.describe("Admin can", () => {
             await page.locator('[data-testid="DeleteIcon"]').first().click();
             await page.getByText("Kyllä").click();
         }
-
+        await page.waitForTimeout(1000);
         expect(await page.getByTestId("DeleteIcon").count()).toBe(0)
     })
 

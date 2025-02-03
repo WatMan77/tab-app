@@ -73,7 +73,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: ${{ secrets.HOST }}
 
-      - run: bun install && bun run dev &
+      - run: bun install && bun install lodash && bun run dev &
         working-directory: ./frontend
 
       - run: bun install @playwright/test --with-deps && bunx playwright install

@@ -7,7 +7,7 @@ services:
         ports:
             - 5432:5432
         environment:
-            POSTGRES_USERNAME: postgres
+            POSTGRES_USER: postgres
             POSTGRES_DB: piikki_db
             POSTGRES_PASSWORD: example
             HOST: db
@@ -17,10 +17,10 @@ services:
         ports:
             - 5432:5432
         environment:
-            POSTGRES_USERNAME: postgres
+            POSTGRES_USER: postgres
             POSTGRES_DB: test-db
             POSTGRES_PASSWORD: test
-            HOST: test-db
+            HOST: localhost
 
     backend:
         build: ./backend

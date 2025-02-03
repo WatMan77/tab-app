@@ -18,7 +18,7 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USERNAME: postgres
+          POSTGRES_USER: postgres
           POSTGRES_DB: test-db
           POSTGRES_PASSWORD: test
           HOST: test-db
@@ -46,7 +46,7 @@ jobs:
         env:
           CI: true
           SECRET: ${{ secrets.SECRET }}
-          POSTGRES_USERNAME: ${{ secrets.POSTGRES_USERNAME }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: ${{ secrets.HOST }}
@@ -83,10 +83,10 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USERNAME: postgres
+          POSTGRES_USER: postgres
           POSTGRES_DB: test-db
           POSTGRES_PASSWORD: test
-          HOST: test-db
+          HOST: localhost
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5

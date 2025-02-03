@@ -14,7 +14,7 @@ bun run dev
 
 Backend requires a .env file to run. You can insert the following values for development and test purposes
 
-POSTGRES_USERNAME=postgres
+POSTGRES_USER=postgres
 
 POSTGRES_DB=test-db
 

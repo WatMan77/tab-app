@@ -5,11 +5,11 @@ import Knex from "knex";
 const knex = Knex(knexConfig.development);
 
 const dbConfig = {
-    user: process.env["POSTGRES_USERNAME"]!,
-    password: process.env["POSTGRES_PASSWORD"]!,
-    host: process.env["HOST"] ?? "localhost",
+    user: Bun.env["POSTGRES_USER"]!,
+    password: Bun.env["POSTGRES_PASSWORD"]!,
+    host: Bun.env["HOST"] ?? "localhost",
     port: 5432,
-    database: process.env["POSTGRES_DB"]!
+    database: Bun.env["POSTGRES_DB"]!
 }
 console.log("db Config?")
 console.log(dbConfig)

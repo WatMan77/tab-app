@@ -3,7 +3,7 @@ import { db } from './database';
 import { io } from '..';
 const checkBalanceCron = async () => {
     try {
-        await db.query("UPDATE account SET closed = true WHERE (category='HANGAROUND' AND balance <= -5000) OR balance <= -10000;")
+        await db.query("UPDATE account SET closed = true WHERE < 0;")
         io.emit('accounts-updated');
     } catch (e) {
         console.log("Error in balance cron job\n", e);

@@ -16,7 +16,7 @@ docker exec $DB_CONTAINER pg_dump -U postgres piikki_db > $BACKUP_FILE
 
 # Save backup in katiska
 gzip "$BACKUP_FILE"
-sshpass -p $SSHPASS scp -o StrictHostKeyChecking=no "$BACKUP_FILE.gz" joutomies@katiska.dy.fi:"$DESTINATION_DIR/$BACKUP_FILE"
+sshpass -p $SSHPASS scp -o StrictHostKeyChecking=no "$BACKUP_FILE.gz" joutomies@katiska.dy.fi:"$DESTINATION_DIR/$BACKUP_FILE.gz"
 sshpass -p $SSHPASS ssh -o StrictHostKeyChecking=no joutomies@katiska.dy.fi "find $DESTINATION_DIR -name 'backup_*.sql.gz' -type f -mtime +30 -exec rm {} \;"
 
 rm -rf "$BACKUP_FILE.gz"

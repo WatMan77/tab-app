@@ -24,6 +24,7 @@ services:
 
     backend:
         build: ./backend
+        restart: always
         ports:
             - 3000:3000
         environment:
@@ -32,6 +33,7 @@ services:
 
     frontend:
         build: ./frontend
+        restart: always
         ports:
             - 4173:4173
         depends_on:

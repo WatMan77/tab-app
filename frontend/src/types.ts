@@ -17,7 +17,8 @@ interface Account {
     balance?: number,
     closed: boolean
     recent: Date | null,
-    id?: number
+    id?: number,
+    unlocked_until: Date | null
 }
 
 interface UpdateAccount {
@@ -27,7 +28,9 @@ interface UpdateAccount {
     closed: boolean
     recent: Date | null,
     newName: string,
-    change: number
+    change: number,
+    pincode: string,
+    unlockedUntil: Date | null
 }
 
 interface Product {

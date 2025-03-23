@@ -6,21 +6,27 @@ const accounts: Account[] = [
         category: UserType.ASUKAS,
         balance: 1000,
         closed: false,
-        recent: null
+        recent: null,
+        unlocked_until: null,
+        pincode: null
     },
     {
         username: "Kari",
         category: UserType.ASUKAS,
         balance: -1000,
         closed: false,
-        recent: null
+        recent: null,
+        unlocked_until: null,
+        pincode: null
     },
     {
         username: "Mikael",
         category: UserType.VANHA,
         balance: 10000,
         closed: false,
-        recent: null
+        recent: null,
+        unlocked_until: null,
+        pincode: null
     }
 ]
 

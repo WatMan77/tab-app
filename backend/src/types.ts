@@ -10,7 +10,9 @@ interface Account {
     balance?: number,
     closed: boolean,
     recent: Date | null,
-    id?: number
+    id?: number,
+    pincode: string | null,
+    unlocked_until: Date | null
 }
 
 interface UpdateAccount {
@@ -22,7 +24,9 @@ interface UpdateAccount {
     newName: string,
     id: number,
     newCategory: UserType,
-    change: number
+    change: number,
+    pincode?: string,
+    unlocked_until: Date | null
 }
 
 interface Product {

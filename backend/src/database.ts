@@ -11,8 +11,6 @@ const dbConfig = {
     port: 5432,
     database: Bun.env["POSTGRES_DB"]!
 }
-console.log("db Config?")
-console.log(dbConfig)
 const pool = new pg.Pool(dbConfig)
 
 const clearDatabase = async () => {
@@ -34,9 +32,8 @@ const initDb = async () => {
     }
 }
 
-if (Bun.env.NODE_ENV === "development") {
+if (Bun.env.NODE_ENV === "development" || Bun.env.NODE_ENV === "test") {
     await initDb()
-    console.log("DB initialized")
 }
 
 export { pool as db, initDb, clearDatabase }

@@ -11,13 +11,16 @@ const toNewAccount = (object: unknown): Account => {
 const isValidAccount = (account: any): account is Account => {
     const hasValidId = typeof account.id === "undefined" || typeof account.id === "number"
     const hasValidBalance = typeof account.balance === "undefined" || typeof account.balance === "number"
+    const hasValidPin = account.pincode === null || typeof account.pincode === "string"
+
 
     return (
         typeof account === "object" &&
         typeof account.username === 'string' &&
         hasValidBalance &&
         isValidUserType(account.category) &&
-        hasValidId
+        hasValidId &&
+        hasValidPin
     )
 }
 
@@ -44,14 +47,14 @@ const isValidProduct = (product: any): product is Product => {
 }
 
 const toNewTransaction = (object: unknown): Transaction => {
-    if (isValidTranscation(object)) {
+    if (isValidTransaction(object)) {
         return object as Transaction
     } else {
         throw new Error("Invalid transcation structure")
     }
 }
 
-const isValidTranscation = (transaction: any): transaction is Transaction => {
+const isValidTransaction = (transaction: any): transaction is Transaction => {
 
     return (
         transaction &&

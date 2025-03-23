@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -f .env ]; then
-    export $(cat .env | xargs)
+if [ -f .env.production ]; then
+    export $(cat .env.production | xargs)
 fi
 
 LATEST_BACKUP=$(sshpass -p $SSHPASS ssh joutomies@katiska.dy.fi \

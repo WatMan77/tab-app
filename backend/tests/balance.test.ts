@@ -34,7 +34,6 @@ beforeEach(async () => {
 
 afterAll(() => {
     console.log("Ending it")
-    // db.end()
 })
 
 describe("Balance", () => {

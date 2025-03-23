@@ -6,6 +6,8 @@ import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Transaction, Log, Account } from "../src/types"
 
+let token: string;
+
 beforeAll(async () => {
     await initDb()
     await clearDatabase()
@@ -18,12 +20,17 @@ beforeAll(async () => {
         await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
     }
 
-    // Add the admin to the database
-    const hash = await bcrypt.hash(admin.password, 10)
-    await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
 })
 beforeEach(async () => {
     await clearDatabase()
+    // Add the admin to the database
+    const hash = await bcrypt.hash(admin.password, 10)
+    await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+    const login = await request(app)
+        .post("/api/login")
+        .send({ ...admin })
+        .expect(200)
+    token = login.body.token
 })
 
 afterAll(() => {
@@ -39,7 +46,7 @@ describe("Transaction", () => {
         const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
         const product = products[0]
         const transaction: Transaction = {
-            items: [{ product: product, amount: 1 }],
+            items: [{ product, amount: 1 }],
             users: [{ ...account, id: res.id }]
         }
         await request(app)
@@ -77,8 +84,8 @@ describe("Transaction", () => {
         let ids: Map<string, number> = new Map();
         await db.query("DELETE FROM account;")
         for (const a of accounts) {
-            const moi = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [a.username, a.category, a.balance!.toString()])
-            const user: { id: number, username: string } = moi.rows[0];
+            const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [a.username, a.category, a.balance!.toString()])
+            const user: { id: number, username: string } = query.rows[0];
             ids.set(user.username, user.id);
         }
 
@@ -111,5 +118,51 @@ describe("Transaction", () => {
             expect(original).toBeDefined()
             expect(u.balance).toBe(original!.balance! - totalCost)
         }
+    })
+
+    test.only("account with set pincode can make transaction", async () => {
+        // Add a pincode to a user
+        let account: Account = accounts[0]
+        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
+        const product = products[0]
+        const transaction: Transaction = {
+            items: [{ product, amount: 1 }],
+            users: [{ ...account, id: res.id, pincode: "1234", unlocked_until: new Date }]
+        }
+        await request(app)
+            .put("/api/balance")
+            .set("Authorization", "Bearer " + token)
+            .send({ accounts: [{ ...transaction.users[0] }] })
+            .expect(201)
+
+        await request(app)
+            .post("/api/transaction")
+            .send(transaction)
+            .expect(200)
+
+    })
+
+    test("wrong pincode doesn't allow for updating balance", async () => {
+        // Add a pincode to a user
+        let account: Account = accounts[0]
+        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
+        const product = products[0]
+        const transaction: Transaction = {
+            items: [{ product, amount: 1 }],
+            users: [{ ...account, id: res.id, pincode: "1234", unlocked_until: new Date }]
+        }
+        await request(app)
+            .put("/api/balance")
+            .set("Authorization", "Bearer " + token)
+            .send({ accounts: [{ ...transaction.users[0] }] })
+            .expect(201)
+        //Set wrong pincode
+        transaction.users[0].pincode = "4321"
+
+        const response = await request(app)
+            .post("/api/transaction")
+            .send(transaction)
+            .expect(400)
+        expect(response.text).toContain("Wrong pincode for " + account.username)
     })
 })

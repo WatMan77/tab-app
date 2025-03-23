@@ -39,6 +39,8 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         username,
         category,
         balance: Math.floor(balance), // Without this could casue some issues with decimals
+        pincode: null,
+        unlocked_until: null
       }),
     };
     const request = await fetch("/api/newaccount", requestOptions);

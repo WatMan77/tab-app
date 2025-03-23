@@ -13,7 +13,6 @@ const Changes = () => {
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
   const [users, setUsers] = useState<Account[]>([]);
 
-  console.log("CHANGES!");
   useEffect(() => {
     fetch("/api/changes")
       .then((x) => x.json())

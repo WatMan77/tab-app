@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
-dotenv.config();
+const env = process.env.NODE_ENV;
+dotenv.config({ path: `.env.${env}` });
 
 const config = {
     development: {
@@ -15,7 +16,20 @@ const config = {
             directory: './knex-migrations',
         },
     },
-    prod: {
+    test: {
+        client: 'pg',
+        connection: {
+            host: "localhost",
+            user: "postgres",
+            password: "test",
+            database: "test-db"
+        },
+        migrations: {
+            tableName: 'knex_migrations',
+            directory: './knex-migrations',
+        },
+    },
+    production: {
         client: 'pg',
         connection: {
             host: process.env["HOST"],

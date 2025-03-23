@@ -25,6 +25,7 @@ const UpdateBalance: React.FC<{
   handleNameChange: (id: number, newName: string) => void;
   handleDelete: (id: number) => void;
   handleCategoryChange: (id: number, category: UserType) => void;
+  handlePinChange: (id: number, newPin: string) => void;
 }> = React.memo(
   ({
     user,
@@ -33,6 +34,7 @@ const UpdateBalance: React.FC<{
     handleNameChange,
     handleDelete,
     handleCategoryChange,
+    handlePinChange,
   }) => {
     const [open, setOpen] = useState(false);
     const [category, setCategory] = useState<UserType>(user.account.category);
@@ -73,7 +75,7 @@ const UpdateBalance: React.FC<{
           <AccordionDetails>
             <div className="row">
               <TextField
-                placeholder="Change username"
+                placeholder="Name"
                 onChange={({ target }) =>
                   handleNameChange(user.account.id!, target.value)
                 }
@@ -99,8 +101,14 @@ const UpdateBalance: React.FC<{
                   {categories}
                 </Select>
               </FormControl>
+              <TextField
+                placeholder="Pin"
+                onChange={({ target }) =>
+                  handlePinChange(user.account.id!, target.value)
+                }
+              />
               <CurrencyInput
-                placeholder="Change amount"
+                placeholder="Amount"
                 onValueChange={(_value, _name, values) => {
                   handleBalanceChange(
                     user.account.id!,

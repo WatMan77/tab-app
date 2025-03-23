@@ -3,6 +3,7 @@ import { db } from "../database"
 import type { Account } from '../types';
 import { toNewAccount } from '../utils';
 import { validateToken } from '../middlewares';
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
@@ -49,6 +50,22 @@ router.delete("/", validateToken, async (req, res) => {
 
         return res.status(200).send("User deleted successfully");
 
+    } catch (e) {
+        console.log(e)
+        res.status(400).send(e)
+    }
+});
+
+router.patch("/unlockUntil", async (req, res) => {
+    try {
+        const body: { id: number; pincode: string; unlocked_until: string } = req.body;
+        const hash = await db.query("SELECT pincode FROM account WHERE id=$1", [body.id]);
+        const correctPin = bcrypt.compareSync(body.pincode, hash.rows[0].pincode)
+        if (!correctPin) {
+            return res.status(401).send("Incorrect pincode")
+        }
+        await db.query("UPDATE account SET unlocked_until=$1 WHERE id=$2", [body.unlocked_until.toString(), body.id.toString()])
+        return res.status(204).end();
     } catch (e) {
         console.log(e)
         res.status(400).send(e)

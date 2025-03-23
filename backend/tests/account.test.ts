@@ -35,12 +35,14 @@ describe("Accounts", () => {
             .get("/api/account/transactions")
         const accs = response.body.map(({ id, ...rest }: (any)) => rest)
         accs.sort((a: any, b: any) => a.username.localeCompare(b.username));
-        const accCopy = [...accounts].map(({ balance, category, closed, username, recent }) => ({
+        const accCopy = [...accounts].map(({ balance, category, closed, username, recent, pincode, unlocked_until }) => ({
             balance,
             category,
             closed,
+            pincode,
             recent,
-            username
+            username,
+            unlocked_until
         }))
         accCopy.sort((a, b) => a.username.localeCompare(b.username));
         expect(accs).toEqual(accCopy)
@@ -58,7 +60,10 @@ describe("Accounts", () => {
             category: UserType.VANHA,
             balance: 0,
             closed: false,
-            recent: null
+            recent: null,
+            pincode: null,
+            unlocked_until: null
+
         }
 
         await request(app)

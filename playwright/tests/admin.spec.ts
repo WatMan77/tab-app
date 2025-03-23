@@ -93,7 +93,7 @@ test.describe("Admin can", () => {
         }
 
         for (let i = 0; i < users.length; i += 1) {
-            await page.getByPlaceholder("Change amount").nth(i).fill("10")
+            await page.getByPlaceholder("Amount").nth(i).fill("10")
         }
 
         await page.click('body')

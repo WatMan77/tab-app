@@ -13,6 +13,7 @@ const BalanceAdmin = () => {
       change: number;
       newName: string;
       newCategory: UserType;
+      pincode: string;
     }[]
   >([]);
   const [userFilter, setUserFilter] = useState("");
@@ -52,6 +53,11 @@ const BalanceAdmin = () => {
     );
   };
 
+  const handlePinChange = (id: number, newPin: string) => {
+    setUsers((prevUsers) =>
+      prevUsers.map((u) => (u.account.id! === id ? { ...u, pincode: newPin.replace(/\D/g, "") } : u))) // Allow only numbers
+  }
+
   const fetchUsers = useCallback(() => {
     fetch("/api/account")
       .then((res) => res.json())
@@ -64,6 +70,8 @@ const BalanceAdmin = () => {
               change: 0,
               newName: "",
               newCategory: u.category,
+              pincode: "",
+              unlockedUntil: ""
             };
           })
         );
@@ -92,15 +100,21 @@ const BalanceAdmin = () => {
       (u) =>
         u.change !== 0 ||
         u.newName !== "" ||
-        u.newCategory !== u.account.category
+        u.newCategory !== u.account.category ||
+        u.pincode !== ""
     );
+    if (filteredUsers.length == 0) {
+      return;
+    }
     const updatedChangeUsers: UpdateAccount[] = filteredUsers.map((u) => ({
       ...u.account,
       balance: u.account.balance! + u.change * 100,
       newName: u.newName,
       newCategory: u.newCategory,
       change: u.change * 100,
+      pincode: u.pincode
     }));
+
 
     const requestOptions = {
       method: "PUT",
@@ -185,6 +199,7 @@ const BalanceAdmin = () => {
           handleNameChange={handleNameChange}
           handleDelete={handleDelete}
           handleCategoryChange={handleCategoryChange}
+          handlePinChange={handlePinChange}
         />
       ))}
 

@@ -42,52 +42,36 @@ const CategoryWrapper: React.FC<{
     [users]
   );
 
-  useEffect(() => {
-    const f = sortedByDate();
-    // In addition filter by name if the name filter has a value
-    let fu: Set<{
-      user: Account;
-      pressed: boolean;
-    }> = new Set();
-    if (nameFilter.trim() === "" || nameFilter.trim().length < 3) {
-      fu = new Set(f.slice(0, 20));
-    } else {
-      fu = new Set(filteredByName(nameFilter));
-    }
-    f.forEach((x) => {
-      if (x.pressed) {
-        fu.add(x);
+  const buildFilteredUsers = useCallback(
+    (filter: string): { user: Account; pressed: boolean }[] => {
+      const trimmedFilter = filter.trim().toLowerCase();
+      const baseList = sortedByDate();
+
+      let result: { user: Account; pressed: boolean }[];
+
+      if (trimmedFilter === "" || trimmedFilter.length < 3) {
+        result = baseList.slice(0, 20);
+      } else {
+        result = filteredByName(trimmedFilter);
       }
-    });
 
-    //console.log("Before inserting?", [...fu]);
+      // Include all pressed users (even if they weren't in the filtered list)
+      const finalMap = new Map<number, { user: Account; pressed: boolean }>();
+      result.forEach((u) => finalMap.set(u.user.id!, u));
+      users.forEach((u) => {
+        if (u.pressed) finalMap.set(u.user.id!, u);
+      });
 
-    setFiltered([...fu]);
-  }, [users, sortedByDate, nameFilter, filteredByName]); // Update filtered state when users prop changes
+      return [...finalMap.values()];
+    },
+    [users, sortedByDate, filteredByName]
+  );
+
+  useEffect(() => {
+    setFiltered(buildFilteredUsers(nameFilter));
+  }, [users, sortedByDate, nameFilter, filteredByName, buildFilteredUsers]); // Update filtered state when users prop changes
 
   const handleChange = (name: string) => {
-    const trimmed = name.trim();
-    if (trimmed === "" || !name || trimmed.length < 3) {
-      // Here null might be a problem
-      const f = sortedByDate();
-
-      const fu = new Set(f.slice(0, 8));
-      f.forEach((x) => {
-        if (x.pressed) {
-          fu.add(x);
-        }
-      });
-
-      setFiltered([...fu]);
-    } else {
-      const searched = new Set(filteredByName(name));
-      users.forEach((x) => {
-        if (x.pressed) {
-          searched.add(x);
-        }
-      });
-      setFiltered([...searched]);
-    }
     setNameFilter(name);
   };
   return (

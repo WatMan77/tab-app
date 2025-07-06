@@ -1,5 +1,5 @@
 import UpdateBalance from "./UpdateBalance";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, startTransition } from "react";
 import type { Account, UpdateAccount, UserType } from "../../types";
 import NewUser from "./NewAccount";
 import { Button, TextField } from "@mui/material";
@@ -63,18 +63,22 @@ const BalanceAdmin = () => {
       .then((res) => res.json())
       .then((data) => {
         data.sort(compareAccounts);
-        setUsers(
-          (data as Account[]).map((u: Account) => {
-            return {
-              account: u,
-              change: 0,
-              newName: "",
-              newCategory: u.category,
-              pincode: "",
-              unlockedUntil: ""
-            };
-          })
-        );
+        // Don't block scrolling or input while setting users.
+        startTransition(() => {
+          setUsers(
+            (data as Account[]).map((u: Account) => {
+              return {
+                account: u,
+                change: 0,
+                newName: "",
+                newCategory: u.category,
+                pincode: "",
+                unlockedUntil: ""
+              };
+            })
+          );
+        })
+
       });
   }, []);
 

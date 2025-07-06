@@ -65,7 +65,7 @@ const App = () => {
 
   useEffect(() => {
     // Disable scrolling for this page;
-    if (process.env.NODE_ENV !== "dev") {
+    if (process.env.NODE_ENV === "production") {
       document.body.style.overflow = "hidden";
     }
     socket.on("accounts-updated", () => {

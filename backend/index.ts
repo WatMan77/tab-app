@@ -2,7 +2,7 @@ import express from 'express';
 import "express-async-errors"
 import 'dotenv/config';
 import { db, clearDatabase, initDb } from "./src/database";
-import { toNewAccount } from "./src/utils";
+import { redisClient, toNewAccount } from "./src/utils";
 import type { Account } from "./src/types";
 import { accountRouter } from "./src/routes/account"
 import { productRouter } from "./src/routes/product"
@@ -45,6 +45,7 @@ app.use("/api/changes", changeRouter)
 
 if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
     app.delete("/api/reset", async (_req, res) => {
+        await redisClient.flushAll();
         try {
             await initDb();
             await clearDatabase();
@@ -54,6 +55,8 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
         }
     })
     app.get("/api/testadmin", async (_req, res) => {
+        await redisClient.flushAll();
+
         try {
             const passwordHash = await bcrypt.hash("password123", 10);
             await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", ["admin", passwordHash])
@@ -65,6 +68,7 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
     })
 
     app.get("/api/testdb", async (_req, res) => {
+        await redisClient.flushAll();
 
         for (const a of testValues.accounts) {
             await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])

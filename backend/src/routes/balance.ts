@@ -1,7 +1,7 @@
 import express from "express"
 import { db } from "../database"
 import type { UpdateAccount } from "../types";
-import { toNewAccount } from "../utils";
+import { cleanRedisAccounts, cleanRedisChange, toNewAccount } from "../utils";
 import { validateToken } from "../middlewares";
 import bcrypt from "bcrypt";
 
@@ -30,6 +30,8 @@ router.put("/", validateToken, async (req, res) => {
                 await db.query("UPDATE account SET username=$1 WHERE id=$2", [a.newName, a.id.toString()])
             }
         };
+        await cleanRedisAccounts()
+        await cleanRedisChange()
         res.status(201).send("OK")
     } catch (e) {
         console.log(e)

@@ -18,13 +18,17 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: test-db
-          POSTGRES_PASSWORD: test
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: test-db
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
 
     steps:
       # ...
@@ -49,6 +53,7 @@ jobs:
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          REDIS_URL: ${{ vars.REDIS_URL }}
           HOST: ${{ secrets.HOST }}
 
   playwright-tests:
@@ -72,6 +77,7 @@ jobs:
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: ${{ secrets.HOST }}
+          REDIS_URL: ${{ vars.REDIS_URL }}
 
       - run: bun install && bun install lodash && bun run dev &
         working-directory: ./frontend
@@ -87,10 +93,14 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: test-db
-          POSTGRES_PASSWORD: test
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: localhost
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379

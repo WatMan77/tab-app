@@ -4,10 +4,12 @@ import app from "../index"
 import { clearDatabase, db, initDb } from "../src/database"
 import { admin } from "./db_values"
 import bcrypt from "bcrypt"
+import { redisClient } from "../src/utils"
 
 beforeAll(async () => {
     await initDb();
     await clearDatabase();
+    await redisClient.flushAll()
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
 })

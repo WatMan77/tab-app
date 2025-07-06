@@ -1,4 +1,5 @@
 import type { Account, Product, Transaction, UserType } from "./types";
+import { createClient } from "redis";
 
 const toNewAccount = (object: unknown): Account => {
     if (isValidAccount(object)) {
@@ -64,5 +65,30 @@ const isValidTransaction = (transaction: any): transaction is Transaction => {
     )
 }
 
+console.log("redis url?")
+console.log(Bun.env["REDIS_URL"])
+const redisClient = await createClient({
+    url: Bun.env["REDIS_URL"]
+})
+    .on("error", (err) => console.log("Redis Client Error", err))
+    .connect();
 
-export { toNewAccount, toNewProduct, toNewTransaction }
+const CACHE_ACCOUNT_TRANSACTIONS = "accounts:transactions";
+const CACHE_ACCOUNTS = "accounts";
+const CACHE_PRODUCTS = "products";
+const CACHE_CHANGE = "change";
+
+const cleanRedisAccounts = async () => {
+    await redisClient.del(CACHE_ACCOUNTS)
+    await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS)
+}
+
+const cleanRedisProducts = async () => {
+    await redisClient.del(CACHE_PRODUCTS)
+}
+
+const cleanRedisChange = async () => {
+    await redisClient.del(CACHE_CHANGE)
+}
+
+export { toNewAccount, toNewProduct, toNewTransaction, redisClient, cleanRedisAccounts, cleanRedisProducts, cleanRedisChange }

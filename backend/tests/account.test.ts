@@ -5,8 +5,10 @@ import { clearDatabase, db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { type Account, UserType } from "../src/types"
+import { redisClient } from "../src/utils"
 
 beforeEach(async () => {
+    await redisClient.flushAll()
     await initDb()
     await clearDatabase()
 
@@ -67,7 +69,7 @@ describe("Accounts", () => {
         }
 
         await request(app)
-            .post("/api/newaccount")
+            .post("/api/account")
             .set("Authorization", `Bearer ${token}`)
             .send(newUser)
             .expect(201)

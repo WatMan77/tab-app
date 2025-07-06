@@ -1,0 +1,5 @@
+{
+    "scripts": {
+        "production": "docker compose --env-file .env.production up db redis backend frontend --build -d"
+    }
+}

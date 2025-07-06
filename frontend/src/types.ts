@@ -31,7 +31,7 @@ interface UpdateAccount {
     newName: string,
     change: number,
     pincode: string,
-    unlockedUntil: Date | null
+    unlocked_until: Date | null
 }
 
 interface Product {

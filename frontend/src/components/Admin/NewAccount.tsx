@@ -43,7 +43,7 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         unlocked_until: null
       }),
     };
-    const request = await fetch("/api/newaccount", requestOptions);
+    const request = await fetch("/api/account", requestOptions);
     if (request.ok) {
       fetchUsers();
       setCategory("");

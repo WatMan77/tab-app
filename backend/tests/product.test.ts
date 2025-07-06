@@ -6,10 +6,12 @@ import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Product } from "../src/types"
 import { Color } from "../src/types"
+import { redisClient } from "../src/utils"
 
 beforeAll(async () => {
     await initDb()
     await clearDatabase()
+    await redisClient.flushAll()
 
     for (const a of accounts) {
         await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])

@@ -5,9 +5,9 @@ services:
         ports:
             - 5432:5432
         environment:
-            POSTGRES_USER: postgres
-            POSTGRES_DB: piikki_db
-            POSTGRES_PASSWORD: example
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             HOST: db
     test-db:
         image: postgres
@@ -15,9 +15,9 @@ services:
         ports:
             - 5432:5432
         environment:
-            POSTGRES_USER: postgres
-            POSTGRES_DB: test-db
-            POSTGRES_PASSWORD: test
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_DB: ${POSTGRES_DB}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             HOST: localhost
 
     backend:
@@ -38,3 +38,9 @@ services:
             - backend
         environment:
             DOCKER: true
+
+    redis:
+        image: redis:latest
+        restart: always
+        ports:
+            - 6379:6379

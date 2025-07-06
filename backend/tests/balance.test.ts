@@ -5,12 +5,14 @@ import { clearDatabase, db, initDb } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import { UserType, type Account } from "../src/types"
+import { redisClient } from "../src/utils"
 
 let token: string;
 
 beforeEach(async () => {
     await initDb()
     await clearDatabase()
+    await redisClient.flushAll()
 
     for (const a of accounts) {
         const id = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING id", [a.username, a.category, a.balance!.toString()]);

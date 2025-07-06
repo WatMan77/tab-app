@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import type { Log, Account } from "../types";
 import {
   Select,
@@ -18,12 +18,18 @@ const Transactions = () => {
     fetch("/api/transaction")
       .then((x) => x.json())
       .then((data) => {
-        setTrans(data);
+        startTransition(() => {
+          setTrans(data);
+
+        })
       });
     fetch("/api/account")
       .then((x) => x.json())
       .then((data) => {
-        setUsers(data);
+        startTransition(() => {
+          setUsers(data);
+
+        })
       });
   }, []);
 

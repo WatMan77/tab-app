@@ -213,6 +213,7 @@ test.describe("Admin can", () => {
         await login(page);
 
         await page.getByText("Balances").click()
+        await page.waitForTimeout(2000)
 
         expect(await page.locator('.account').count()).toBe(testvalues.accounts.length)
 

@@ -5,6 +5,7 @@ import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
 import bcrypt from "bcrypt"
 import type { Transaction, Log, Account } from "../src/types"
+import { redisClient } from "../src/utils"
 
 let token: string;
 
@@ -23,6 +24,7 @@ beforeAll(async () => {
 })
 beforeEach(async () => {
     await clearDatabase()
+    await redisClient.flushAll()
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
     await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])

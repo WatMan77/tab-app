@@ -78,6 +78,51 @@ const BalanceAdmin = () => {
       });
   }, []);
 
+  const fetchStats = async () => {
+    const res = await fetch("/api/account/stats", {
+      headers: { "Content-Type": "application/json", "Authorization": token, method: "GET" }
+    });
+    const rows: { username: string; balance: number; closed: boolean }[] = await res.json();
+
+    const usernames = rows.map((u) => u.username);
+    const balances = rows.map((u) => (u.balance / 100).toFixed(2));
+    const closeds = rows.map((u) => String(u.closed));
+
+    const usernameWidth = Math.max("username".length, ...usernames.map((s) => s.length));
+    const balanceWidth = Math.max("balance".length, ...balances.map((s) => s.length));
+    const closedWidth = Math.max("closed".length, ...closeds.map((s) => s.length));
+
+    // Helper function
+    const pad = (text: string, width: number) => text + " ".repeat(width - text.length);
+
+    const header =
+      pad("username", usernameWidth) +
+      " | " +
+      pad("balance", balanceWidth) +
+      " | " +
+      pad("closed", closedWidth);
+
+    const separator = `${"-".repeat(usernameWidth)}-+-${"-".repeat(balanceWidth)}-+-${"-".repeat(closedWidth)}`;
+
+    const data = rows
+      .map(
+        (u) =>
+          pad(u.username, usernameWidth) +
+          " | " +
+          pad((u.balance / 100).toFixed(2), balanceWidth) +
+          " | " +
+          pad(String(u.closed), closedWidth)
+      )
+      .join("\n");
+
+    return `${header}\n${separator}\n${data}`;
+  };
+
+  const handleCopyStats = async () => {
+    const text = await fetchStats();
+    await navigator.clipboard.writeText(text);
+  }
+
   const changePiikkiStatus = async (account: Account) => {
     const requestOptions = {
       method: "PUT",
@@ -208,6 +253,9 @@ const BalanceAdmin = () => {
           <p>
             Piikin tilanne: <strong>{balanceSum.toFixed(2)}</strong>
           </p>
+          <Button variant="contained" onClick={handleCopyStats}>
+            Copy stats
+          </Button>
 
           <Button variant="contained" onClick={handleChangeConfirm}>
             Confirm change

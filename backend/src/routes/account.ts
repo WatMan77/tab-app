@@ -56,7 +56,7 @@ router.delete("/", validateToken, async (req, res) => {
     }
 });
 
-router.patch("/unlockUntil", async (req, res) => {
+router.patch("/unlockUntil", validateToken, async (req, res) => {
     try {
         const body: { id: number; pincode: string; unlocked_until: string } = req.body;
         const hash = await db.query("SELECT pincode FROM account WHERE id=$1", [body.id]);
@@ -69,6 +69,17 @@ router.patch("/unlockUntil", async (req, res) => {
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
+    }
+})
+
+router.get("/stats", validateToken, async (_req, res) => {
+
+    try {
+        const accounts = await db.query("SELECT username, balance, closed FROM account ORDER BY username ASC;");
+        return res.status(200).send(accounts.rows);
+    } catch (e) {
+        console.log(e)
+        res.status(500).send(e)
     }
 })
 

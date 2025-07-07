@@ -19,6 +19,7 @@ interface Account {
     recent: Date | null,
     id?: number,
     unlocked_until: Date | null
+    pincode: string | null
 }
 
 interface UpdateAccount {

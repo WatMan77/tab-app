@@ -61,22 +61,23 @@ router.post("/", async (req, res) => {
 
     try {
         const transaction: Transaction = toNewTransaction(req.body)
+        const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1000);
         const totalCost: number = transaction.items.reduce((totalCost, item) => {
             return totalCost + item.amount * item.product.pricein
         }, 0)
         let errorList: string[] = [];
 
         for (const user of transaction.users) {
-            const userInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows
+            const accountInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows
             // Pincode required only if unlocked_until has passed
-            const account = userInfo[0];
+            const account = accountInfo[0];
             const needsPincode =
-                account &&
-                account.unlocked_until &&
-                new Date(account.unlocked_until) < new Date() &&
-                account.pincode;
+                account.unlocked_until !== null &&
+                account.pincode !== null &&
+                normalize(new Date(account.unlocked_until)) < normalize(new Date());
+
             if (needsPincode) {
-                if (!bcrypt.compareSync(user.pincode ?? "", userInfo[0].pincode)) {
+                if (!bcrypt.compareSync(user.pincode ?? "", accountInfo[0].pincode)) {
                     errorList.push("Wrong pincode for " + user.username)
                     continue;
                 }

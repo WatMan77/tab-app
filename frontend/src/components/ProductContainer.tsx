@@ -135,10 +135,11 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       }
 
       // Clear PIN input
-      setEnteredPin("");
 
       if (pendingUsers.length == 1) {
-        confirm(confirmedUsers.map(u => u.user).concat(pendingUsers[0].user));
+        confirm(confirmedUsers.map(u => u.user).concat({ ...pendingUsers[0].user, pincode: enteredPin }));
+        setEnteredPin("");
+
         return;
       }
 

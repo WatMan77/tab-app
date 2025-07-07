@@ -67,9 +67,16 @@ router.post("/", async (req, res) => {
         let errorList: string[] = [];
 
         for (const user of transaction.users) {
-            const pinHash = (await db.query("SELECT pincode FROM account WHERE id=$1", [user.id!])).rows
-            if (pinHash.length == 1 && pinHash[0].pincode !== null) {
-                if (!bcrypt.compareSync(user.pincode ?? "", pinHash[0].pincode)) {
+            const userInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows
+            // Pincode required only if unlocked_until has passed
+            const account = userInfo[0];
+            const needsPincode =
+                account &&
+                account.unlocked_until &&
+                new Date(account.unlocked_until) < new Date() &&
+                account.pincode;
+            if (needsPincode) {
+                if (!bcrypt.compareSync(user.pincode ?? "", userInfo[0].pincode)) {
                     errorList.push("Wrong pincode for " + user.username)
                     continue;
                 }
@@ -92,6 +99,7 @@ router.post("/", async (req, res) => {
             return res.status(207).send(errorList)
         }
         if (errorList.length > 0 && errorList.length === transaction.users.length) {
+            console.log(errorList)
             return res.status(400).send(errorList)
         }
 

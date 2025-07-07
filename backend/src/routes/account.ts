@@ -56,7 +56,7 @@ router.delete("/", validateToken, async (req, res) => {
     }
 });
 
-router.patch("/unlockUntil", validateToken, async (req, res) => {
+router.patch("/unlockUntil", async (req, res) => {
     try {
         const body: { id: number; pincode: string; unlocked_until: string } = req.body;
         const hash = await db.query("SELECT pincode FROM account WHERE id=$1", [body.id]);

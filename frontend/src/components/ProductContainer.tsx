@@ -233,13 +233,13 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           <Button onClick={() => handleUnlock(pendingUsers[0].user.unlocked_until!)} variant="contained" disabled={enteredPin.length === 0}>
             One time
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button onClick={() => handleUnlock(new Date(Date.now() + 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             1h
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 3 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button onClick={() => handleUnlock(new Date(Date.now() + 3 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             3h
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 8 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button onClick={() => handleUnlock(new Date(Date.now() + 8 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             8h
           </Button>
           <Button onClick={() => handleUnlock(selectedDate!.toDate())} variant="contained" disabled={enteredPin.length === 0}>

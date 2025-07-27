@@ -207,6 +207,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
         </div>
       </div>
       <Dialog
+        maxWidth="md"
         open={pendingUsers.length > 0}>
         <DialogTitle>Enter pin for {pendingUsers[0]?.user.username}</DialogTitle>
         <DialogContent>
@@ -226,24 +227,27 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
             helperText={pinError}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleSkip} variant="contained" color="error">
+        <DialogActions >
+          <Button className="pin-button" onClick={handleSkip} variant="contained" color="error">
             Skip
           </Button>
-          <Button onClick={() => handleUnlock(pendingUsers[0].user.unlocked_until!)} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(pendingUsers[0].user.unlocked_until!)} variant="contained" disabled={enteredPin.length === 0}>
             One time
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(new Date(Date.now() + 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             1h
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 3 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(new Date(Date.now() + 3 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             3h
           </Button>
-          <Button onClick={() => handleUnlock(new Date(Date.now() + 8 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(new Date(Date.now() + 8 * 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>
             8h
           </Button>
-          <Button onClick={() => handleUnlock(selectedDate!.toDate())} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(selectedDate!.toDate())} variant="contained" disabled={enteredPin.length === 0}>
             Custom time
+          </Button>
+          <Button className="pin-button" onClick={() => handleUnlock(new Date(Date.now() + 200 * 365 * 24 * 60 * 60 * 1000))} variant="contained" color="error" disabled={enteredPin.length === 0}>
+            Permanent
           </Button>
         </DialogActions>
       </Dialog>

@@ -171,7 +171,7 @@ test.describe("Basic user", () => {
         await page.getByText("VAHVISTA").click()
 
         //Expect to see a window for inserting pin
-        const buttons = ["SKIP", "ONE TIME", "1H", "3H", "8H", "CUSTOM TIME"]
+        const buttons = ["SKIP", "ONE TIME", "1H", "3H", "8H", "CUSTOM TIME", "PERMANENT"]
         for (const button of buttons.slice(1)) {
             await expect(page.getByText(button)).toBeDisabled()
         }

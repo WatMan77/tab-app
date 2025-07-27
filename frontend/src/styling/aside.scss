@@ -32,11 +32,11 @@
         }
     }
 
-    > div {
+    >div {
         align-items: center;
     }
 
-    .plus, 
+    .plus,
     .minus {
         font-size: 1.125rem;
         min-width: 4rem !important;
@@ -53,7 +53,7 @@
     display: inline-block;
     width: 20px;
     height: 20px;
-    background: linear-gradient( -45deg, black, black 49%, yellow 51% ); 
+    background: linear-gradient(-45deg, black, black 49%, yellow 51%);
     border-radius: 50%;
     border: 1px solid white;
     margin-left: 10px;
@@ -61,18 +61,23 @@
     &--blue {
         background: blue;
     }
+
     &--white {
         background: white;
     }
+
     &--red {
         background: red;
     }
+
     &--black {
         background: black;
     }
+
     &--redblue {
         background: linear-gradient(-45deg, black, red 49%, blue 51%);
     }
+
     &--yellowblack {
         background: linear-gradient(-45deg, black, black 49%, yellow 51%);
     }
@@ -96,7 +101,7 @@
         grid-template-columns: 1fr 1fr;
         gap: 0.5rem;
     }
-    
+
     button {
         height: 56px;
         font-size: 1.25rem;
@@ -105,3 +110,8 @@
     }
 }
 
+.pin-button {
+    min-width: 120px; // or any width you prefer
+    padding: 8px 16px; // optional, for better spacing
+    text-align: center;
+}

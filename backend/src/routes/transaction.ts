@@ -1,9 +1,10 @@
 import express from "express"
 import { db } from "../database"
 import type { Log, Transaction } from '../types';
-import { toNewTransaction } from '../utils'
+import { redisClient, toNewTransaction } from '../utils'
 import bcrypt from "bcrypt";
 
+const CACHE_ACCOUNT_TRANSACTIONS = "accounts:transactions";
 
 const router = express.Router();
 
@@ -66,6 +67,8 @@ router.post("/", async (req, res) => {
             return totalCost + item.amount * item.product.pricein
         }, 0)
         let errorList: string[] = [];
+        await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS);
+
 
         for (const user of transaction.users) {
             const accountInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows

@@ -2,6 +2,7 @@ import pg from "pg";
 import { migrate } from 'postgres-migrations';
 import knexConfig from "../knexfile";
 import Knex from "knex";
+import { redisClient } from "./utils";
 const knex = Knex(knexConfig.development);
 
 const dbConfig = {
@@ -24,6 +25,7 @@ const clearDatabase = async () => {
 
 const initDb = async () => {
     try {
+        await redisClient.flushAll();
         await migrate(dbConfig, './migrations');
         await knex.migrate.latest();
     } catch (e) {

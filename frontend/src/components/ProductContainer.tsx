@@ -222,6 +222,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           <TextField
             placeholder="Pin"
             value={enteredPin}
+            type="password"
             onChange={({ target }) => setEnteredPin(target.value)}
             error={!!pinError}
             helperText={pinError}

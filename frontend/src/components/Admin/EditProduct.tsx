@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import CurrencyInput from "react-currency-input-field";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from 'axios';
 
 import { Color, type Product } from "../../types";
 import { useState } from "react";
@@ -82,20 +83,16 @@ const EditProduct: React.FC<{
         color: color,
       }),
     };
-    await fetch("/api/product", requestOptions);
+    await axios.put("/api/product", requestOptions);
     fetchProducts();
   };
 
   const handleDelete = async () => {
     const token = JSON.parse(userInfo!).token;
     const requestOptions = {
-      method: "DELETE",
       headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        name: product.name,
-      }),
     };
-    await fetch("/api/product", requestOptions);
+    await axios.delete(` /api/product/${product.name}`, requestOptions);
     fetchProducts();
   };
 

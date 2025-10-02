@@ -9,6 +9,7 @@ import {
 import { UserType } from "../../types";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
+import axios from 'axios';
 
 const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
   const [category, setCategory] = useState("");
@@ -33,23 +34,20 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
     }
     const token = JSON.parse(userInfo!).token;
     const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        username,
-        category,
-        balance: Math.floor(balance), // Without this could casue some issues with decimals
-        pincode: null,
-        unlocked_until: null
-      }),
+      headers: { "Content-Type": "application/json", "Authorization": token }
     };
-    const request = await fetch("/api/account", requestOptions);
-    if (request.ok) {
-      fetchUsers();
-      setCategory("");
-      setBalance(0);
-      setUsername("");
-    }
+    const body = {
+      username,
+      category,
+      balance: Math.floor(balance), // Without this could casue some issues with decimals
+      pincode: null,
+      unlocked_until: null
+    };
+    await axios.post("/api/account", body, requestOptions);
+    fetchUsers();
+    setCategory("");
+    setBalance(0);
+    setUsername("");
   };
 
   return (

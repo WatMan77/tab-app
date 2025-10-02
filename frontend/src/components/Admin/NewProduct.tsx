@@ -10,6 +10,7 @@ import {
   type SelectChangeEvent,
 } from "@mui/material";
 import { Color } from "../../types";
+import axios from 'axios';
 
 const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   fetchProducts,
@@ -63,18 +64,18 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   const handleNewDrink = async () => {
     const token = JSON.parse(userInfo!).token;
     const requestOptions = {
-      method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        name,
-        pricein: Number.parseFloat(priceIn) * 100,
-        priceout: Number.parseFloat(priceOut) * 100,
-        color: color,
-      }),
+    };
+
+    const body = {
+      name,
+      pricein: Number.parseFloat(priceIn) * 100,
+      priceout: Number.parseFloat(priceOut) * 100,
+      color: color,
     };
 
     try {
-      await fetch("/api/product", requestOptions);
+      await axios.post("/api/product", body, requestOptions);
       setName("");
       setPriceIn("");
       setPriceOut("");

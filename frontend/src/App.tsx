@@ -7,6 +7,8 @@ import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
 import { io } from "socket.io-client";
+import { ToastContainer } from "react-toastify";
+import axios from 'axios';
 
 const socket = io(import.meta.env["VITE_API_URL"] || "http://localhost:3000");
 
@@ -38,10 +40,9 @@ const App = () => {
   };
 
   const fetchAccounts = (): void => {
-    fetch("/api/account/transactions")
-      .then((response) => response.json())
+    axios.get("/api/account/transactions")
       .then((data) => {
-        const sorted = [...data].sort(
+        const sorted = [...data.data].sort(
           (a: { username: string }, b: { username: string }) =>
             a.username.localeCompare(b.username)
         );
@@ -81,11 +82,11 @@ const App = () => {
   }, []);
   useEffect(() => {
     fetchAccounts();
-    fetch("/api/product")
-      .then((response) => response.json())
-      .then((data: Product[]) => {
+    axios.get("/api/product")
+      .then(res => {
+        const products: Product[] = res.data;
         setDrinkStates(
-          data.map((x) => {
+          products.map((x) => {
             return { product: x, amount: 0 };
           })
         );
@@ -115,6 +116,7 @@ const App = () => {
       alignItems="stretch"
       spacing={2}
     >
+      <ToastContainer />
       <div className="main-content">
         <h2>Asukkaat</h2>
         <div className="account-grid">

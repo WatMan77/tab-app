@@ -2,11 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import type { Product } from "../types";
 import { Color } from "../types";
 import "../styling/pricelist.scss";
+import axios from "axios";
 
 const PriceList: React.FC = () => {
   const { isPending, error, data } = useQuery({
     queryKey: ["products"],
-    queryFn: () => fetch("/api/product").then((res) => res.json()),
+    queryFn: () => axios.get("/api/product").then(res => res.data),
   });
 
   if (isPending) {

@@ -63,9 +63,10 @@ router.post("/", async (req, res) => {
     }
 });
 
-router.delete("/", validateToken, async (req, res) => {
+router.delete("/:id", validateToken, async (req, res) => {
     try {
-        await db.query("DELETE FROM account WHERE id=$1;", [req.body.id]);
+        const { id } = req.params;
+        await db.query("DELETE FROM account WHERE id=$1;", [id]);
         await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS)
         await redisClient.del(CACHE_ACCOUNTS)
 

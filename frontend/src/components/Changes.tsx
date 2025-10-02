@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { BalanceChange, Account } from "../types";
+import axios from 'axios';
 import {
   Select,
   MenuItem,
@@ -14,14 +15,12 @@ const Changes = () => {
   const [users, setUsers] = useState<Account[]>([]);
 
   useEffect(() => {
-    fetch("/api/changes")
-      .then((x) => x.json())
-      .then((data) => setChanges(data));
+    axios.get("/api/changes")
+      .then(res => setChanges(res.data));
 
-    fetch("/api/account")
-      .then((x) => x.json())
-      .then((data) => {
-        setUsers(data);
+    axios.get("/api/account")
+      .then(res => {
+        setUsers(res.data);
       });
   }, []);
 
@@ -46,17 +45,15 @@ const Changes = () => {
   };
 
   const fetchNewUser = async (id: number) => {
-    const res = await fetch(`/api/changes/${id}`);
-    const data = await res.json();
-    setChanges(data);
+    const res = await axios.get(`/api/changes/${id}`);
+    setChanges(res.data);
   };
 
   const handleNewUser = async (event: SelectChangeEvent) => {
     if (event.target.value.trim() == "") {
-      const res = await fetch("/api/changes");
-      const data = await res.json();
+      const res = await axios.get("/api/changes");
       setSelectedUser(null);
-      setChanges(data);
+      setChanges(res.data);
     } else {
       const user = users.find((u) => u.username == event.target.value);
       if (user) {

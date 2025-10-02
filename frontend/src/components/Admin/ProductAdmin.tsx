@@ -2,15 +2,15 @@ import { useEffect, useState } from "react";
 import type { Product } from "../../types";
 import EditProduct from "./EditProduct";
 import NewProduct from "./NewProduct";
+import axios from "axios";
 
 const ProductAdmin = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
   const fetchProducts = () => {
-    fetch("/api/product")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data as Product[]);
+    axios.get("/api/product")
+      .then(res => {
+        setProducts(res.data as Product[]);
       });
   };
 

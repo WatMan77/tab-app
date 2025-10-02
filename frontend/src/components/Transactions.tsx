@@ -8,6 +8,7 @@ import {
   type SelectChangeEvent,
 } from "@mui/material";
 import "../styling/transactions.scss";
+import axios from "axios";
 
 const Transactions = () => {
   const [trans, setTrans] = useState<Log[]>([]);
@@ -15,28 +16,25 @@ const Transactions = () => {
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
 
   useEffect(() => {
-    fetch("/api/transaction")
-      .then((x) => x.json())
-      .then((data) => {
+    axios.get("/api/transaction")
+      .then(res => {
         startTransition(() => {
-          setTrans(data);
+          setTrans(res.data);
 
         })
       });
-    fetch("/api/account")
-      .then((x) => x.json())
-      .then((data) => {
+    axios.get("/api/account")
+      .then(res => {
         startTransition(() => {
-          setUsers(data);
+          setUsers(res.data);
 
         })
       });
   }, []);
 
   const fetchNewUser = async (id: number) => {
-    const res = await fetch(`/api/transaction/${id}`);
-    const data = await res.json();
-    setTrans(data);
+    const res = await axios.get(`/api/transaction/${id}`);
+    setTrans(res.data);
   };
 
   const compareAccounts = (a: Account, b: Account): number => {
@@ -60,10 +58,9 @@ const Transactions = () => {
 
   const handleNewUser = async (event: SelectChangeEvent) => {
     if (event.target.value.trim() == "") {
-      const res = await fetch("/api/transaction");
-      const data = await res.json();
+      const res = await axios.get("/api/transaction");
       setSelectedUser(null);
-      setTrans(data);
+      setTrans(res.data);
     } else {
       const user = users.find((u) => u.username == event.target.value);
       if (user) {

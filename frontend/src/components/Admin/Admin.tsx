@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styling/login.scss";
 import logo from "../../assets/joutomiehet_white.svg";
+import axios from 'axios';
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -21,15 +22,9 @@ const AdminLogin = () => {
     };
 
     try {
-      const response = await fetch("/api/login", requestOptions);
+      const response = await axios.get("/api/login", requestOptions);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      const token = `Bearer ${data.token}`;
+      const token = `Bearer ${response.data.token}`;
       window.localStorage.setItem(
         "loggedPiikkiAdmin",
         JSON.stringify({ username, token })

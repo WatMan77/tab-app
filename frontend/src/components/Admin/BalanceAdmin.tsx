@@ -5,6 +5,8 @@ import NewUser from "./NewAccount";
 import { Button, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import "../../styling/balanceadmin.scss";
+import { toast, ToastContainer } from "react-toastify";
+import axios, { type AxiosRequestConfig } from "axios";
 
 const BalanceAdmin = () => {
   const [users, setUsers] = useState<
@@ -59,14 +61,13 @@ const BalanceAdmin = () => {
   }
 
   const fetchUsers = useCallback(() => {
-    fetch("/api/account")
-      .then((res) => res.json())
+    axios.get("/api/account")
       .then((data) => {
-        data.sort(compareAccounts);
+        data.data.sort(compareAccounts);
         // Don't block scrolling or input while setting users.
         startTransition(() => {
           setUsers(
-            (data as Account[]).map((u: Account) => {
+            (data.data as Account[]).map((u: Account) => {
               return {
                 account: u,
                 change: 0,
@@ -83,10 +84,10 @@ const BalanceAdmin = () => {
   }, []);
 
   const fetchStats = async () => {
-    const res = await fetch("/api/account/stats", {
-      headers: { "Content-Type": "application/json", "Authorization": token, method: "GET" }
+    const res = await axios.get("/api/account/stats", {
+      headers: { "Content-Type": "application/json", "Authorization": token }
     });
-    const rows: { username: string; balance: number; closed: boolean }[] = await res.json();
+    const rows: { username: string; balance: number; closed: boolean }[] = res.data;
 
     const usernames = rows.map((u) => u.username);
     const balances = rows.map((u) => (u.balance / 100).toFixed(2));
@@ -128,18 +129,15 @@ const BalanceAdmin = () => {
   }
 
   const changePiikkiStatus = async (account: Account) => {
-    const requestOptions = {
-      method: "PUT",
+    const requestOptions: AxiosRequestConfig = {
       headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        account: account,
-      }),
     };
 
     try {
-      await fetch("/api/account/closed", requestOptions);
+      await axios.put("/api/account/closed", account, requestOptions);
       fetchUsers();
     } catch (e) {
+      toast("Failed to update piikki status: ")
       console.log(e);
     }
   };
@@ -166,14 +164,10 @@ const BalanceAdmin = () => {
 
 
     const requestOptions = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        accounts: updatedChangeUsers,
-      }),
+      headers: { "Content-Type": "application/json", "Authorization": token }
     };
     try {
-      await fetch("/api/balance", requestOptions);
+      await axios.put("/api/balance", { accounts: updatedChangeUsers }, requestOptions);
     } catch (e) {
       console.log(e);
     }
@@ -182,23 +176,15 @@ const BalanceAdmin = () => {
 
   const handleDelete = async (id: number) => {
     const requestOptions = {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        id,
-      }),
+      headers: { "Content-Type": "application/json", "Authorization": token }
     };
     try {
-      await fetch("/api/account", requestOptions);
+      await axios.delete(`/api/account/${id}`, requestOptions);
       fetchUsers();
     } catch (e) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
 
   const debouncedFilterChange = useMemo(
     () =>
@@ -207,6 +193,16 @@ const BalanceAdmin = () => {
       }, 300),
     []
   );
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  useEffect(() => {
+    return () => {
+      debouncedFilterChange.cancel()
+    }
+  }, [debouncedFilterChange])
 
   const filteredUsers = useMemo(() => {
     let filtered = [...users];
@@ -223,6 +219,7 @@ const BalanceAdmin = () => {
 
   return (
     <div className="container container--balance">
+      <ToastContainer />
       <NewUser fetchUsers={fetchUsers} />
 
       <div className="filter">

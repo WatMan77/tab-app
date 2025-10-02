@@ -7,8 +7,10 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
+import { toast } from 'react-toastify';
 import Other from "./OtherDrink";
 import "../styling/aside.scss";
+import axios from 'axios';
 
 interface ProductContainerProps {
   drinkState: { product: Product; amount: number }[];
@@ -78,15 +80,10 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       items.push(otherProduct);
     }
     const requestOptions = {
-      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: items,
-        users: finalUsers,
-      }),
     };
     try {
-      await fetch("/api/transaction", requestOptions);
+      await axios.post("/api/transaction", { items, users: finalUsers }, requestOptions);
       resetAll();
       //fetchRecentTransactions();
     } catch (e) {
@@ -114,30 +111,17 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   const handleUnlock = async (date: Date) => {
     const user: Account = pendingUsers[0].user;
     try {
-      const response = await fetch(`/api/account/unlockUntil`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id: user.id!,
-          pincode: enteredPin,
-          unlocked_until: date
-        }),
-      });
-
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        setPinError(errorText)
-        setTimeout(() => {
-          setPinError(null)
-        }, 5000)
-        return;
-      }
+      const headers = { "Content-Type": "application/json" };
+      await axios.patch(`/api/account/unlockUntil`, {
+        id: user.id!,
+        pincode: enteredPin,
+        unlocked_until: date
+      }, { headers: headers });
 
       // Clear PIN input
 
       if (pendingUsers.length == 1) {
-        confirm(confirmedUsers.map(u => u.user).concat({ ...pendingUsers[0].user, pincode: enteredPin }));
+        await confirm(confirmedUsers.map(u => u.user).concat({ ...pendingUsers[0].user, pincode: enteredPin }));
         setEnteredPin("");
 
         return;
@@ -148,6 +132,12 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       setPendingUsers((prev) => prev.slice(1));
 
     } catch (e) {
+      console.log("FAILED TO UNLOCK!")
+      toast("Failed to unlock user: " + e)
+      setPinError(e as string)
+      setTimeout(() => {
+        setPinError(null)
+      }, 5000)
       console.log(e)
     }
   }

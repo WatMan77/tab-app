@@ -7,7 +7,6 @@ import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
 import { io } from "socket.io-client";
-import { ToastContainer } from "react-toastify";
 import axios from 'axios';
 
 const socket = io(import.meta.env["VITE_API_URL"] || "http://localhost:3000");
@@ -116,7 +115,6 @@ const App = () => {
       alignItems="stretch"
       spacing={2}
     >
-      <ToastContainer />
       <div className="main-content">
         <h2>Asukkaat</h2>
         <div className="account-grid">

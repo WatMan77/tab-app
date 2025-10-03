@@ -3,14 +3,14 @@
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "@playwright/test": "^1.43.1",
+    "@playwright/test": "^1.55.1",
     "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "test": "bunx playwright test --workers=1",
-    "test:ui": "bunx playwright test --ui --workers=1"
+    "test": "bunx playwright test",
+    "test:ui": "bunx playwright test --ui"
   }
 }

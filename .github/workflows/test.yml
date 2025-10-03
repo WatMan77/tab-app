@@ -79,8 +79,12 @@ jobs:
           HOST: ${{ secrets.HOST }}
           REDIS_URL: ${{ vars.REDIS_URL }}
 
-      - run: bun install && bun install lodash && bun run dev &
+      - run: bunx wait-on http://localhost:3000/api/health
+
+      - run: bun install && bun run dev &
         working-directory: ./frontend
+
+      - run: bunx wait-on http://localhost:5173
 
       - run: bun install @playwright/test --with-deps && bunx playwright install
         working-directory: ./playwright
@@ -88,6 +92,12 @@ jobs:
       - name: Run the playwright tests
         working-directory: ./playwright
         run: bun run test
+      - name: Upload trace
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace
+          path: ./playwright/test-results/**/*.zip
 
     services:
       test-db:

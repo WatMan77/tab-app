@@ -38,7 +38,6 @@ router.get("/", async (_req, res) => {
     try {
         const cached = await redisClient.get(CACHE_ACCOUNTS)
         if (cached) {
-            console.log("RETURNING CACHED!")
             return res.status(200).send(JSON.parse(cached))
         }
         const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows

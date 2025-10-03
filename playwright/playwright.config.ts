@@ -1,0 +1,11 @@
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+    use: {
+        baseURL: "http://localhost:5173",
+        trace: 'retry-with-trace'
+    },
+    fullyParallel: false,
+    testDir: 'tests',
+    workers: 1
+})

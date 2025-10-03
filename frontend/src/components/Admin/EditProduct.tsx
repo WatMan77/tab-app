@@ -18,6 +18,7 @@ import axios from 'axios';
 
 import { Color, type Product } from "../../types";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const EditProduct: React.FC<{
   product: Product;
@@ -73,18 +74,28 @@ const EditProduct: React.FC<{
   const handleUpdate = async () => {
     const token = JSON.parse(userInfo!).token;
     const requestOptions = {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": token },
-      body: JSON.stringify({
-        name: product.name,
-        newName,
-        pricein: Number.parseFloat(priceIn) * 100,
-        priceout: Number.parseFloat(priceOut) * 100,
-        color: color,
-      }),
+      headers: { "Content-Type": "application/json", "Authorization": token }
     };
-    await axios.put("/api/product", requestOptions);
-    fetchProducts();
+    const body = {
+      name: product.name,
+      newName,
+      pricein: Number.parseFloat(priceIn) * 100,
+      priceout: Number.parseFloat(priceOut) * 100,
+      color: color,
+    };
+    try {
+      await axios.put("/api/product", body, requestOptions);
+      fetchProducts();
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Failed to update product: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error")
+      }
+    }
+
   };
 
   const handleDelete = async () => {
@@ -92,8 +103,21 @@ const EditProduct: React.FC<{
     const requestOptions = {
       headers: { "Content-Type": "application/json", "Authorization": token },
     };
-    await axios.delete(` /api/product/${product.name}`, requestOptions);
-    fetchProducts();
+    try {
+      await axios.delete(`/api/product/${product.name}`, requestOptions);
+      fetchProducts();
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Failed to delete: " + message)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error")
+      }
+    }
+
   };
 
   return (

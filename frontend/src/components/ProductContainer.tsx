@@ -86,7 +86,17 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       await axios.post("/api/transaction", { items, users: finalUsers }, requestOptions);
       resetAll();
       //fetchRecentTransactions();
-    } catch (e) {
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Error sending transactions: " + message)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error")
+      }
+
       console.log(e);
     }
   };
@@ -131,10 +141,14 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
       setConfirmedUsers((prev) => prev.concat(pendingUsers[0]))
       setPendingUsers((prev) => prev.slice(1));
 
-    } catch (e) {
-      console.log("FAILED TO UNLOCK!")
-      toast("Failed to unlock user: " + e)
-      setPinError(e as string)
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        setPinError(e?.response?.data || e.message || "Unexpected error in sending pin")
+      } else if (e instanceof Error) {
+        setPinError(e.message)
+      } else {
+        setPinError("Unexpected error")
+      }
       setTimeout(() => {
         setPinError(null)
       }, 5000)

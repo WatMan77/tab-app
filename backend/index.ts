@@ -80,6 +80,9 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
 
         res.status(201).send("OK")
     })
+    app.get("/api/health", async (_req, res) => {
+        res.status(201).send("OK")
+    })
 }
 
 

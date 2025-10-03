@@ -102,9 +102,8 @@ describe("Products with correct token", () => {
 
     test("delete a drink", async () => {
         await request(app)
-            .delete("/api/product")
+            .delete("/api/product/" + products[1].name)
             .set("Authorization", "Bearer " + token)
-            .send({ name: products[1].name })
             .expect(204)
 
         const response = await request(app)

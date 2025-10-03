@@ -5,7 +5,7 @@ import NewUser from "./NewAccount";
 import { Button, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import "../../styling/balanceadmin.scss";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import axios, { type AxiosRequestConfig } from "axios";
 
 const BalanceAdmin = () => {
@@ -60,30 +60,38 @@ const BalanceAdmin = () => {
       prevUsers.map((u) => (u.account.id! === id ? { ...u, pincode: newPin.replace(/\D/g, "") } : u))) // Allow only numbers
   }
 
-  const fetchUsers = useCallback(() => {
-    axios.get("/api/account")
-      .then((data) => {
-        data.data.sort(compareAccounts);
-        // Don't block scrolling or input while setting users.
-        startTransition(() => {
-          setUsers(
-            (data.data as Account[]).map((u: Account) => {
-              return {
-                account: u,
-                change: 0,
-                newName: "",
-                newCategory: u.category,
-                pincode: "",
-                unlockedUntil: ""
-              };
-            })
-          );
-        })
-
-      });
+  const fetchUsers = useCallback(async () => {
+    try {
+      const { data } = await axios.get<Account[]>("/api/account");
+      data.sort(compareAccounts);
+      // Don't block scrolling or input while setting users.
+      startTransition(() => {
+        setUsers(
+          (data as Account[]).map((u: Account) => {
+            return {
+              account: u,
+              change: 0,
+              newName: "",
+              newCategory: u.category,
+              pincode: "",
+              unlockedUntil: ""
+            };
+          })
+        );
+      })
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Failed to fetch users: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error: " + e)
+      }
+      console.log(e)
+    }
   }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = async (): Promise<string> => {
     const res = await axios.get("/api/account/stats", {
       headers: { "Content-Type": "application/json", "Authorization": token }
     });
@@ -121,11 +129,22 @@ const BalanceAdmin = () => {
       .join("\n");
 
     return `${header}\n${separator}\n${data}`;
+
   };
 
   const handleCopyStats = async () => {
-    const text = await fetchStats();
-    await navigator.clipboard.writeText(text);
+    try {
+      const text = await fetchStats();
+      await navigator.clipboard.writeText(text);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Failed to fetch stats: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error: " + e)
+      }
+    }
   }
 
   const changePiikkiStatus = async (account: Account) => {
@@ -136,9 +155,16 @@ const BalanceAdmin = () => {
     try {
       await axios.put("/api/account/closed", account, requestOptions);
       fetchUsers();
-    } catch (e) {
-      toast("Failed to update piikki status: ")
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Error fetching products: " + message)
+      } else {
+        toast.error("Failed to update piikki status: ")
+      }
       console.log(e);
+
     }
   };
 
@@ -168,10 +194,10 @@ const BalanceAdmin = () => {
     };
     try {
       await axios.put("/api/balance", { accounts: updatedChangeUsers }, requestOptions);
+      window.location.reload();
     } catch (e) {
       console.log(e);
     }
-    window.location.reload();
   };
 
   const handleDelete = async (id: number) => {
@@ -181,7 +207,14 @@ const BalanceAdmin = () => {
     try {
       await axios.delete(`/api/account/${id}`, requestOptions);
       fetchUsers();
-    } catch (e) {
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Error deleting account: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error: " + e)
+      }
       console.log(e);
     }
   };
@@ -219,7 +252,6 @@ const BalanceAdmin = () => {
 
   return (
     <div className="container container--balance">
-      <ToastContainer />
       <NewUser fetchUsers={fetchUsers} />
 
       <div className="filter">

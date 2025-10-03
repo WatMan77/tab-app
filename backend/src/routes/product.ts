@@ -51,9 +51,9 @@ router.put("/", validateToken, async (req, res) => {
     }
 })
 
-router.delete("/", validateToken, async (req, res) => {
+router.delete("/:name", validateToken, async (req, res) => {
     try {
-        const name = req.body.name;
+        const { name } = req.params
         if (!name) {
             return res.status(400).json({ error: "'name' not found" })
         }

@@ -20,7 +20,7 @@ test.beforeEach(async ({ request }) => {
 test.describe("Admin can", () => {
     test("Log in", async ({ page }) => {
         await page.goto(baseUrl)
-        await expect(page.getByText("Asukkaat")).toBeVisible()
+        await expect(page.getByText("Asukkaat")).toBeVisible({ timeout: 10000 })
         await page.locator('.MuiMenuItem-root').last().click()
         await expect(page.getByText("LOG IN")).toBeVisible()
         await page.getByRole('textbox').first().fill(admin)

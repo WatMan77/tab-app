@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import "../styling/transactions.scss";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Transactions = () => {
   const [trans, setTrans] = useState<Log[]>([]);
@@ -16,20 +17,30 @@ const Transactions = () => {
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
 
   useEffect(() => {
-    axios.get("/api/transaction")
-      .then(res => {
-        startTransition(() => {
-          setTrans(res.data);
+    try {
+      axios.get("/api/transaction")
+        .then(res => {
+          startTransition(() => {
+            setTrans(res.data);
 
-        })
-      });
-    axios.get("/api/account")
-      .then(res => {
-        startTransition(() => {
-          setUsers(res.data);
+          })
+        });
+      axios.get("/api/account")
+        .then(res => {
+          startTransition(() => {
+            setUsers(res.data);
 
-        })
-      });
+          })
+        });
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Failed to fetch transaction data: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error " + e)
+      }
+    }
   }, []);
 
   const fetchNewUser = async (id: number) => {
@@ -57,17 +68,28 @@ const Transactions = () => {
   };
 
   const handleNewUser = async (event: SelectChangeEvent) => {
-    if (event.target.value.trim() == "") {
-      const res = await axios.get("/api/transaction");
-      setSelectedUser(null);
-      setTrans(res.data);
-    } else {
-      const user = users.find((u) => u.username == event.target.value);
-      if (user) {
-        setSelectedUser(user);
-        await fetchNewUser(user.id!);
+    try {
+      if (event.target.value.trim() == "") {
+        const res = await axios.get("/api/transaction");
+        setSelectedUser(null);
+        setTrans(res.data);
+      } else {
+        const user = users.find((u) => u.username == event.target.value);
+        if (user) {
+          setSelectedUser(user);
+          await fetchNewUser(user.id!);
+        }
+      }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        toast.error("Error handling new user: " + e.response?.data)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpecte error: " + e)
       }
     }
+
   };
   return (
     <div className="transactions-container">

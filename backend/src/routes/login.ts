@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
     try {
+        console.log("LOGGING IN!")
 
         const { username, password } = req.body;
         const query: { username: string, hash: string } = (await db.query("SELECT * FROM admin WHERE username=$1", [username])).rows[0]

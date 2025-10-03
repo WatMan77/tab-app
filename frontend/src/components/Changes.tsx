@@ -9,6 +9,7 @@ import {
   type SelectChangeEvent,
 } from "@mui/material";
 import "../styling/transactions.scss";
+import { toast } from "react-toastify";
 const Changes = () => {
   const [changes, setChanges] = useState<BalanceChange[]>([]);
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
@@ -50,17 +51,30 @@ const Changes = () => {
   };
 
   const handleNewUser = async (event: SelectChangeEvent) => {
-    if (event.target.value.trim() == "") {
-      const res = await axios.get("/api/changes");
-      setSelectedUser(null);
-      setChanges(res.data);
-    } else {
-      const user = users.find((u) => u.username == event.target.value);
-      if (user) {
-        setSelectedUser(user);
-        await fetchNewUser(user.id!);
+    try {
+      if (event.target.value.trim() == "") {
+        const res = await axios.get("/api/changes");
+        setSelectedUser(null);
+        setChanges(res.data);
+      } else {
+        const user = users.find((u) => u.username == event.target.value);
+        if (user) {
+          setSelectedUser(user);
+          await fetchNewUser(user.id!);
+        }
+      }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Error creating new user: " + message)
+      } else if (e instanceof Error) {
+        toast.error("Error creating new user: " + e.message)
+      } else {
+        toast.error("Unexpected error")
       }
     }
+
   };
   return (
     <div className="transactions-container">

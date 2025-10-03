@@ -10,6 +10,7 @@ import { UserType } from "../../types";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import axios from 'axios';
+import { toast } from "react-toastify";
 
 const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
   const [category, setCategory] = useState("");
@@ -43,11 +44,23 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
       pincode: null,
       unlocked_until: null
     };
-    await axios.post("/api/account", body, requestOptions);
-    fetchUsers();
-    setCategory("");
-    setBalance(0);
-    setUsername("");
+    try {
+      await axios.post("/api/account", body, requestOptions);
+      fetchUsers();
+      setCategory("");
+      setBalance(0);
+      setUsername("");
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Couldn't create new user: " + message)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error")
+      }
+    }
   };
 
   return (

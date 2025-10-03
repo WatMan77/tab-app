@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { Color } from "../../types";
 import axios from 'axios';
+import { toast } from "react-toastify";
 
 const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
   fetchProducts,
@@ -81,7 +82,16 @@ const NewProduct: React.FC<{ fetchProducts: () => void }> = ({
       setPriceOut("");
       setColor(Color.EMPTY);
       fetchProducts();
-    } catch (e) {
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Failed to create product: " + message)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error)")
+      }
       console.log(e);
     }
   };

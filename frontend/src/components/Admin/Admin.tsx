@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../../styling/login.scss";
 import logo from "../../assets/joutomiehet_white.svg";
 import axios from 'axios';
+import { toast } from "react-toastify";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
@@ -13,16 +14,16 @@ const AdminLogin = () => {
 
   const logIn = async () => {
     const requestOptions = {
-      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
+    };
+
+    const body = {
+      username,
+      password,
     };
 
     try {
-      const response = await axios.get("/api/login", requestOptions);
+      const response = await axios.post("/api/login/", body, requestOptions);
 
       const token = `Bearer ${response.data.token}`;
       window.localStorage.setItem(
@@ -30,8 +31,17 @@ const AdminLogin = () => {
         JSON.stringify({ username, token })
       );
       navigate("/");
-    } catch (e) {
+    } catch (e: unknown) {
       console.log("LOGIN FAILED!");
+      if (axios.isAxiosError(e)) {
+        const message = e?.response?.data && e.response.data !== "" ?
+          e.response.data : e.message;
+        toast.error("Login failed: " + message)
+      } else if (e instanceof Error) {
+        toast.error(e.message)
+      } else {
+        toast.error("Unexpected error")
+      }
       console.log(e);
     }
   };

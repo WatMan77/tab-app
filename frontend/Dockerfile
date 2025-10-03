@@ -4,6 +4,6 @@ WORKDIR /frontend
 
 COPY . .
 
-RUN bun install && bun install lodash && bun run build
+RUN bun install && bun run build
 
 CMD ["bun", "run", "preview", "--", "--host"]

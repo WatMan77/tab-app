@@ -2,7 +2,7 @@ import UpdateBalance from "./UpdateBalance";
 import { useState, useEffect, useCallback, useMemo, startTransition } from "react";
 import type { Account, UpdateAccount, UserType } from "../../types";
 import NewUser from "./NewAccount";
-import { Button, TextField } from "@mui/material";
+import { Button, Dialog, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { debounce } from "lodash";
 import "../../styling/balanceadmin.scss";
 import { toast } from "react-toastify";
@@ -20,6 +20,8 @@ const BalanceAdmin = () => {
   >([]);
   const [userFilter, setUserFilter] = useState("");
   const [showClosed, setShowClosed] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [stats, setStats] = useState("");
 
   const userData = window.localStorage.getItem("loggedPiikkiAdmin");
   const token = JSON.parse(userData!).token;
@@ -91,7 +93,7 @@ const BalanceAdmin = () => {
     }
   }, []);
 
-  const fetchStats = async (): Promise<string> => {
+  const fetchStats = useCallback(async (): Promise<string> => {
     const res = await axios.get("/api/account/stats", {
       headers: { "Content-Type": "application/json", "Authorization": token }
     });
@@ -130,22 +132,7 @@ const BalanceAdmin = () => {
 
     return `${header}\n${separator}\n${data}`;
 
-  };
-
-  const handleCopyStats = async () => {
-    try {
-      const text = await fetchStats();
-      await navigator.clipboard.writeText(text);
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        toast.error("Failed to fetch stats: " + e.response?.data)
-      } else if (e instanceof Error) {
-        toast.error(e.message)
-      } else {
-        toast.error("Unexpected error: " + e)
-      }
-    }
-  }
+  }, [token]);
 
   const changePiikkiStatus = async (account: Account) => {
     const requestOptions: AxiosRequestConfig = {
@@ -229,7 +216,8 @@ const BalanceAdmin = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [fetchUsers]);
+    fetchStats().then(x => setStats(x))
+  }, [fetchUsers, fetchStats]);
 
   useEffect(() => {
     return () => {
@@ -280,13 +268,37 @@ const BalanceAdmin = () => {
           handlePinChange={handlePinChange}
         />
       ))}
+      <Dialog
+        open={showStats}
+        onClose={() => setShowStats(false)}
+        fullWidth
+        maxWidth="xs"
+      >
+        <DialogTitle>
+          Piikki balances
+        </DialogTitle>
+        <DialogContentText style={{ overflowX: "auto" }}>
+          <pre
+            style={{
+              fontFamily: "monospace",
+              margin: 0,
+              padding: "1rem 1rem 1rem 2rem",
+              backgroundColor: "black",
+              borderRadius: "4px",
+            }}
+          >
+            {stats}
+          </pre>
+        </DialogContentText>
+
+      </Dialog>
 
       <div className="balance-footer">
         <div className="container">
           <p>
             Piikin tilanne: <strong>{balanceSum.toFixed(2)}</strong>
           </p>
-          <Button variant="contained" onClick={handleCopyStats}>
+          <Button variant="contained" onClick={() => setShowStats(true)}>
             Copy stats
           </Button>
 

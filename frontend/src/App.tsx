@@ -107,6 +107,14 @@ const App = () => {
     [users]
   );
 
+  const trimResidentName = (name: string): string => {
+    // Matches: single lowercase letter + space at start
+    if (/^[a-z]\s/.test(name)) {
+      return name.substring(2); // skip letter + space
+    }
+    return name; // if no prefix, return unchanged
+  };
+
   return (
     <Stack
       className="wrapper"
@@ -120,7 +128,7 @@ const App = () => {
         <div className="account-grid">
           {asukasUsers.map((u) => (
             <UserBlock
-              user={u}
+              user={{ ...u, user: { ...u.user, username: trimResidentName(u.user.username) } }}
               changePress={changePress}
               key={u.user.username}
             />

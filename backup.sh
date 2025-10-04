@@ -7,8 +7,11 @@ DESTINATION_DIR="/srv/joutavaa/piikki_jutut/db_backups"
 cd /mnt/c/Users/cjout/projects/jomipiikki
 
 # Load the environment variables
-if [ -f .env ]; then
-    export $(cat .env | xargs)
+if [ -f .env.production ]; then
+    export $(cat .env.production | xargs)
+else
+    echo "❌ No .env or .env.production file found. Cannot continue."
+    exit 1
 fi
 
 # The db is the POSTGRES_DB value in docker-compose.yml

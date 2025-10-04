@@ -1,0 +1,8 @@
+localhost {
+    respond "If you see this, Piikkis Caddy is working"
+}
+
+jomipiikki.localhost {
+    tls internal
+    reverse_proxy frontend:4173
+}

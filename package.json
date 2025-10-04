@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "production": "docker compose --env-file .env.production up db redis backend frontend --build -d"
+        "production": "docker compose --env-file .env.production up db redis backend frontend caddy --build -d"
     },
     "dependencies": {
         "axios": "^1.12.2"

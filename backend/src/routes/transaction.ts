@@ -74,13 +74,19 @@ router.post("/", async (req, res) => {
             const accountInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows
             // Pincode required only if unlocked_until has passed
             const account = accountInfo[0];
+            console.log(account)
             const needsPincode =
                 account.unlocked_until !== null &&
                 account.pincode !== null &&
                 normalize(new Date(account.unlocked_until)) < normalize(new Date());
 
+            console.log("DOES IT NEED PINCODE?!?!", needsPincode)
+            console.log(new Date(account.unlocked_until))
+
             if (needsPincode) {
+                console.log("NEEDS PINCODE!")
                 if (!bcrypt.compareSync(user.pincode ?? "", accountInfo[0].pincode)) {
+                    console.log("WRONG PINCODE!")
                     errorList.push("Wrong pincode for " + user.username)
                     continue;
                 }

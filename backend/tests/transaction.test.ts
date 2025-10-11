@@ -122,14 +122,14 @@ describe("Transaction", () => {
         }
     })
 
-    test.only("account with set pincode can make transaction", async () => {
+    test("account with set pincode can make transaction", async () => {
         // Add a pincode to a user
         let account: Account = accounts[0]
         const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product, amount: 1 }],
-            users: [{ ...account, id: res.id, pincode: "1234", unlocked_until: new Date }]
+            users: [{ ...account, id: res.id, pincode: "1234" }]
         }
         await request(app)
             .put("/api/balance")
@@ -151,7 +151,7 @@ describe("Transaction", () => {
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product, amount: 1 }],
-            users: [{ ...account, id: res.id, pincode: "1234", unlocked_until: new Date }]
+            users: [{ ...account, id: res.id, pincode: "1234" }]
         }
         await request(app)
             .put("/api/balance")
@@ -160,6 +160,9 @@ describe("Transaction", () => {
             .expect(201)
         //Set wrong pincode
         transaction.users[0].pincode = "4321"
+        // Unlocked until is not taken into consideration when updating pin. Instead, Wait 1.5s so
+        // the time difference is enough
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
         const response = await request(app)
             .post("/api/transaction")

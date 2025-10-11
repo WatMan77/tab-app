@@ -16,6 +16,7 @@ router.put("/", validateToken, async (req, res) => {
         for (const a of confirmedAccounts) {
             await db.query("UPDATE account SET balance=$1, category=$2 WHERE id=$3;", [a.balance!.toFixed(0), a.newCategory, a.id.toString()])
             if (a.pincode) {
+                console.log("Updating pin: ", a.pincode, a.unlocked_until)
                 const hash = await bcrypt.hash(a.pincode!, 10)
                 await db.query("UPDATE account SET pincode=$1, unlocked_until=$2 WHERE id=$3;", [hash, new Date().toISOString(), a.id.toString()])
             }

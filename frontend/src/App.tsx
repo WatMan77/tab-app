@@ -109,7 +109,7 @@ const App = () => {
 
   const trimResidentName = (name: string): string => {
     // Matches: single lowercase letter + space at start
-    if (/^[a-z]\s/.test(name)) {
+    if (/^[\w]\s/.test(name)) {
       return name.substring(2); // skip letter + space
     }
     return name; // if no prefix, return unchanged

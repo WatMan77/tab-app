@@ -53,8 +53,10 @@ router.put("/", validateToken, async (req, res) => {
 
 router.delete("/:name", validateToken, async (req, res) => {
     try {
-        const { name } = req.params
-        if (!name) {
+        const params = req.params
+        const name: string = decodeURIComponent(params['name'] ?? "");
+
+        if (!name || name.length == 0) {
             return res.status(400).json({ error: "'name' not found" })
         }
         await db.query("DELETE FROM product WHERE name=$1;", [name]);

@@ -101,8 +101,9 @@ describe("Products with correct token", () => {
     })
 
     test("delete a drink", async () => {
+        const productName = encodeURIComponent(products[1].name)
         await request(app)
-            .delete("/api/product/" + products[1].name)
+            .delete("/api/product/" + productName)
             .set("Authorization", "Bearer " + token)
             .expect(204)
 

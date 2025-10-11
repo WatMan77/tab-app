@@ -104,7 +104,8 @@ const EditProduct: React.FC<{
       headers: { "Content-Type": "application/json", "Authorization": token },
     };
     try {
-      await axios.delete(`/api/product/${product.name}`, requestOptions);
+      const productName: string = encodeURIComponent(product.name);
+      await axios.delete(`/api/product/${productName}`, requestOptions);
       fetchProducts();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {

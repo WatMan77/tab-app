@@ -118,7 +118,10 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
     setEnteredPin("");
   };
 
-  const handleUnlock = async (date: Date) => {
+  const handleUnlock = async (date: Date | null) => {
+    if (!date || date === null) {
+      return
+    }
     const user: Account = pendingUsers[0].user;
     try {
       const headers = { "Content-Type": "application/json" };
@@ -236,7 +239,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
           <Button className="pin-button" onClick={handleSkip} variant="contained" color="error">
             Skip
           </Button>
-          <Button className="pin-button" onClick={() => handleUnlock(pendingUsers[0].user.unlocked_until!)} variant="contained" disabled={enteredPin.length === 0}>
+          <Button className="pin-button" onClick={() => handleUnlock(pendingUsers[0]?.user.unlocked_until)} variant="contained" disabled={enteredPin.length === 0}>
             One time
           </Button>
           <Button className="pin-button" onClick={() => handleUnlock(new Date(Date.now() + 60 * 60 * 1000))} variant="contained" disabled={enteredPin.length === 0}>

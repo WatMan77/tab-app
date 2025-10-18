@@ -1,5 +1,5 @@
 import UpdateBalance from "./UpdateBalance";
-import { useState, useEffect, useCallback, useMemo, startTransition } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 import type { Account, UpdateAccount, UserType } from "../../types";
 import NewUser from "./NewAccount";
 import { Button, Dialog, DialogContentText, DialogTitle, TextField } from "@mui/material";
@@ -206,13 +206,10 @@ const BalanceAdmin = () => {
     }
   };
 
-  const debouncedFilterChange = useMemo(
-    () =>
-      debounce((filter: string) => {
-        setUserFilter(filter);
-      }, 300),
-    []
-  );
+  const debouncedFilterChange =
+    debounce((filter: string) => {
+      setUserFilter(filter);
+    }, 300);
 
   useEffect(() => {
     fetchUsers();
@@ -225,7 +222,8 @@ const BalanceAdmin = () => {
     }
   }, [debouncedFilterChange])
 
-  const filteredUsers = useMemo(() => {
+
+  const filteredUsers = () => {
     let filtered = [...users];
     if (showClosed) {
       filtered = filtered.filter((u) => u.account.closed);
@@ -236,7 +234,7 @@ const BalanceAdmin = () => {
       );
     }
     return filtered;
-  }, [userFilter, users, showClosed]);
+  };
 
   return (
     <div className="container container--balance">
@@ -256,7 +254,7 @@ const BalanceAdmin = () => {
         </Button>
       </div>
 
-      {filteredUsers.map((u) => (
+      {filteredUsers().map((u) => (
         <UpdateBalance
           key={u.account.username}
           user={u}

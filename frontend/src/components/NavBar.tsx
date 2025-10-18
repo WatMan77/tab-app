@@ -13,7 +13,7 @@ const NavBar = () => {
 
   const logout = () => {
     window.localStorage.removeItem("loggedPiikkiAdmin");
-    navigate("/"); // Needed to refresh the page
+    window.location.href = "/"
   };
 
   const adminOrLogout = (logged: string | null) => {

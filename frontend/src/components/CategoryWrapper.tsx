@@ -1,5 +1,5 @@
 import type { Account } from "../types";
-import { useState, useEffect, useCallback } from "react";
+import { useMemo, useCallback } from "react";
 import UserBlock from "./UserBlock";
 import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
@@ -10,7 +10,6 @@ const CategoryWrapper: React.FC<{
   nameFilter: string;
   setNameFilter: (name: string) => void;
 }> = ({ users, changePress, nameFilter, setNameFilter }) => {
-  const [filtered, setFiltered] = useState(users);
 
   const sortedByDate = useCallback(() => {
     const usersCopy = [...users];
@@ -67,9 +66,11 @@ const CategoryWrapper: React.FC<{
     [users, sortedByDate, filteredByName]
   );
 
-  useEffect(() => {
-    setFiltered(buildFilteredUsers(nameFilter));
-  }, [users, sortedByDate, nameFilter, filteredByName, buildFilteredUsers]); // Update filtered state when users prop changes
+  const filtered = useMemo(
+    () => buildFilteredUsers(nameFilter),
+    [buildFilteredUsers, nameFilter]
+  );
+
 
   const handleChange = (name: string) => {
     setNameFilter(name);

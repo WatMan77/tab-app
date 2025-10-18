@@ -1,7 +1,7 @@
 import { UserType } from "./types";
 import type { Account, Product } from "./types";
 import UserBlock from "./components/UserBlock";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import "./styling/accounts.scss";
 import CategoryWrapper from "./components/CategoryWrapper";
@@ -92,20 +92,11 @@ const App = () => {
       });
   }, []);
 
-  const asukasUsers = useMemo(
-    () => users.filter((x) => x.user.category === UserType.ASUKAS),
-    [users]
-  );
+  const asukasUsers = users.filter((x) => x.user.category === UserType.ASUKAS);
 
-  const vanhatUsers = useMemo(
-    () => users.filter((x) => x.user.category === UserType.VANHA),
-    [users]
-  );
+  const vanhatUsers = users.filter((x) => x.user.category === UserType.VANHA);
 
-  const hangaroundUsers = useMemo(
-    () => users.filter((x) => x.user.category === UserType.HANGAROUND),
-    [users]
-  );
+  const hangaroundUsers = users.filter((x) => x.user.category === UserType.HANGAROUND);
 
   const trimResidentName = (name: string): string => {
     // Matches: single lowercase letter + space at start

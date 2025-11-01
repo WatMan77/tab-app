@@ -59,7 +59,11 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
 
         try {
             const passwordHash = await bcrypt.hash("password123", 10);
-            await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", ["admin", passwordHash])
+            await db`
+            INSERT INTO admin (username, hash)
+            VALUES (${"admin"}, ${passwordHash})
+            `;
+
             res.status(201).send("OK")
 
         } catch (e) {
@@ -71,11 +75,17 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
         await redisClient.flushAll();
 
         for (const a of testValues.accounts) {
-            await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+            await db`
+            INSERT INTO account (username, category, balance)
+            VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
+            `;
         }
 
         for (const p of testValues.products) {
-            await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
+            await db`
+            INSERT INTO product (name, pricein, priceout, color)
+            VALUES (${p.name}, ${p.pricein.toString()}, ${p.priceout.toString()}, ${p.color})
+            `;
         }
 
         res.status(201).send("OK")
@@ -93,7 +103,10 @@ app.post("/api/newaccount", validateToken, async (req, res) => {
         // There is a chance the amount has a decimal at the very end
         const balance = Math.floor(account.balance!)
 
-        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [account.username, account.category, balance.toString()])
+        await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${account.username}, ${account.category}, ${balance.toString()})
+        `;
         res.status(201).send("OK")
     } catch (e) {
         res.status(400).send(e)

@@ -14,16 +14,26 @@ beforeAll(async () => {
     await redisClient.flushAll()
 
     for (const a of accounts) {
-        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+        await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
+        `;
     }
 
     for (const p of products) {
-        await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
+        await db`
+        INSERT INTO product (name, pricein, priceout, color)
+        VALUES (${p.name}, ${p.pricein.toString()}, ${p.priceout.toString()}, ${p.color})
+        `;
     }
 
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
-    await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+    await db`
+    INSERT INTO admin (username, hash)
+    VALUES (${admin.username}, ${hash})
+    `;
+
 })
 
 afterAll(() => {

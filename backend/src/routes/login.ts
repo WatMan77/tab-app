@@ -9,7 +9,11 @@ router.post("/", async (req, res) => {
     try {
 
         const { username, password } = req.body;
-        const query: { username: string, hash: string } = (await db.query("SELECT * FROM admin WHERE username=$1", [username])).rows[0]
+        const query: { username: string; hash: string } = (await db`
+        SELECT *
+        FROM admin
+        WHERE username = ${username}
+        `)[0];
 
         //Check the validity of the query.
         if (!query || !query.username || !query.hash) {

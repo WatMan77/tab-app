@@ -10,7 +10,11 @@ router.put("/", validateToken, async (req, res) => {
     try {
         const confirmedAccount = toNewAccount(account);
         const status: string = (!confirmedAccount.closed).toString()
-        await db.query("UPDATE account SET closed=$1 WHERE username=$2", [status, confirmedAccount.username])
+        await db`
+        UPDATE account
+        SET closed = ${status}
+        WHERE username = ${confirmedAccount.username}
+        `;
         await cleanRedisAccounts()
         res.status(201).send("OK")
     } catch (e) {

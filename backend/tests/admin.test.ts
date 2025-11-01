@@ -11,7 +11,10 @@ beforeAll(async () => {
     await clearDatabase();
     await redisClient.flushAll()
     const hash = await bcrypt.hash(admin.password, 10)
-    await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+    await db`
+    INSERT INTO admin (username, hash)
+    VALUES (${admin.username}, ${hash})
+    `;
 })
 
 describe("Admin", () => {

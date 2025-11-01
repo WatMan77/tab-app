@@ -12,7 +12,10 @@ router.post("/", async (req, res) => {
         // 10 is the "salt round"
         const passwordHash = await bcrypt.hash(password, 10);
 
-        await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [username, passwordHash])
+        await db`
+        INSERT INTO admin (username, hash)
+        VALUES (${username}, ${passwordHash})
+        `;
         res.status(201).send("User created")
     } catch (e) {
         res.status(400).send("Error creating user " + e)

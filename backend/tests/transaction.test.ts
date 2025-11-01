@@ -14,11 +14,17 @@ beforeAll(async () => {
     await clearDatabase()
 
     for (const a of accounts) {
-        await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3)", [a.username, a.category, a.balance!.toString()])
+        await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
+        `;
     }
 
     for (const p of products) {
-        await db.query("INSERT INTO product (name, pricein, priceout, color) VALUES ($1, $2, $3, $4)", [p.name, p.pricein.toString(), p.priceout.toString(), p.color])
+        await db`
+        INSERT INTO product (name, pricein, priceout, color)
+        VALUES (${p.name}, ${p.pricein.toString()}, ${p.priceout.toString()}, ${p.color})
+        `;
     }
 
 })
@@ -27,7 +33,10 @@ beforeEach(async () => {
     await redisClient.flushAll()
     // Add the admin to the database
     const hash = await bcrypt.hash(admin.password, 10)
-    await db.query("INSERT INTO admin (username, hash) VALUES ($1, $2)", [admin.username, hash])
+    await db`
+    INSERT INTO admin (username, hash)
+    VALUES (${admin.username}, ${hash})
+    `;
     const login = await request(app)
         .post("/api/login")
         .send({ ...admin })
@@ -45,7 +54,11 @@ describe("Transaction", () => {
 
         // Add users first
         let account: Account = accounts[0]
-        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
+        const res: { username: string; id: number } = (await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${account.username}, ${account.category}, ${account.balance!.toString()})
+        RETURNING username, id
+        `)[0];
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product, amount: 1 }],
@@ -60,6 +73,7 @@ describe("Transaction", () => {
         const logs = await request(app)
             .get("/api/transaction")
             .expect(200)
+
 
         const t_info: Log[] = logs.body
         expect(t_info).toHaveLength(1)
@@ -84,10 +98,14 @@ describe("Transaction", () => {
 
         // Reset data for this database
         let ids: Map<string, number> = new Map();
-        await db.query("DELETE FROM account;")
+        await db`DELETE FROM account`;
         for (const a of accounts) {
-            const query = await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [a.username, a.category, a.balance!.toString()])
-            const user: { id: number, username: string } = query.rows[0];
+            const query = await db`
+                INSERT INTO account (username, category, balance)
+                VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
+                RETURNING username, id
+                `;
+            const user: { id: number, username: string } = query[0];
             ids.set(user.username, user.id);
         }
 
@@ -125,7 +143,12 @@ describe("Transaction", () => {
     test("account with set pincode can make transaction", async () => {
         // Add a pincode to a user
         let account: Account = accounts[0]
-        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
+        const res: { username: string; id: number } = (await db`
+            INSERT INTO account (username, category, balance)
+            VALUES (${account.username}, ${account.category}, ${account.balance!.toString()})
+            RETURNING username, id
+            `)[0];
+
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product, amount: 1 }],
@@ -147,7 +170,11 @@ describe("Transaction", () => {
     test("wrong pincode doesn't allow for updating balance", async () => {
         // Add a pincode to a user
         let account: Account = accounts[0]
-        const res: { username: string, id: number } = (await db.query("INSERT INTO account (username, category, balance) VALUES ($1, $2, $3) RETURNING username, id;", [account.username, account.category, account.balance!.toString()])).rows[0]
+        const res: { username: string; id: number } = (await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${account.username}, ${account.category}, ${account.balance!.toString()})
+        RETURNING username, id
+        `)[0];
         const product = products[0]
         const transaction: Transaction = {
             items: [{ product, amount: 1 }],

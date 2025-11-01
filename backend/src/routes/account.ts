@@ -19,12 +19,13 @@ router.get("/transactions", async (_req, res) => {
         }
         // Get all users with their most recent transaction.
         // Leaves blank transaction if user has not done it earlier.
-        const accounts: Account[] = (await db.query(`
+        const accounts = await db`
         SELECT u.*, MAX(t.transaction_date) AS recent
         FROM account AS u
-        LEFT JOIN transaction t ON u.id=t.user_id
+        LEFT JOIN transaction t ON u.id = t.user_id
         GROUP BY u.username, u.category, u.balance, u.closed, u.id
-        ORDER BY recent DESC;`)).rows
+        ORDER BY recent DESC
+        `;
 
         await redisClient.setEx(CACHE_ACCOUNT_TRANSACTIONS, 600, JSON.stringify(accounts))
 
@@ -40,7 +41,7 @@ router.get("/", async (_req, res) => {
         if (cached) {
             return res.status(200).send(JSON.parse(cached))
         }
-        const accounts: Account[] = (await db.query("SELECT * FROM account;")).rows
+        const accounts: Account[] = await db`SELECT * FROM account`;
 
         await redisClient.setEx(CACHE_ACCOUNTS, 600, JSON.stringify(accounts))
         res.status(200).send(accounts)
@@ -53,7 +54,11 @@ router.get("/", async (_req, res) => {
 router.post("/", async (req, res) => {
     try {
         const account: Account = toNewAccount(req.body)
-        await db.query("INSERT INTO account (username, category, balance) VALUES($1, $2, $3) RETURNING id, balance", [account.username, account.category, Math.floor(account.balance!).toString()])
+        await db`
+        INSERT INTO account (username, category, balance)
+        VALUES (${account.username}, ${account.category}, ${Math.floor(account.balance!).toString()})
+        RETURNING id, balance
+        `;
         await cleanRedisAccounts()
         res.status(201).send("OK")
     } catch (e) {
@@ -65,7 +70,10 @@ router.post("/", async (req, res) => {
 router.delete("/:id", validateToken, async (req, res) => {
     try {
         const { id } = req.params;
-        await db.query("DELETE FROM account WHERE id=$1;", [id]);
+        await db`
+        DELETE FROM account
+        WHERE id = ${id}
+        `;
         await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS)
         await redisClient.del(CACHE_ACCOUNTS)
 
@@ -80,12 +88,21 @@ router.delete("/:id", validateToken, async (req, res) => {
 router.patch("/unlockUntil", async (req, res) => {
     try {
         const body: { id: number; pincode: string; unlocked_until: string } = req.body;
-        const hash = await db.query("SELECT pincode FROM account WHERE id=$1", [body.id]);
-        const correctPin = bcrypt.compareSync(body.pincode, hash.rows[0].pincode)
+        const hash = (await db`
+        SELECT pincode
+        FROM account
+        WHERE id = ${body.id}
+        `)[0];
+        const correctPin = bcrypt.compareSync(body.pincode, hash[0][0].pincode)
         if (!correctPin) {
             return res.status(401).send("Incorrect pincode")
         }
-        await db.query("UPDATE account SET unlocked_until=$1 WHERE id=$2", [body.unlocked_until.toString(), body.id.toString()])
+        await db`
+        UPDATE account
+        SET unlocked_until = ${body.unlocked_until.toString()}
+        WHERE id = ${body.id.toString()}
+        `;
+
         await cleanRedisAccounts()
 
         return res.status(204).end();
@@ -98,8 +115,12 @@ router.patch("/unlockUntil", async (req, res) => {
 router.get("/stats", validateToken, async (_req, res) => {
 
     try {
-        const accounts = await db.query("SELECT username, balance, closed FROM account ORDER BY username ASC;");
-        return res.status(200).send(accounts.rows);
+        const accounts = (await db`
+        SELECT username, balance, closed
+        FROM account
+        ORDER BY username ASC
+        `)[0];
+        return res.status(200).send(accounts[0]);
     } catch (e) {
         console.log(e)
         res.status(500).send(e)

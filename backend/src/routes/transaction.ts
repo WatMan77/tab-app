@@ -10,12 +10,11 @@ const router = express.Router();
 
 router.get("/", async (_req, res) => {
     try {
-        const query =
-            `SELECT t.*, a.*
+        const transactions: Log[] =
+            await db`SELECT t.*, a.*
          FROM transaction AS t
          JOIN account a ON a.id=t.user_id
          ORDER BY transaction_date DESC;`;
-        const transactions: Log[] = (await db.query(query)).rows
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)
@@ -29,7 +28,7 @@ router.get("/recent", async (_req, res) => {
          FROM transaction AS t
          JOIN account a ON a.id=t.user_id
          ORDER BY transaction_date DESC LIMIT 10;`
-        const transactions: Log[] = (await db.query(query)).rows;
+        const transactions: Log[] = (await db(query))[0];
         res.status(200).send(transactions)
     } catch (e) {
         console.log(e)
@@ -40,13 +39,12 @@ router.get("/recent", async (_req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const query =
-            `SELECT t.*, a.*
+        const transactions: Log[] =
+            (await db`SELECT t.*, a.*
          FROM transaction AS t
          JOIN account a ON a.id=t.user_id
-         WHERE a.id=$1
-         ORDER BY transaction_date DESC;`;
-        const transactions: Log[] = (await db.query(query, [id])).rows;
+         WHERE a.id=${id}
+         ORDER BY transaction_date DESC;`)[0];
         res.status(200).send(transactions);
     } catch (e) {
         console.log(e);
@@ -71,39 +69,38 @@ router.post("/", async (req, res) => {
 
 
         for (const user of transaction.users) {
-            const accountInfo = (await db.query("SELECT pincode, unlocked_until FROM account WHERE id=$1", [user.id!])).rows
+            const accountInfo = (await db`
+                SELECT pincode, unlocked_until
+                FROM account
+                WHERE id = ${user.id!}
+                `);
             // Pincode required only if unlocked_until has passed
             const account = accountInfo[0];
-            console.log(account)
             const needsPincode =
                 account.unlocked_until !== null &&
                 account.pincode !== null &&
                 normalize(new Date(account.unlocked_until)) < normalize(new Date());
 
-            console.log("DOES IT NEED PINCODE?!?!", needsPincode)
-            console.log(new Date(account.unlocked_until))
 
             if (needsPincode) {
-                console.log("NEEDS PINCODE!")
                 if (!bcrypt.compareSync(user.pincode ?? "", accountInfo[0].pincode)) {
-                    console.log("WRONG PINCODE!")
                     errorList.push("Wrong pincode for " + user.username)
                     continue;
                 }
             }
             for (const item of transaction.items) {
                 const sum = (item.amount * item.product.pricein).toFixed(0);
-                await db.query(
-                    `
-                    INSERT INTO transaction
-                    (user_id, product_name, amount, sum)
-                    VALUES ($1, $2, $3, $4) RETURNING *;
-                    `,
-                    [user.id!.toString(), item.product.name, item.amount.toString(), sum]
-                );
+                await db`
+                    INSERT INTO transaction (user_id, product_name, amount, sum)
+                    VALUES (${user.id!.toString()}, ${item.product.name}, ${item.amount.toString()}, ${sum})
+                    RETURNING *
+                    `;
             }
-            await db.query(`
-                UPDATE account SET balance=balance - $1 WHERE username=$2`, [totalCost.toFixed(0), user.username]);
+            await db`
+            UPDATE account
+            SET balance = balance - ${totalCost.toFixed(0)}
+            WHERE username = ${user.username}
+            `;
         }
         if (errorList.length > 0 && errorList.length !== transaction.users.length) {
             return res.status(207).send(errorList)

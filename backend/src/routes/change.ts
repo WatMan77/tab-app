@@ -8,15 +8,14 @@ const CACHE_CHANGE = "change";
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
-        const changes = await db.query(`
-            
+        const changes = await db`
         SELECT change_date, change, username
         FROM admin_change
-        JOIN account ON admin_change.id=account.id
-        WHERE account.id=$1
+        JOIN account ON admin_change.id = account.id
+        WHERE account.id = ${id}
         ORDER BY change_date DESC
-        `, [id])
-        res.status(200).send(changes.rows)
+        `;
+        res.status(200).send(changes[0])
 
     } catch (e) {
         res.status(400).send(e)
@@ -29,15 +28,14 @@ router.get("/", async (_req, res) => {
         if (cached) {
             return res.status(200).send(JSON.parse(cached))
         }
-        const changes = await db.query(
-            `
+        const changes = (await db`
         SELECT change_date, change, username
         FROM admin_change
-        JOIN account ON admin_change.id=account.id
+        JOIN account ON admin_change.id = account.id
         ORDER BY change_date DESC
-        ;`)
-        await redisClient.set(CACHE_CHANGE, JSON.stringify(changes.rows))
-        res.status(200).send(changes.rows);
+        `);
+        await redisClient.set(CACHE_CHANGE, JSON.stringify(changes))
+        res.status(200).send(changes);
     } catch (e) {
         res.status(400).send(e)
     }

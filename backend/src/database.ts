@@ -1,9 +1,6 @@
 import { SQL } from "bun"
 import { migrate } from 'postgres-migrations';
-import knexConfig from "../knexfile";
-import Knex from "knex";
 import { redisClient } from "./utils";
-const knex = Knex(knexConfig.development);
 
 const dbConfig = {
     user: Bun.env["POSTGRES_USER"]!,
@@ -31,7 +28,6 @@ const initDb = async () => {
     try {
         await redisClient.flushAll();
         await migrate(dbConfig, './migrations');
-        await knex.migrate.latest();
     } catch (e) {
         console.log("DB initialization failed")
         console.log(e)

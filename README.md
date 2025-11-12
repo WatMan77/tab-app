@@ -70,10 +70,8 @@ needs to have the same name as the service name of the database.
 
 # Updating database
 
-In case there changes have to be made to the structure of the database, use knex.
-To run all newest migrations run while Database is running
-
-`bunx knex migrate:latest --env prod`
+In case there changes have to be made to the structure of the database, use postgres-migrations.
+The backend will automatically run all migrations.
 
 # Scripts
 

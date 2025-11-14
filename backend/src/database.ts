@@ -26,7 +26,6 @@ const clearDatabase = async () => {
 
 const initDb = async () => {
     try {
-        console.log("INITING DB!!")
         await redisClient.flushAll();
         await migrate(dbConfig, './migrations');
     } catch (e) {

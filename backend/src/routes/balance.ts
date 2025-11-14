@@ -3,7 +3,6 @@ import { db } from "../database"
 import type { UpdateAccount } from "../types";
 import { cleanRedisAccounts, cleanRedisChange, toNewAccount } from "../utils";
 import { validateToken } from "../middlewares";
-import bcrypt from "bcrypt";
 
 
 const router = express.Router();
@@ -17,7 +16,7 @@ router.put("/", validateToken, async (req, res) => {
             await db`UPDATE account SET balance = ${a.balance!.toFixed(0)}, category = ${a.newCategory} WHERE id = ${a.id.toString()}`;
 
             if (a.pincode) {
-                const hash = await bcrypt.hash(a.pincode!, 10)
+                const hash = await Bun.password.hash(a.pincode!)
                 await db`UPDATE account SET pincode = ${hash}, unlocked_until = ${new Date().toISOString()} WHERE id = ${a.id.toString()}`;
             }
 

@@ -3,7 +3,6 @@ import request from "supertest"
 import app from "../index"
 import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
-import bcrypt from "bcrypt"
 import type { Product } from "../src/types"
 import { Color } from "../src/types"
 import { redisClient } from "../src/utils"
@@ -28,7 +27,7 @@ beforeAll(async () => {
     }
 
     // Add the admin to the database
-    const hash = await bcrypt.hash(admin.password, 10)
+    const hash = await Bun.password.hash(admin.password)
     await db`
     INSERT INTO admin (username, hash)
     VALUES (${admin.username}, ${hash})

@@ -2,7 +2,6 @@ import express from "express"
 import { db } from "../database"
 import type { Log, Transaction } from '../types';
 import { redisClient, toNewTransaction } from '../utils'
-import bcrypt from "bcrypt";
 
 const CACHE_ACCOUNT_TRANSACTIONS = "accounts:transactions";
 
@@ -83,7 +82,7 @@ router.post("/", async (req, res) => {
 
 
             if (needsPincode) {
-                if (!bcrypt.compareSync(user.pincode ?? "", accountInfo[0].pincode)) {
+                if (!Bun.password.verifySync(user.pincode ?? "", accountInfo[0].pincode)) {
                     errorList.push("Wrong pincode for " + user.username)
                     continue;
                 }

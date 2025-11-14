@@ -3,7 +3,6 @@ import { db } from "../database"
 import type { Account } from '../types';
 import { cleanRedisAccounts, toNewAccount } from '../utils';
 import { validateToken } from '../middlewares';
-import bcrypt from "bcrypt";
 import { redisClient } from '../utils';
 const router = express.Router();
 
@@ -87,23 +86,35 @@ router.delete("/:id", validateToken, async (req, res) => {
 
 router.patch("/unlockUntil", async (req, res) => {
     try {
+        await cleanRedisAccounts()
         const body: { id: number; pincode: string; unlocked_until: string } = req.body;
         const hash = (await db`
         SELECT pincode
         FROM account
         WHERE id = ${body.id}
         `)[0];
-        const correctPin = bcrypt.compareSync(body.pincode, hash[0][0].pincode)
+
+        // Case 1: Is bcrypt
+        const correctPin = await Bun.password.verify(body.pincode, hash.pincode)
         if (!correctPin) {
             return res.status(401).send("Incorrect pincode")
         }
-        await db`
-        UPDATE account
-        SET unlocked_until = ${body.unlocked_until.toString()}
-        WHERE id = ${body.id.toString()}
-        `;
 
-        await cleanRedisAccounts()
+        if (hash.pincode.startsWith("$2")) {
+            const newHash = Bun.password.hash(body.pincode);
+            await db`UPDATE account SET pincode=${newHash}`;
+            await db`
+                UPDATE account
+                SET unlocked_until = ${body.unlocked_until.toString()}
+                WHERE id = ${body.id.toString()}
+                `;
+        }
+        // Case 2: argon2id
+        await db`
+                UPDATE account
+                SET unlocked_until = ${body.unlocked_until.toString()}
+                WHERE id = ${body.id.toString()}
+                `;
 
         return res.status(204).end();
     } catch (e) {
@@ -119,7 +130,7 @@ router.get("/stats", validateToken, async (_req, res) => {
         SELECT username, balance, closed
         FROM account
         ORDER BY username ASC
-        `)[0];
+        `);
         return res.status(200).send(accounts[0]);
     } catch (e) {
         console.log(e)

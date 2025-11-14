@@ -3,7 +3,6 @@ import request from "supertest"
 import app from "../index"
 import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
-import bcrypt from "bcrypt"
 import type { Transaction, Log, Account } from "../src/types"
 import { redisClient } from "../src/utils"
 
@@ -32,7 +31,7 @@ beforeEach(async () => {
     await clearDatabase()
     await redisClient.flushAll()
     // Add the admin to the database
-    const hash = await bcrypt.hash(admin.password, 10)
+    const hash = await Bun.password.hash(admin.password)
     await db`
     INSERT INTO admin (username, hash)
     VALUES (${admin.username}, ${hash})
@@ -189,8 +188,11 @@ describe("Transaction", () => {
         transaction.users[0].pincode = "4321"
         // Unlocked until is not taken into consideration when updating pin. Instead, Wait 1.5s so
         // the time difference is enough
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 2000));
 
+
+        console.log("Sending")
+        console.log(transaction)
         const response = await request(app)
             .post("/api/transaction")
             .send(transaction)

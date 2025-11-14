@@ -13,7 +13,6 @@ import { balanceRouter } from "./src/routes/balance"
 import { closeRouter } from './src/routes/closed';
 import { changeRouter } from './src/routes/change';
 import * as testValues from "./tests/db_values"
-import bcrypt from "bcrypt";
 import cors from "cors"
 import './src/cron-jobs';
 import { Server } from 'socket.io';
@@ -58,7 +57,7 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
         await redisClient.flushAll();
 
         try {
-            const passwordHash = await bcrypt.hash("password123", 10);
+            const passwordHash = await Bun.password.hash("password123");
             await db`
             INSERT INTO admin (username, hash)
             VALUES (${"admin"}, ${passwordHash})

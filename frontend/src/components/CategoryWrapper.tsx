@@ -24,8 +24,6 @@ const CategoryWrapper: React.FC<{
     return f;
   }, [users]);
 
-  console.log("USERS")
-
   const filteredByName = useCallback(
     (name: string): { user: Account; pressed: boolean }[] => {
       const searched = new Set(
@@ -73,10 +71,6 @@ const CategoryWrapper: React.FC<{
     [buildFilteredUsers, nameFilter]
   );
 
-  console.log("Filtered:")
-  console.log(filtered)
-
-
   const handleChange = (name: string) => {
     setNameFilter(name);
   };
@@ -97,12 +91,9 @@ const CategoryWrapper: React.FC<{
         />
       </div>
       {
-        filtered.map((f) => {
-          console.log('Rendering user:', f);
-          return (
-            <UserBlock user={f} changePress={changePress} key={f.user.username} />
-          );
-        })
+        filtered.map((f) => (
+          <UserBlock user={f} changePress={changePress} key={f.user.username} />
+        ))
       }
     </div>
   );

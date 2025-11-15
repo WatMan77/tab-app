@@ -13,20 +13,20 @@ else
     exit 1
 fi
 
-BACKUP_FILE=$(ls backup_*.sql 2>/dev/null | head -n 1)
+BACKUP_FILE=$(ls backup_*.dump 2>/dev/null | head -n 1)
 
 if [ -z "$BACKUP_FILE" ]; then
-  echo "❌ No backup .sql file found matching 'backup_*.sql'"
+  echo "❌ No backup .dump file found matching 'backup_*.dump'"
   exit 1
 fi
 
 # Copy backup file to container
-docker cp "$BACKUP_FILE" "$DB_CONTAINER:/backup_file.sql"
+docker cp "$BACKUP_FILE" "$DB_CONTAINER:/backup_file.dump"
 
 # Delete old database
-docker exec -it $DB_CONTAINER psql -U postgres -c "DROP DATABASE IF EXISTS \"$POSTGRES_DB\";"
+docker exec $DB_CONTAINER dropdb -U postgres "$POSTGRES_DB"
 
 # Create database to save data in
-docker exec -it $DB_CONTAINER psql -U postgres -c "CREATE DATABASE \"$POSTGRES_DB\";"
+docker exec $DB_CONTAINER createdb -U postgres "$POSTGRES_DB"
 # Insert data from the backup file
-docker exec -it $DB_CONTAINER psql -U postgres -d "$POSTGRES_DB" -f /backup_file.sql
+docker exec $DB_CONTAINER pg_restore -U postgres -d "$POSTGRES_DB" /backup_file.dump

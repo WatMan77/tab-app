@@ -49,6 +49,11 @@ interface Log {
     amount: number
 }
 
+interface LogInformation {
+    logs: Log[],
+    count: number
+}
+
 export enum Color {
     WHITE = "WHITE",
     RED = "RED",
@@ -60,4 +65,4 @@ export enum Color {
 }
 
 export { UserType }
-export type { Account, Product, Transaction, Log, UpdateAccount }
+export type { Account, Product, Transaction, Log, LogInformation, UpdateAccount }

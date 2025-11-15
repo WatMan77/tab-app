@@ -3,7 +3,7 @@ import request from "supertest"
 import app from "../index"
 import { db, initDb, clearDatabase } from "../src/database"
 import { accounts, admin, products } from "./db_values"
-import type { Transaction, Log, Account } from "../src/types"
+import type { Transaction, Account, LogInformation } from "../src/types"
 import { redisClient } from "../src/utils"
 
 let token: string;
@@ -74,7 +74,8 @@ describe("Transaction", () => {
             .expect(200)
 
 
-        const t_info: Log[] = logs.body
+        const response: LogInformation = logs.body
+        const t_info = response.logs
         expect(t_info).toHaveLength(1)
 
         expect(t_info[0]).toHaveProperty("username")

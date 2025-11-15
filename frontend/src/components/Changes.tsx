@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BalanceChange, Account } from "../types";
+import type { BalanceChangeInfo, Account } from "../types";
 import axios from 'axios';
 import {
   Select,
@@ -11,7 +11,7 @@ import {
 import "../styling/transactions.scss";
 import { toast } from "react-toastify";
 const Changes = () => {
-  const [changes, setChanges] = useState<BalanceChange[]>([]);
+  const [changes, setChanges] = useState<BalanceChangeInfo>({ count: 0, changes: [] });
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
   const [users, setUsers] = useState<Account[]>([]);
 
@@ -46,7 +46,7 @@ const Changes = () => {
   };
 
   const fetchNewUser = async (id: number) => {
-    const res = await axios.get(`/api/changes/${id}`);
+    const res = await axios.get(`/api/changes/${id}?page=1`);
     setChanges(res.data);
   };
 
@@ -67,9 +67,9 @@ const Changes = () => {
       if (axios.isAxiosError(e)) {
         const message = e?.response?.data && e.response.data !== "" ?
           e.response.data : e.message;
-        toast.error("Error creating new user: " + message)
+        toast.error("Error fetching new user : " + JSON.stringify(message))
       } else if (e instanceof Error) {
-        toast.error("Error creating new user: " + e.message)
+        toast.error("Error fetching new user: " + e.message)
       } else {
         toast.error("Unexpected error")
       }
@@ -99,7 +99,7 @@ const Changes = () => {
             </tr>
           </thead>
           <tbody>
-            {changes.map((change) => (
+            {changes.changes.map((change) => (
               <tr key={change.username + " " + change.change_date}>
                 <td>{change.username}</td>
                 <td>{(change.change / 100).toFixed(2)}</td>

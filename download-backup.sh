@@ -5,8 +5,8 @@ if [ -f .env.production ]; then
 fi
 
 LATEST_BACKUP=$(sshpass -p $SSHPASS ssh joutomies@katiska.dy.fi \
-"ls -t $DESTINATION_DIR/backup_*.sql.gz | head -n 1")
+"ls -t $DESTINATION_DIR/backup_*.dump.gz | head -n 1")
 
 sshpass -p $SSHPASS scp joutomies@katiska.dy.fi:"$LATEST_BACKUP" .
 
-gunzip backup_*.sql.gz
+gunzip backup_*.dump.gz

@@ -1,20 +1,30 @@
 import express from "express"
 import { db } from "../database"
-import type { Log, Transaction } from '../types';
+import type { Log, LogInformation, Transaction } from '../types';
 import { redisClient, toNewTransaction } from '../utils'
 
 const CACHE_ACCOUNT_TRANSACTIONS = "accounts:transactions";
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
     try {
+        const page = parseInt(req.query["page"]?.toString() ?? "") || 1;
+        const limit = 50;
+        const offset = (page - 1) * limit;
         const transactions: Log[] =
             await db`SELECT t.*, a.*
          FROM transaction AS t
          JOIN account a ON a.id=t.user_id
-         ORDER BY transaction_date DESC;`;
-        res.status(200).send(transactions)
+         ORDER BY transaction_date DESC
+         OFFSET ${offset}
+         LIMIT ${limit};`;
+        const count = await db`SELECT COUNT(*) FROM transaction;`;
+        const returnObj: LogInformation = {
+            count: Number.parseInt(count[0].count),
+            logs: transactions
+        };
+        res.status(200).send(returnObj)
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
@@ -38,13 +48,23 @@ router.get("/recent", async (_req, res) => {
 router.get("/:id", async (req, res) => {
     try {
         const id = req.params.id;
+        const page = parseInt(req.query["page"]?.toString() ?? "") || 1;
+        const limit = 50;
+        const offset = (page - 1) * limit;
         const transactions: Log[] =
             (await db`SELECT t.*, a.*
          FROM transaction AS t
          JOIN account a ON a.id=t.user_id
          WHERE a.id=${id}
-         ORDER BY transaction_date DESC;`)[0];
-        res.status(200).send(transactions);
+         ORDER BY transaction_date DESC
+         OFFSET ${offset}
+         LIMIT ${limit};`);
+        const count = await db`SELECT COUNT(*) from transaction WHERE user_id=${id};`
+        const returnObj: LogInformation = {
+            count: Number.parseInt(count[0].count),
+            logs: transactions
+        }
+        res.status(200).send(returnObj);
     } catch (e) {
         console.log(e);
         res.status(400).send(e);

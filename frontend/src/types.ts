@@ -56,10 +56,20 @@ interface Log {
     username: string
 }
 
+interface LogInformation {
+    logs: Log[],
+    count: number
+}
+
 interface BalanceChange {
     username: string,
     change_date: Date,
     change: number
+}
+
+interface BalanceChangeInfo {
+    changes: BalanceChange[],
+    count: number
 }
 
 export enum Color {
@@ -74,4 +84,4 @@ export enum Color {
 }
 
 export { UserType }
-export type { User, Product, Account, Admin, UpdateAccount, Log, BalanceChange }
+export type { User, Product, Account, Admin, UpdateAccount, Log, LogInformation, BalanceChange, BalanceChangeInfo }

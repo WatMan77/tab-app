@@ -1,30 +1,42 @@
 import { startTransition, useEffect, useState } from "react";
-import type { Log, Account } from "../types";
+import type { LogInformation, Account } from "../types";
 import {
   Select,
   MenuItem,
   FormControl,
   InputLabel,
   type SelectChangeEvent,
+  Pagination,
 } from "@mui/material";
 import "../styling/transactions.scss";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const Transactions = () => {
-  const [trans, setTrans] = useState<Log[]>([]);
+  const [trans, setTrans] = useState<LogInformation>({ count: 0, logs: [] });
   const [users, setUsers] = useState<Account[]>([]);
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     try {
-      axios.get("/api/transaction")
-        .then(res => {
-          startTransition(() => {
-            setTrans(res.data);
+      if (selectedUser) {
+        axios.get(`/api/transaction/${selectedUser.id!}?page=${page}`)
+          .then(res => {
+            startTransition(() => {
+              setTrans(res.data);
 
-          })
-        });
+            })
+          });
+      } else {
+        axios.get("/api/transaction?page=" + page)
+          .then(res => {
+            startTransition(() => {
+              setTrans(res.data);
+
+            })
+          });
+      }
       axios.get("/api/account")
         .then(res => {
           startTransition(() => {
@@ -41,10 +53,11 @@ const Transactions = () => {
         toast.error("Unexpected error " + e)
       }
     }
-  }, []);
+  }, [page, selectedUser]);
 
   const fetchNewUser = async (id: number) => {
-    const res = await axios.get(`/api/transaction/${id}`);
+    const res = await axios.get(`/api/transaction/${id}?page=${1}`);
+    setPage(1)
     setTrans(res.data);
   };
 
@@ -70,8 +83,9 @@ const Transactions = () => {
   const handleNewUser = async (event: SelectChangeEvent) => {
     try {
       if (event.target.value.trim() == "") {
-        const res = await axios.get("/api/transaction");
+        const res = await axios.get("/api/transaction?page=1");
         setSelectedUser(null);
+        setPage(1)
         setTrans(res.data);
       } else {
         const user = users.find((u) => u.username == event.target.value);
@@ -91,6 +105,11 @@ const Transactions = () => {
     }
 
   };
+
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    console.log("new value " + value)
+    setPage(value);
+  }
   return (
     <div className="transactions-container">
       <FormControl className="form-control">
@@ -116,7 +135,7 @@ const Transactions = () => {
             </tr>
           </thead>
           <tbody>
-            {trans.map((transaction, index) => (
+            {trans.logs.map((transaction, index) => (
               <tr key={index}>
                 <td>{transaction.username}</td>
                 <td>{transaction.product_name}</td>
@@ -139,6 +158,7 @@ const Transactions = () => {
           </tbody>
         </table>
       </div>
+      <Pagination count={Math.ceil(trans.count / 50)} page={page} onChange={handlePageChange} />
     </div>
   );
 };

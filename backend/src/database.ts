@@ -10,7 +10,8 @@ const dbConfig = {
     database: Bun.env["POSTGRES_DB"]!
 }
 console.log(dbConfig)
-const pool = new SQL(`postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`)
+const psqlString = Bun.env["POSTGRES_URL"];
+const pool = new SQL(psqlString!)
 
 const clearDatabase = async () => {
     if (!(Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development")) {

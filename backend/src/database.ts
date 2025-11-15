@@ -12,6 +12,7 @@ const dbConfig = {
 console.log(dbConfig)
 const psqlString = Bun.env["POSTGRES_URL"];
 const pool = new SQL(psqlString!)
+console.log(psqlString)
 
 const clearDatabase = async () => {
     if (!(Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development")) {
@@ -35,8 +36,6 @@ const initDb = async () => {
     }
 }
 
-if (Bun.env.NODE_ENV === "development" || Bun.env.NODE_ENV === "test") {
-    await initDb()
-}
+await initDb()
 
 export { pool as db, initDb, clearDatabase }

@@ -131,7 +131,7 @@ router.get("/stats", validateToken, async (_req, res) => {
         FROM account
         ORDER BY username ASC
         `);
-        return res.status(200).send(accounts[0]);
+        return res.status(200).send(accounts);
     } catch (e) {
         console.log(e)
         res.status(500).send(e)

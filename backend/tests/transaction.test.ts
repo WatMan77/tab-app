@@ -190,9 +190,6 @@ describe("Transaction", () => {
         // the time difference is enough
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-
-        console.log("Sending")
-        console.log(transaction)
         const response = await request(app)
             .post("/api/transaction")
             .send(transaction)

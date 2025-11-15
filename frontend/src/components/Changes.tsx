@@ -24,8 +24,6 @@ const Changes = () => {
         setUsers(res.data);
       });
   }, []);
-  console.log("CHANGES!")
-  console.log(changes)
 
   const compareAccounts = (a: Account, b: Account): number => {
     if (a.username < b.username) {

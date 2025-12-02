@@ -1,32 +1,41 @@
-import { describe, test, expect, afterAll, beforeEach } from "bun:test"
+import { describe, test, expect, afterAll, beforeEach, beforeAll } from "bun:test"
 import request from "supertest"
 import app from "../index"
 import { clearDatabase, db, initDb } from "../src/database"
-import { accounts, admin, products } from "./db_values"
-import { UserType, type Account } from "../src/types"
-import { redisClient } from "../src/utils"
+import { admin, products, createRandomAccount } from "./db_values"
+import { type Account, type UpdateAccount } from "../src/types"
+import { commonFieldMap, redisClient, toNewAccount } from "../src/utils"
+import { faker } from '@faker-js/faker';
+
 
 let token: string;
+faker.seed(479407)
 
+const accountAmount = 50;
+let accounts: Account[] = []
+
+beforeAll(() => {
+    faker.seed(479407)
+})
 beforeEach(async () => {
+    accounts = [
+        ...new Map(Array.from({ length: accountAmount }, () => createRandomAccount())
+            .map(acc => [acc.username, acc])
+        ).values()
+    ]
     await initDb()
     await clearDatabase()
     await redisClient.flushAll()
 
     for (const a of accounts) {
-        const id: any = (await db`
-        INSERT INTO account (username, category, balance)
-        VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
-        RETURNING id
-        `)[0];
-        a.id = id.id;
+        delete a.pincode
+        delete a.unlocked_until
+        const { id } = (await db`INSERT INTO account ${db(a)} RETURNING id`)[0]
+        a.id = id
     }
 
     for (const p of products) {
-        await db`
-        INSERT INTO product (name, pricein, priceout, color)
-        VALUES (${p.name}, ${p.pricein.toString()}, ${p.priceout.toString()}, ${p.color})
-        `;
+        await db`INSERT INTO product ${db(p)}`
     }
 
     // Add the admin to the database
@@ -48,28 +57,38 @@ afterAll(() => {
 })
 
 describe("Balance", () => {
-    test("changing the balance for one with correct token", async () => {
-        // Change the balance first
-        await request(app)
-            .put("/api/balance")
-            .set("Authorization", "Bearer " + token)
-            .send({ accounts: [{ ...accounts[0], balance: accounts[0].balance! - 100, change: -100, newCategory: accounts[0].category }] })
-            .expect(201)
+    test("changing the balance for one at a time with correct token", async () => {
+        const change = -100
+        for (const account of accounts) {
+            // Change the balance first
+            const changedBalance: UpdateAccount[] = [{ ...account, balance: account.balance! + change, change }]
+            await request(app)
+                .put("/api/balance")
+                .set("Authorization", "Bearer " + token)
+                .send({ accounts: changedBalance })
+                .expect(201)
 
-        // Check that the balance in the database is correct
-        const response = await request(app)
-            .get("/api/account/transactions")
-            .expect(200)
+            // Check that the balance in the database is correct
+            const fetchedAccounts = await request(app)
+                .get("/api/account/transactions")
+                .expect(200)
+            const body: any[] = fetchedAccounts.body;
+            expect(body).toBeArray()
+            const updatedAccounts: Account[] = body.map(a => toNewAccount(a))
 
-        const expectedAccount = { ...accounts[0], balance: accounts[0].balance! - 100 };
-        delete expectedAccount.id;
+            const found = updatedAccounts.find(x => x.username === account.username)
+            expect(found).toBeDefined()
+            const expectedAccount: Account = { ...account, balance: account.balance! + change }
 
-        const actualAccounts = response.body.map(({ id, ...rest }: { id?: number }) => rest);
-        expect(actualAccounts).toEqual(expect.arrayContaining([expectedAccount]))
+            const commonFielded = commonFieldMap(account, found)
+            expect(expectedAccount).toEqual(commonFielded)
+
+        }
     })
 
     test("change balance for more than one user at a time", async () => {
-        const updatedBalances: Account[] = accounts.map(a => ({ ...a, balance: a.balance! - 100, change: -100, newCategory: a.category }))
+        const change = -100
+        const updatedBalances: UpdateAccount[] = accounts.map(a => ({ ...a, balance: a.balance! + change, change }))
 
         await request(app)
             .put("/api/balance")
@@ -81,24 +100,18 @@ describe("Balance", () => {
             .get("/api/account")
             .expect(200)
 
-        // Map the response body to remove IDs for comparison
-        const actualAccounts = response.body.map(({ username, category, balance, closed }: { username: string, category: UserType, balance: number, closed: boolean }) => ({
-            username,
-            category,
-            balance,
-            closed
-        }));
-        const expectedAccounts = updatedBalances.map(({ username, category, balance, closed }) => ({
-            username,
-            category,
-            balance,
-            closed
-        }));
+        const body: any[] = response.body;
+        expect(body).toBeArray()
+        const updatedAccounts: Account[] = body.map(a => toNewAccount(a))
 
-        // Check if the actual accounts include the expected updated account
-        actualAccounts.sort((a: any, b: any) => a.username.localeCompare(b.username));
-        expectedAccounts.sort((a, b) => a.username.localeCompare(b.username));
-        expect(actualAccounts).toEqual(expectedAccounts);
+        for (const account of accounts) {
+            const found = updatedAccounts.find(x => x.username === account.username)
+            expect(found).toBeDefined()
+            const expectedAccount: Account = { ...account, balance: account.balance! + change }
+
+            const commonFielded = commonFieldMap(account, found)
+            expect(expectedAccount).toEqual(commonFielded)
+        }
 
     })
 })

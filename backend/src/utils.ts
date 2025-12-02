@@ -3,8 +3,15 @@ import { createClient } from "redis";
 
 const toNewAccount = (object: unknown): Account => {
     if (isValidAccount(object)) {
-        return object as Account
+        return {
+            ...object,
+            unlocked_until:
+                object.unlocked_until === null
+                    ? null
+                    : new Date(object.unlocked_until!)
+        } as Account;
     } else {
+        console.log(object)
         throw new Error("Invalid account structure")
     }
 }
@@ -12,17 +19,18 @@ const toNewAccount = (object: unknown): Account => {
 const isValidAccount = (account: any): account is Account => {
     const hasValidId = typeof account.id === "undefined" || typeof account.id === "number"
     const hasValidBalance = typeof account.balance === "undefined" || typeof account.balance === "number"
-    const hasValidPin = account.pincode === null || typeof account.pincode === "string"
+    const hasValidPin = !account.pincode || account.pincode === null || typeof account.pincode === "string"
+    const hasValidUnlockDate = !account.unlocked_until || account.unlocked_until === null || account.unlocked_until instanceof Date || account.unlocked_until !== null && !isNaN(Date.parse(account.unlocked_until))
 
-
-    return (
-        typeof account === "object" &&
+    const valAcc = typeof account === "object" &&
         typeof account.username === 'string' &&
         hasValidBalance &&
         isValidUserType(account.category) &&
         hasValidId &&
-        hasValidPin
-    )
+        hasValidPin &&
+        hasValidUnlockDate
+
+    return valAcc
 }
 
 const isValidUserType = (category: any): category is UserType => {
@@ -65,8 +73,6 @@ const isValidTransaction = (transaction: any): transaction is Transaction => {
     )
 }
 
-console.log("redis url?")
-console.log(Bun.env["REDIS_URL"])
 const redisClient = await createClient({
     url: Bun.env["REDIS_URL"]
 })
@@ -91,4 +97,19 @@ const cleanRedisChange = async () => {
     await redisClient.del(CACHE_CHANGE)
 }
 
-export { toNewAccount, toNewProduct, toNewTransaction, redisClient, cleanRedisAccounts, cleanRedisProducts, cleanRedisChange }
+const commonFieldMap = <T extends object>(expected: T, received: any): T => {
+    const keys = Object.keys(expected) as (keyof T)[];
+
+    const subset = {} as T;
+
+    for (const key of keys) {
+        subset[key] = received[key];
+    }
+
+    return subset;
+};
+
+const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1000);
+
+
+export { toNewAccount, toNewProduct, toNewTransaction, redisClient, cleanRedisAccounts, cleanRedisProducts, cleanRedisChange, commonFieldMap, normalize }

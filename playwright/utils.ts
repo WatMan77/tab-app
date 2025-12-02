@@ -1,9 +1,9 @@
-import { type Account, type Product, UserType } from "../src/types";
-import { Color } from "../src/types";
+import { type Account, type Product, UserType, Color } from "../backend/src/types";
 import { faker } from '@faker-js/faker';
-import { normalize } from "../src/utils";
 
 faker.seed(479407)
+const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1000);
+
 const accounts: Account[] = [
     {
         username: "Jarmo",

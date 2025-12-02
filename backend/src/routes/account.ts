@@ -53,13 +53,13 @@ router.get("/", async (_req, res) => {
 router.post("/", async (req, res) => {
     try {
         const account: Account = toNewAccount(req.body)
-        await db`
-        INSERT INTO account (username, category, balance)
-        VALUES (${account.username}, ${account.category}, ${Math.floor(account.balance!).toString()})
-        RETURNING id, balance
-        `;
+        if (account.pincode && /^\d+$/.test(account.pincode)) {
+            const hash = Bun.password.hashSync(account.pincode)
+            account.pincode = hash
+        }
+        const result = await db`INSERT INTO ACCOUNT ${db(account)} RETURNING id, balance`
         await cleanRedisAccounts()
-        res.status(201).send("OK")
+        res.status(201).send({ ...result[0] })
     } catch (e) {
         console.log(e)
         res.status(400).send(e)
@@ -102,19 +102,20 @@ router.patch("/unlockUntil", async (req, res) => {
 
         if (hash.pincode.startsWith("$2")) {
             const newHash = Bun.password.hash(body.pincode);
-            await db`UPDATE account SET pincode=${newHash}`;
+            await db`
+                UPDATE account
+                SET unlocked_until = ${body.unlocked_until.toString()},
+                pincode=${newHash}
+                WHERE id = ${body.id.toString()}
+                `;
+        } else {
+            // Case 2: argon2id
             await db`
                 UPDATE account
                 SET unlocked_until = ${body.unlocked_until.toString()}
                 WHERE id = ${body.id.toString()}
                 `;
         }
-        // Case 2: argon2id
-        await db`
-                UPDATE account
-                SET unlocked_until = ${body.unlocked_until.toString()}
-                WHERE id = ${body.id.toString()}
-                `;
 
         return res.status(204).end();
     } catch (e) {

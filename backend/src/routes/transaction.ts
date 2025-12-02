@@ -96,10 +96,9 @@ router.post("/", async (req, res) => {
             // Pincode required only if unlocked_until has passed
             const account = accountInfo[0];
             const needsPincode =
-                account.unlocked_until !== null &&
-                account.pincode !== null &&
+                account.unlocked_until && account.unlocked_until !== null &&
+                account.pincode && account.pincode !== null &&
                 normalize(new Date(account.unlocked_until)) < normalize(new Date());
-
 
             if (needsPincode) {
                 if (!Bun.password.verifySync(user.pincode ?? "", accountInfo[0].pincode)) {

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import * as testvalues from "../../backend/tests/db_values";
+import * as testvalues from "../utils";
 const baseUrl = "http://localhost:5173"
 
 

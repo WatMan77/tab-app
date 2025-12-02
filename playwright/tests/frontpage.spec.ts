@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import * as testValues from "../../backend/tests/db_values"
+import * as testValues from "../utils"
 
 const admin = "admin"
 const password = "password123"

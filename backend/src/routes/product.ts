@@ -42,13 +42,9 @@ router.post("/", validateToken, async (req, res) => {
 router.put("/", validateToken, async (req, res) => {
     try {
         const product: Product = toNewProduct(req.body);
-        const newName = req.body.newName
-        if (!newName || typeof newName !== 'string') {
-            return res.status(401).json({ error: "No new name found" })
-        }
         await db`
         UPDATE product 
-        SET name = ${newName}, 
+        SET name = ${product.newName}, 
             pricein = ${product.pricein.toFixed(0)}, 
             priceout = ${product.priceout.toFixed(0)}, 
             color = ${product.color}

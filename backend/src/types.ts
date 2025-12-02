@@ -9,31 +9,32 @@ interface Account {
     category: UserType,
     balance?: number,
     closed: boolean,
-    recent: Date | null,
+    recent?: Date | null,
     id?: number,
-    pincode: string | null,
-    unlocked_until: Date | null
+    pincode?: string,
+    unlocked_until?: Date | null
 }
 
 interface UpdateAccount {
     username: string,
-    category: UserType,
+    category?: UserType,
     balance?: number,
     closed: boolean,
-    recent: Date | null,
-    newName: string,
-    id: number,
-    newCategory: UserType,
+    recent?: Date | null,
+    newName?: string,
+    id?: number,
+    newCategory?: UserType,
     change: number,
     pincode?: string,
-    unlocked_until: Date | null
+    unlocked_until?: Date | null
 }
 
 interface Product {
     name: string,
     pricein: number,
     priceout: number,
-    color: Color
+    color: Color,
+    newName?: string
 }
 
 

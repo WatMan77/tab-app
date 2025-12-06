@@ -7,6 +7,7 @@ import {
   FormControl,
   InputLabel,
   type SelectChangeEvent,
+  Pagination,
 } from "@mui/material";
 import "../styling/transactions.scss";
 import { toast } from "react-toastify";
@@ -14,16 +15,18 @@ const Changes = () => {
   const [changes, setChanges] = useState<BalanceChangeInfo>({ count: 0, changes: [] });
   const [selectedUser, setSelectedUser] = useState<Account | null>(null);
   const [users, setUsers] = useState<Account[]>([]);
+  const [page, setPage] = useState<number>(1);
+
 
   useEffect(() => {
-    axios.get("/api/changes")
+    axios.get("/api/changes?page=" + page)
       .then(res => setChanges(res.data));
 
     axios.get("/api/account")
       .then(res => {
         setUsers(res.data);
       });
-  }, []);
+  }, [page]);
 
   const compareAccounts = (a: Account, b: Account): number => {
     if (a.username < b.username) {
@@ -74,8 +77,10 @@ const Changes = () => {
         toast.error("Unexpected error")
       }
     }
-
   };
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  }
   return (
     <div className="transactions-container">
       <FormControl className="form-control">
@@ -117,6 +122,7 @@ const Changes = () => {
           </tbody>
         </table>
       </div>
+      <Pagination count={Math.ceil(changes.count / 50)} page={page} onChange={handlePageChange} />
     </div>
   );
 };

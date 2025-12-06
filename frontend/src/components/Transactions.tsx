@@ -107,7 +107,6 @@ const Transactions = () => {
   };
 
   const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
-    console.log("new value " + value)
     setPage(value);
   }
   return (

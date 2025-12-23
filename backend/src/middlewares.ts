@@ -17,6 +17,7 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
         }
 
         // Attach the decoded token to the request for later use if needed
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (req as any).decodedToken = decodedToken;
         next(); // Proceed to the next middleware or route handler
     } catch (e) {
@@ -25,4 +26,4 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { validateToken }
+export { validateToken };

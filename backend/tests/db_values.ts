@@ -1,9 +1,9 @@
-import { type Account, type Product, UserType } from "../src/types";
-import { Color } from "../src/types";
+import { type Account, type Product, UserType } from "@app/common";
+import { Color } from "@app/common";
 import { faker } from '@faker-js/faker';
 import { normalize } from "../src/utils";
 
-faker.seed(479407)
+faker.seed(479407);
 const accounts: Account[] = [
     {
         username: "Jarmo",
@@ -32,7 +32,7 @@ const accounts: Account[] = [
         unlocked_until: null,
 
     }
-]
+];
 
 const products: Product[] = [
     {
@@ -53,32 +53,32 @@ const products: Product[] = [
         priceout: 300,
         color: Color.RED
     }
-]
+];
 
-const drinks: string[] = ["Beer", "Long Drink", "Water", "Soda", "Vodka"]
+const drinks: string[] = ["Beer", "Long Drink", "Water", "Soda", "Vodka"];
 
 const admin = {
     username: "admin",
     password: "password123"
-}
+};
 
 const createRandomAccount = (): Account => {
-    const pinBool = faker.datatype.boolean()
-    const unlockBool = faker.datatype.boolean()
+    const pinBool = faker.datatype.boolean();
+    const unlockBool = faker.datatype.boolean();
     const unlocked_until = pinBool ? (unlockBool ? faker.date.past() : faker.date.future()) : null;
     const o: Account = {
         username: faker.internet.username(),
         category: faker.helpers.arrayElement(Object.values(UserType)),
         closed: faker.datatype.boolean(),
         balance: faker.number.int(50000)
-    }
+    };
     if (pinBool) {
         o.pincode = faker.string.numeric({ allowLeadingZeros: true, length: 4 });
-        o.unlocked_until = normalize(unlocked_until!)
+        o.unlocked_until = normalize(unlocked_until!);
     }
 
     return o;
-}
+};
 
 const createRandomProduct = (name?: string): Product => {
     return {
@@ -86,8 +86,8 @@ const createRandomProduct = (name?: string): Product => {
         color: faker.helpers.arrayElement(Object.values(Color)),
         pricein: faker.number.int({ min: 100, max: 10000 }),
         priceout: faker.number.int({ min: 100, max: 10000 })
-    }
-}
+    };
+};
 
 
-export { accounts, products, admin, createRandomAccount, createRandomProduct }
+export { accounts, products, admin, createRandomAccount, createRandomProduct };

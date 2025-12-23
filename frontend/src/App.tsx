@@ -1,5 +1,5 @@
-import { UserType } from "./types";
-import type { Account, Product } from "./types";
+import { UserType } from "@app/common";
+import type { Account, Product } from "@app/common";
 import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";

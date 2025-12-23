@@ -6,7 +6,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import { UserType } from "../../types";
+import { UserType } from "@app/common";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import axios from 'axios';

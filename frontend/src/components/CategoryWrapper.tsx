@@ -1,4 +1,4 @@
-import type { Account } from "../types";
+import type { Account } from "@app/common";
 import { useMemo, useCallback } from "react";
 import UserBlock from "./UserBlock";
 import { TextField, InputAdornment } from "@mui/material";

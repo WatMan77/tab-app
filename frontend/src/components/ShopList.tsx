@@ -1,4 +1,4 @@
-import type { Product } from "../types";
+import type { Product } from "@app/common";
 
 const ShopList: React.FC<{
   drinkStates: { product: Product; amount: number }[];

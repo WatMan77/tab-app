@@ -1,4 +1,4 @@
-import type { Account } from "../types.ts";
+import type { Account } from "@app/common";
 import { Button } from "@mui/material";
 import React from "react";
 

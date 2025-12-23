@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Product } from "../../types";
+import type { Product } from "@app/common";
 import EditProduct from "./EditProduct";
 import NewProduct from "./NewProduct";
 import axios from "axios";

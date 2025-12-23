@@ -9,7 +9,7 @@ import {
   InputLabel,
   type SelectChangeEvent,
 } from "@mui/material";
-import { Color } from "../../types";
+import { Color } from "@app/common";
 import axios from 'axios';
 import { toast } from "react-toastify";
 

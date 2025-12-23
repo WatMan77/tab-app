@@ -12,6 +12,6 @@ const checkBalanceCron = async () => {
     } catch (e) {
         console.log("Error in balance cron job\n", e);
     }
-}
+};
 
-cron.schedule('0 12 * * *', checkBalanceCron)
+cron.schedule('0 12 * * *', checkBalanceCron);

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import type { Product } from "../types";
-import { Color } from "../types";
+import type { Product } from "@app/common";
+import { Color } from "@app/common";
 import "../styling/pricelist.scss";
 import axios from "axios";
 

@@ -16,7 +16,7 @@ import CurrencyInput from "react-currency-input-field";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from 'axios';
 
-import { Color, type Product } from "../../types";
+import { Color, type Product } from "@app/common";
 import { useState } from "react";
 import { toast } from "react-toastify";
 

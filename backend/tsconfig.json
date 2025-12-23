@@ -23,5 +23,11 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/.eslintrc.cjs",
+    "**/eslint.config.cjs"
+  ]
 }

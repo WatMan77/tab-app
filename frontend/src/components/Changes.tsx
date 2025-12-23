@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { BalanceChangeInfo, Account } from "../types";
+import type { BalanceChangeInfo, Account } from "@app/common";
 import axios from 'axios';
 import {
   Select,

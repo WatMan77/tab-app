@@ -1,5 +1,5 @@
 import { startTransition, useEffect, useState } from "react";
-import type { LogInformation, Account } from "../types";
+import type { LogInformation, Account } from "@app/common";
 import {
   Select,
   MenuItem,

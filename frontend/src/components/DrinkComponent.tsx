@@ -1,6 +1,6 @@
 import { Button, Box, ButtonGroup } from "@mui/material";
-import type { Product } from "../types";
-import { Color } from "../types";
+import type { Product } from "@app/common";
+import { Color } from "@app/common";
 
 const Drink: React.FC<{
   drink: Product;

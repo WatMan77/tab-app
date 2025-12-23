@@ -1,4 +1,4 @@
-import type { Account, Product, Transaction, UserType } from "./types";
+import type { Account, Product, Transaction, UserType } from "@app/common";
 import { createClient } from "redis";
 
 const toNewAccount = (object: unknown): Account => {
@@ -11,67 +11,84 @@ const toNewAccount = (object: unknown): Account => {
                     : new Date(object.unlocked_until!)
         } as Account;
     } else {
-        console.log(object)
-        throw new Error("Invalid account structure")
+        console.log(object);
+        throw new Error("Invalid account structure");
     }
-}
+};
 
-const isValidAccount = (account: any): account is Account => {
-    const hasValidId = typeof account.id === "undefined" || typeof account.id === "number"
-    const hasValidBalance = typeof account.balance === "undefined" || typeof account.balance === "number"
-    const hasValidPin = !account.pincode || account.pincode === null || typeof account.pincode === "string"
-    const hasValidUnlockDate = !account.unlocked_until || account.unlocked_until === null || account.unlocked_until instanceof Date || account.unlocked_until !== null && !isNaN(Date.parse(account.unlocked_until))
+const isValidAccount = (account: unknown): account is Account => {
+    if (typeof account !== "object" || account === null) return false;
+    const acc = account as Record<string, unknown>;
+    const hasValidId =
+        typeof acc["id"] === "undefined" || typeof acc["id"] === "number";
+    const hasValidBalance =
+        typeof acc["balance"] === "undefined" || typeof acc["balance"] === "number";
+    const hasValidPin =
+        !acc["pincode"] ||
+        acc["pincode"] === null ||
+        typeof acc["pincode"] === "string"
+    const hasValidUnlockDate =
+        !acc["unlocked_until"] ||
+        acc["unlocked_until"] === null ||
+        acc["unlocked_until"] instanceof Date ||
+        (typeof acc["unlocked_until"] === "string" && !isNaN(Date.parse(acc["unlocked_until"])));
 
-    const valAcc = typeof account === "object" &&
-        typeof account.username === 'string' &&
+    const valAcc =
+        typeof acc["username"] === 'string' &&
         hasValidBalance &&
-        isValidUserType(account.category) &&
+        isValidUserType(acc["category"]) &&
         hasValidId &&
         hasValidPin &&
-        hasValidUnlockDate
+        hasValidUnlockDate;
 
-    return valAcc
-}
+    return valAcc;
+};
 
-const isValidUserType = (category: any): category is UserType => {
+const isValidUserType = (category: unknown): category is UserType => {
+    if (typeof category !== "string") return false;
     return ['ASUKAS', 'VANHA', 'HANGAROUND'].includes(category);
-}
+};
 
 
 // Product object validation
 const toNewProduct = (object: unknown): Product => {
     if (isValidProduct(object)) {
-        return object as Product
+        return object;
     } else {
-        throw new Error("Invalid product structure")
+        throw new Error("Invalid product structure");
     }
-}
+};
 
-const isValidProduct = (product: any): product is Product => {
+const isValidProduct = (product: unknown): product is Product => {
+    const prod = product as Record<string, unknown>;
     return (
-        typeof product.name === "string" &&
-        typeof product.pricein === "number" &&
-        typeof product.priceout === "number"
-    )
-}
+        typeof prod["name"] === "string" &&
+        typeof prod["pricein"] === "number" &&
+        typeof prod["priceout"] === "number"
+    );
+};
 
 const toNewTransaction = (object: unknown): Transaction => {
     if (isValidTransaction(object)) {
-        return object as Transaction
+        return object;
     } else {
-        throw new Error("Invalid transcation structure")
+        throw new Error("Invalid transcation structure");
     }
-}
+};
 
-const isValidTransaction = (transaction: any): transaction is Transaction => {
+const isValidTransaction = (transaction: unknown): transaction is Transaction => {
+    if (typeof transaction !== "object" || transaction === null) return false;
+    const trans = transaction as Record<string, unknown>
 
     return (
         transaction &&
-        Array.isArray(transaction.items) &&
-        transaction.items.every((item: any) => isValidProduct(item.product) && typeof item.amount === "number") &&
-        transaction.users.every(isValidAccount)
-    )
-}
+        Array.isArray(trans["items"]) &&
+        Array.isArray(trans["users"]) &&
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        trans["items"].every((item: any) => isValidProduct(item.product) && typeof item.amount === "number") &&
+        trans["users"].every(isValidAccount)
+    );
+};
 
 const redisClient = await createClient({
     url: Bun.env["REDIS_URL"]
@@ -85,18 +102,19 @@ const CACHE_PRODUCTS = "products";
 const CACHE_CHANGE = "change";
 
 const cleanRedisAccounts = async () => {
-    await redisClient.del(CACHE_ACCOUNTS)
-    await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS)
-}
+    await redisClient.del(CACHE_ACCOUNTS);
+    await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS);
+};
 
 const cleanRedisProducts = async () => {
-    await redisClient.del(CACHE_PRODUCTS)
-}
+    await redisClient.del(CACHE_PRODUCTS);
+};
 
 const cleanRedisChange = async () => {
-    await redisClient.del(CACHE_CHANGE)
-}
+    await redisClient.del(CACHE_CHANGE);
+};
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const commonFieldMap = <T extends object>(expected: T, received: any): T => {
     const keys = Object.keys(expected) as (keyof T)[];
 
@@ -112,4 +130,4 @@ const commonFieldMap = <T extends object>(expected: T, received: any): T => {
 const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1000);
 
 
-export { toNewAccount, toNewProduct, toNewTransaction, redisClient, cleanRedisAccounts, cleanRedisProducts, cleanRedisChange, commonFieldMap, normalize }
+export { toNewAccount, toNewProduct, toNewTransaction, redisClient, cleanRedisAccounts, cleanRedisProducts, cleanRedisChange, commonFieldMap, normalize };

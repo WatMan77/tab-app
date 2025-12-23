@@ -1,5 +1,5 @@
-import type { Product, Account } from "../types";
-import { Color } from "../types";
+import type { Product, Account } from "@app/common";
+import { Color } from "@app/common";
 import Drink from "./DrinkComponent";
 import { useState } from "react";
 import { Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UserType, type Account } from "../../types";
+import { UserType, type Account } from "@app/common";
 import CurrencyInput from "react-currency-input-field";
 import {
   Button,

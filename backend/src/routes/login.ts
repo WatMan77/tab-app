@@ -1,6 +1,6 @@
-import express from "express"
-import { db } from "../database"
-import jwt from "jsonwebtoken"
+import express from "express";
+import { db } from "../database";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -21,30 +21,30 @@ router.post("/", async (req, res) => {
 
         // case 1: Is bcrypt
         if (query.hash.startsWith("$2")) {
-            const checkPassword = await Bun.password.verify(password, query.hash)
+            const checkPassword = await Bun.password.verify(password, query.hash);
             if (checkPassword) {
                 // Change password to use argon2id
                 const newHash = await Bun.password.hash(password);
                 await db`UPDATE admin SET hash=${newHash};`;
-                const token = jwt.sign(username, process.env["SECRET"]!)
-                return res.status(200).send({ token })
+                const token = jwt.sign(username, process.env["SECRET"]!);
+                return res.status(200).send({ token });
             } else {
                 return res.status(401).json({ error: "Username or password is invalid" });
             }
         }
 
         //case 2: argon2id
-        const checkPassword = await Bun.password.verify(password, query.hash)
+        const checkPassword = await Bun.password.verify(password, query.hash);
         if (!checkPassword) {
             return res.status(401).json({ error: "Username or password is invalid" });
         }
-        const token = jwt.sign(username, process.env["SECRET"]!)
-        return res.status(200).send({ token })
+        const token = jwt.sign(username, process.env["SECRET"]!);
+        return res.status(200).send({ token });
 
     } catch (e) {
-        res.status(400).send(e)
-        console.log(e)
+        res.status(400).send(e);
+        console.log(e);
     }
-})
+});
 
-export { router as loginRouter }
+export { router as loginRouter };

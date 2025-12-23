@@ -62,8 +62,20 @@ export enum Color {
     YELLOW = "YELLOW",
     REDBLUE = "REDBLUE",
     YELLOWBLACK = "YELLOWBLACK",
-    BLACK = "BLACK"
+    BLACK = "BLACK",
+    EMPTY = "EMPTY"
+}
+
+interface BalanceChangeInfo {
+    changes: BalanceChange[],
+    count: number
+}
+
+interface BalanceChange {
+    username: string,
+    change_date: Date,
+    change: number
 }
 
 export { UserType }
-export type { Account, Product, Transaction, Log, LogInformation, UpdateAccount }
+export type { Account, Product, Transaction, Log, LogInformation, UpdateAccount, BalanceChange, BalanceChangeInfo }

@@ -1,4 +1,4 @@
-import { type Account, type Product, UserType, Color } from "../backend/src/types";
+import { type Account, type Product, UserType, Color } from "@app/common";
 import { faker } from '@faker-js/faker';
 
 faker.seed(479407)

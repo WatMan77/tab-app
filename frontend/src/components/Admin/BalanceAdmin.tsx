@@ -1,6 +1,6 @@
 import UpdateBalance from "./UpdateBalance";
 import { useState, useEffect, useCallback, startTransition } from "react";
-import type { Account, UpdateAccount, UserType } from "../../types";
+import type { Account, UpdateAccount, UserType } from "@app/common";
 import NewUser from "./NewAccount";
 import { Button, Dialog, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { debounce } from "lodash";

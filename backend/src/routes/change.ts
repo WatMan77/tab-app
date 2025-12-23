@@ -1,5 +1,5 @@
-import express from "express"
-import { db } from "../database"
+import express from "express";
+import { db } from "../database";
 import { redisClient } from "../utils";
 
 const router = express.Router();
@@ -19,18 +19,18 @@ router.get("/:id", async (req, res) => {
         ORDER BY change_date DESC
         OFFSET ${offset}
         LIMIT ${limit};`;
-        const count = await db`SELECT COUNT(*) AS count FROM admin_change WHERE id=${id};`
+        const count = await db`SELECT COUNT(*) AS count FROM admin_change WHERE id=${id};`;
         const returnObj = {
             count: count[0].count,
             changes
-        }
-        res.status(200).send(returnObj)
+        };
+        res.status(200).send(returnObj);
 
     } catch (e) {
-        res.status(400).send(e)
-        console.error(e)
+        res.status(400).send(e);
+        console.error(e);
     }
-})
+});
 
 router.get("/", async (req, res) => {
     try {
@@ -49,20 +49,20 @@ router.get("/", async (req, res) => {
         OFFSET ${offset}
         LIMIT ${limit}
         `);
-        const count = await db`SELECT COUNT(*) FROM admin_change;`
+        const count = await db`SELECT COUNT(*) FROM admin_change;`;
         const returnObj = {
             count: count[0].count,
             changes
 
-        }
-        await redisClient.set(CACHE_CHANGE, JSON.stringify(returnObj))
+        };
+        await redisClient.set(CACHE_CHANGE, JSON.stringify(returnObj));
         res.status(200).send(returnObj);
     } catch (e) {
-        res.status(400).send(e)
-        console.error(e)
+        res.status(400).send(e);
+        console.error(e);
     }
 
 });
 
 
-export { router as changeRouter }
+export { router as changeRouter };

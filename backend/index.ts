@@ -76,8 +76,8 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
 
         for (const a of testValues.accounts) {
             await db`
-            INSERT INTO account (username, category, balance)
-            VALUES (${a.username}, ${a.category}, ${a.balance!.toString()})
+            INSERT INTO account (username, balance)
+            VALUES (${a.username} ${a.balance!.toString()})
             `;
         }
 
@@ -104,8 +104,8 @@ app.post("/api/newaccount", validateToken, async (req, res) => {
         const balance = Math.floor(account.balance!);
 
         await db`
-        INSERT INTO account (username, category, balance)
-        VALUES (${account.username}, ${account.category}, ${balance.toString()})
+        INSERT INTO account (username, balance)
+        VALUES (${account.username}, ${balance.toString()})
         `;
         res.status(201).send("OK");
     } catch (e) {

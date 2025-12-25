@@ -13,7 +13,7 @@ router.put("/", validateToken, async (req, res) => {
     try {
         const confirmedAccounts: UpdateAccount[] = accounts.map((o: unknown) => toNewAccount(o));
         for (const a of confirmedAccounts) {
-            await db`UPDATE account SET balance = ${a.balance!.toFixed(0)}, category = ${a.category} WHERE id = ${a.id!.toString()}`;
+            await db`UPDATE account SET balance = ${a.balance!.toFixed(0)}, WHERE id = ${a.id!.toString()}`;
 
             if (a.pincode) {
                 const hash = await Bun.password.hash(a.pincode);

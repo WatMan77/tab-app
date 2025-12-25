@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UserType, type Account } from "@app/common";
+import { type Account } from "@app/common";
 import CurrencyInput from "react-currency-input-field";
 import {
   Button,
@@ -7,13 +7,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   TextField,
-  Select,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  MenuItem,
   FormControl,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -24,7 +22,6 @@ const UpdateBalance: React.FC<{
   changePiikkiStatus: (account: Account) => void;
   handleNameChange: (id: number, newName: string) => void;
   handleDelete: (id: number) => void;
-  handleCategoryChange: (id: number, category: UserType) => void;
   handlePinChange: (id: number, newPin: string) => void;
 }> = (
     ({
@@ -33,11 +30,9 @@ const UpdateBalance: React.FC<{
       changePiikkiStatus,
       handleNameChange,
       handleDelete,
-      handleCategoryChange,
       handlePinChange,
     }) => {
       const [open, setOpen] = useState(false);
-      const [category, setCategory] = useState<UserType>(user.account.category);
 
       const handleOpen = () => {
         setOpen(true);
@@ -46,18 +41,6 @@ const UpdateBalance: React.FC<{
       const handleClose = () => {
         setOpen(false);
       };
-
-      const categories = [
-        <MenuItem key={UserType.ASUKAS} value={UserType.ASUKAS}>
-          {UserType.ASUKAS}
-        </MenuItem>,
-        <MenuItem key={UserType.VANHA} value={UserType.VANHA}>
-          {UserType.VANHA}
-        </MenuItem>,
-        <MenuItem key={UserType.HANGAROUND} value={UserType.HANGAROUND}>
-          {UserType.HANGAROUND}
-        </MenuItem>,
-      ];
 
       return (
         <div className={"account " + (user.account.closed ? "closed" : "")}>
@@ -85,21 +68,6 @@ const UpdateBalance: React.FC<{
                   variant="outlined"
                   sx={{ m: 1, minWidth: 120, flexGrow: 1 }}
                 >
-                  <Select
-                    value={category} // Controlled value
-                    onChange={(event) => {
-                      handleCategoryChange(
-                        user.account.id!,
-                        event.target.value as UserType
-                      );
-                      setCategory(event.target.value as UserType);
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      Select a category
-                    </MenuItem>
-                    {categories}
-                  </Select>
                 </FormControl>
                 <TextField
                   placeholder="Pin"

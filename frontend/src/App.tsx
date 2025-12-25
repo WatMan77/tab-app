@@ -1,6 +1,4 @@
-import { UserType } from "@app/common";
 import type { Account, Product } from "@app/common";
-import UserBlock from "./components/UserBlock";
 import { useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import "./styling/accounts.scss";
@@ -17,7 +15,6 @@ const App = () => {
     { product: Product; amount: number }[]
   >([]);
   const [vanhatNameFilter, setVanhatNameFilter] = useState("");
-  const [hangNameFilter, setHangNameFilter] = useState("");
 
   const changePress = (id: number) => {
     setUsers((prevUsers) =>
@@ -60,7 +57,6 @@ const App = () => {
     setUsers(updatedUsers);
     fetchAccounts();
     setVanhatNameFilter("");
-    setHangNameFilter("");
   };
 
   useEffect(() => {
@@ -92,20 +88,6 @@ const App = () => {
       });
   }, []);
 
-  const asukasUsers = users.filter((x) => x.user.category === UserType.ASUKAS);
-
-  const vanhatUsers = users.filter((x) => x.user.category === UserType.VANHA);
-
-  const hangaroundUsers = users.filter((x) => x.user.category === UserType.HANGAROUND);
-
-  const trimResidentName = (name: string): string => {
-    // Matches: single lowercase letter + space at start
-    if (/^[\w]\s/.test(name)) {
-      return name.substring(2); // skip letter + space
-    }
-    return name; // if no prefix, return unchanged
-  };
-
   return (
     <Stack
       className="wrapper"
@@ -115,30 +97,13 @@ const App = () => {
       spacing={2}
     >
       <div className="main-content">
-        <h2>Asukkaat</h2>
-        <div className="account-grid">
-          {asukasUsers.map((u) => (
-            <UserBlock
-              user={{ ...u, user: { ...u.user, username: trimResidentName(u.user.username) } }}
-              changePress={changePress}
-              key={u.user.username}
-            />
-          ))}
-        </div>
 
-        <h2>Vanhat</h2>
+        <h2>Users</h2>
         <CategoryWrapper
           changePress={changePress}
-          users={vanhatUsers}
+          users={users}
           nameFilter={vanhatNameFilter}
           setNameFilter={setVanhatNameFilter}
-        />
-        <h2>Hangaroundit</h2>
-        <CategoryWrapper
-          changePress={changePress}
-          users={hangaroundUsers}
-          nameFilter={hangNameFilter}
-          setNameFilter={setHangNameFilter}
         />
       </div>
       <div className="product-column">

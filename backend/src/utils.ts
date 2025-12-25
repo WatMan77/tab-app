@@ -1,4 +1,4 @@
-import type { Account, Product, Transaction, UserType } from "@app/common";
+import type { Account, Product, Transaction } from "@app/common";
 import { createClient } from "redis";
 
 const toNewAccount = (object: unknown): Account => {
@@ -36,17 +36,11 @@ const isValidAccount = (account: unknown): account is Account => {
     const valAcc =
         typeof acc["username"] === 'string' &&
         hasValidBalance &&
-        isValidUserType(acc["category"]) &&
         hasValidId &&
         hasValidPin &&
         hasValidUnlockDate;
 
     return valAcc;
-};
-
-const isValidUserType = (category: unknown): category is UserType => {
-    if (typeof category !== "string") return false;
-    return ['ASUKAS', 'VANHA', 'HANGAROUND'].includes(category);
 };
 
 

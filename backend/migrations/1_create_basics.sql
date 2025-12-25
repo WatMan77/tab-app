@@ -29,7 +29,6 @@ $$;
 CREATE TABLE IF NOT EXISTS public.account (
     id serial PRIMARY KEY,
     username varchar(50) UNIQUE NOT NULL,
-    category varchar(50) CHECK (category IN ('ASUKAS', 'VANHA', 'HANGAROUND')),
     balance integer DEFAULT 0,
     closed boolean DEFAULT false,
     pincode varchar(255),

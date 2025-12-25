@@ -20,7 +20,6 @@ test.beforeEach(async ({ request }) => {
 test.describe("Admin can", () => {
     test("Log in", async ({ page }) => {
         await page.goto(baseUrl)
-        await expect(page.getByText("Asukkaat")).toBeVisible({ timeout: 10000 })
         await page.locator('.MuiMenuItem-root').last().click()
         await expect(page.getByText("LOG IN")).toBeVisible()
         await page.getByRole('textbox').first().fill(admin)
@@ -57,19 +56,16 @@ test.describe("Admin can", () => {
         test.setTimeout(120000)
         const users = [
             {
-                name: "J. Joutomies",
+                name: "John Does",
                 amount: "10",
-                category: "ASUKAS"
             },
             {
-                name: "V. Vanha",
+                name: "Valdemar Walrus",
                 amount: "200",
-                category: "VANHA"
             },
             {
-                name: "H. Hangaround",
+                name: "Henry Hippie",
                 amount: "5",
-                category: "HANGAROUND"
             }
         ]
         await page.goto(baseUrl)
@@ -77,8 +73,6 @@ test.describe("Admin can", () => {
         await page.getByText("Balances").click()
         for (const u of users) {
             await page.getByRole('textbox').first().fill(u.name) // Enter name
-            await page.getByRole('combobox').click() // Select category selector
-            await page.getByText(u.category).click()
             await page.getByPlaceholder('Enter a value').first().fill(u.amount)
             await page.getByText("CREATE USER").click()
 

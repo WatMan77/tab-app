@@ -2,7 +2,6 @@ import { TextField, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styling/login.scss";
-import logo from "../../assets/joutomiehet_white.svg";
 import axios from 'axios';
 import { toast } from "react-toastify";
 
@@ -48,7 +47,6 @@ const AdminLogin = () => {
   return (
     <>
       <div className="login-container">
-        <img src={logo} alt="" />
         <div className="login">
           <TextField
             label="Enter username"

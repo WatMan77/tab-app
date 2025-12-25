@@ -1,6 +1,6 @@
 import UpdateBalance from "./UpdateBalance";
 import { useState, useEffect, useCallback, startTransition } from "react";
-import type { Account, UpdateAccount, UserType } from "@app/common";
+import type { Account, UpdateAccount } from "@app/common";
 import NewUser from "./NewAccount";
 import { Button, Dialog, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { debounce } from "lodash";
@@ -14,7 +14,6 @@ const BalanceAdmin = () => {
       account: Account;
       change: number;
       newName: string;
-      newCategory: UserType;
       pincode: string;
     }[]
   >([]);
@@ -51,12 +50,6 @@ const BalanceAdmin = () => {
     );
   }, []);
 
-  const handleCategoryChange = (id: number, newCategory: UserType) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.account.id! === id ? { ...u, newCategory } : u))
-    );
-  };
-
   const handlePinChange = (id: number, newPin: string) => {
     setUsers((prevUsers) =>
       prevUsers.map((u) => (u.account.id! === id ? { ...u, pincode: newPin.replace(/\D/g, "") } : u))) // Allow only numbers
@@ -74,7 +67,6 @@ const BalanceAdmin = () => {
               account: u,
               change: 0,
               newName: "",
-              newCategory: u.category,
               pincode: "",
               unlockedUntil: ""
             };
@@ -160,7 +152,6 @@ const BalanceAdmin = () => {
       (u) =>
         u.change !== 0 ||
         u.newName !== "" ||
-        u.newCategory !== u.account.category ||
         u.pincode !== ""
     );
     if (filteredUsers.length == 0) {
@@ -170,7 +161,6 @@ const BalanceAdmin = () => {
       ...u.account,
       balance: u.account.balance! + u.change * 100,
       newName: u.newName,
-      newCategory: u.newCategory,
       change: u.change * 100,
       pincode: u.pincode
     }));
@@ -262,7 +252,6 @@ const BalanceAdmin = () => {
           changePiikkiStatus={changePiikkiStatus}
           handleNameChange={handleNameChange}
           handleDelete={handleDelete}
-          handleCategoryChange={handleCategoryChange}
           handlePinChange={handlePinChange}
         />
       ))}

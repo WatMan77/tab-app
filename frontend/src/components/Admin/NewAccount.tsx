@@ -1,22 +1,15 @@
 import {
   TextField,
   Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
-import { UserType } from "@app/common";
 import { useState } from "react";
 import CurrencyInput from "react-currency-input-field";
 import axios from 'axios';
 import { toast } from "react-toastify";
 
 const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
-  const [category, setCategory] = useState("");
   const [username, setUsername] = useState("");
   const [balance, setBalance] = useState(0);
-  const options = [UserType.ASUKAS, UserType.VANHA, UserType.HANGAROUND];
 
   const userInfo = window.localStorage.getItem("loggedPiikkiAdmin");
 
@@ -39,7 +32,6 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
     };
     const body = {
       username,
-      category,
       balance: Math.floor(balance), // Without this could casue some issues with decimals
       pincode: null,
       unlocked_until: null
@@ -47,7 +39,6 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
     try {
       await axios.post("/api/account", body, requestOptions);
       fetchUsers();
-      setCategory("");
       setBalance(0);
       setUsername("");
     } catch (e: unknown) {
@@ -70,20 +61,6 @@ const NewUser: React.FC<{ fetchUsers: () => void }> = ({ fetchUsers }) => {
         value={username}
         onChange={({ target }) => setUsername(target.value)}
       />
-      <FormControl variant="outlined" sx={{ m: 1, minWidth: 120, flexGrow: 1 }}>
-        <InputLabel>User type</InputLabel>
-        <Select
-          label="User type"
-          onChange={({ target }) => setCategory(target.value)}
-          value={category}
-        >
-          {options.map((u) => (
-            <MenuItem key={u} value={u}>
-              {u}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
       <CurrencyInput
         placeholder="Enter a value"
         onValueChange={(_value, _name, values) => {

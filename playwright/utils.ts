@@ -1,4 +1,4 @@
-import { type Account, type Product, UserType, Color } from "@app/common";
+import { type Account, type Product, Color } from "@app/common";
 import { faker } from '@faker-js/faker';
 
 faker.seed(479407)
@@ -7,7 +7,6 @@ const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1
 const accounts: Account[] = [
     {
         username: "Jarmo",
-        category: UserType.ASUKAS,
         balance: 1000,
         closed: false,
         recent: null,
@@ -16,7 +15,6 @@ const accounts: Account[] = [
     },
     {
         username: "Kari",
-        category: UserType.ASUKAS,
         balance: -1000,
         closed: false,
         recent: null,
@@ -25,7 +23,6 @@ const accounts: Account[] = [
     },
     {
         username: "Mikael",
-        category: UserType.VANHA,
         balance: 10000,
         closed: false,
         recent: null,
@@ -68,7 +65,6 @@ const createRandomAccount = (): Account => {
     const unlocked_until = pinBool ? (unlockBool ? faker.date.past() : faker.date.future()) : null;
     const o: Account = {
         username: faker.internet.username(),
-        category: faker.helpers.arrayElement(Object.values(UserType)),
         closed: faker.datatype.boolean(),
         balance: faker.number.int(50000)
     }

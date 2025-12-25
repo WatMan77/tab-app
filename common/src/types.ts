@@ -1,12 +1,5 @@
-enum UserType {
-    ASUKAS = "ASUKAS",
-    VANHA = "VANHA",
-    HANGAROUND = "HANGAROUND"
-}
-
 interface Account {
     username: string,
-    category: UserType,
     balance?: number,
     closed: boolean,
     recent?: Date | null,
@@ -17,13 +10,11 @@ interface Account {
 
 interface UpdateAccount {
     username: string,
-    category?: UserType,
     balance?: number,
     closed: boolean,
     recent?: Date | null,
     newName?: string,
     id?: number,
-    newCategory?: UserType,
     change: number,
     pincode?: string,
     unlocked_until?: Date | null
@@ -77,5 +68,4 @@ interface BalanceChange {
     change: number
 }
 
-export { UserType }
 export type { Account, Product, Transaction, Log, LogInformation, UpdateAccount, BalanceChange, BalanceChangeInfo }

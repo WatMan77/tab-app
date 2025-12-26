@@ -77,7 +77,7 @@ jobs:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           REDIS_URL: ${{ vars.REDIS_URL }}
           POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
-          POSTGRES_URL: ${{ vars.POSTGRES_URL }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
 
   playwright-tests:
     name: Playwright tests
@@ -100,7 +100,7 @@ jobs:
           POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
-          POSTGRES_URL: ${{ vars.POSTGRES_URL }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
           REDIS_URL: ${{ vars.REDIS_URL }}
 
       - run: bunx wait-on http://localhost:3000/api/health

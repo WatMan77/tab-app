@@ -1,0 +1,61 @@
+/* Styling for the navbar crown icon */
+.crown {
+    width: 40px;
+    margin-right: 20px;
+}
+
+/* Ensure the logout button or admin links are aligned to the right */
+.admin {
+    margin-left: auto !important;
+    display: flex;
+    align-items: center;
+}
+
+/* Add padding to the body content to prevent navbar overlap */
+body {
+    padding-top: 70px;
+    /* Adjust according to the navbar's height */
+}
+
+/* Adjust AppBar styles */
+.MuiAppBar-root {
+    background-color: #333;
+    /* Dark background for the navbar */
+    z-index: 1300;
+    /* Ensure navbar stays on top */
+    padding: 0 20px;
+    /* Add some horizontal padding */
+}
+
+/* Toolbar flex layout */
+.MuiToolbar-root {
+    display: flex;
+    justify-content: space-between;
+    /* Spread out the items */
+    align-items: center;
+    /* Center align items vertically */
+}
+
+/* General button/link styles */
+.MuiMenuItem-root {
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+    margin-left: 10px;
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Make the navbar responsive */
+@media (max-width: 768px) {
+    .MuiToolbar-root {
+        flex-direction: column;
+    }
+
+    .admin {
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
+}

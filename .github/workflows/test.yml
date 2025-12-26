@@ -1,0 +1,140 @@
+name: testing
+
+on:
+  push:
+    branches:
+      - "*"
+jobs:
+  linter:
+    name: eslint-checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      - name: Install backend deps
+        working-directory: ./backend
+        run: bun install
+
+      - name: Lint backend
+        working-directory: ./backend
+        run: bun run lint
+
+      - name: Install frontend deps
+        working-directory: ./frontend
+        run: bun install
+
+      - name: Lint frontend
+        working-directory: ./frontend
+        run: bun run lint
+    continue-on-error: true
+
+  tests:
+    name: backend-tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix:
+        attempt: [1, 2]
+
+    services:
+      test-db:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          HOST: test-db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379
+
+    steps:
+      # ...
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+
+      # run any `bun` or `bunx` command
+      - run: bun install
+        working-directory: ./backend
+      #- name: Setup tables
+      #  working-directory: ./backend
+      #  run: psql "postgresql://postgres:test@localhost/test-db" -f migrations/1_create_basics.sql
+      ##  working-directory: ./backend
+      - name: Run tests (attempt ${{ matrix.attempt }})
+        run: bun run test
+        working-directory: ./backend
+        env:
+          CI: true
+          SECRET: ${{ secrets.SECRET }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          REDIS_URL: ${{ vars.REDIS_URL }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+
+  playwright-tests:
+    name: Playwright tests
+    runs-on: ubuntu-latest
+    needs: [tests]
+    if: ${{ always() && contains(join(needs.tests.result, ','), 'success')}}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get Bun
+        uses: oven-sh/setup-bun@v1
+
+      - run: bun install && bun run dev &
+        working-directory: ./backend
+        env:
+          CI: true
+          SECRET: ${{ secrets.SECRET }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          REDIS_URL: ${{ vars.REDIS_URL }}
+
+      - run: bunx wait-on http://localhost:3000/api/health
+
+      - run: bun install && bun run dev &
+        working-directory: ./frontend
+
+      - run: bunx wait-on http://localhost:5173
+
+      - run: bun install @playwright/test --with-deps && bunx playwright install
+        working-directory: ./playwright
+
+      - name: Run the playwright tests
+        working-directory: ./playwright
+        run: bun run test
+      - name: Upload trace
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace
+          path: ./playwright/test-results/**/*.zip
+
+    services:
+      test-db:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:latest
+        ports:
+          - 6379:6379

@@ -1,0 +1,8 @@
+localhost {
+    respond "If you see this, Piikkis Caddy is working"
+}
+
+tabapp.localhost {
+    tls internal
+    reverse_proxy frontend:4173
+}

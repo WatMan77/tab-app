@@ -1,0 +1,1 @@
+GET http://localhost:3000/api/testdb HTTP/1.1

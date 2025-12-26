@@ -1,0 +1,82 @@
+.transactions-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem auto;
+    max-width: 800px;
+}
+
+.form-control {
+    width: 300px; // Make the form control wider
+    margin-bottom: 2rem;
+
+    .MuiInputBase-root {
+        background-color: var(--dark-grey); // Background color for the input field
+        color: var(--white); // Text color inside the input
+    }
+
+    .MuiInputLabel-root {
+        color: var(--white); // Input label color
+    }
+
+    .MuiSelect-icon {
+        color: var(--white); // Dropdown arrow icon color
+    }
+
+    .MuiOutlinedInput-notchedOutline {
+        border-color: var(--border); // Border color for the select input
+    }
+
+    .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+        border-color: var(--blue); // Hover effect for the select input
+    }
+
+    .MuiMenuItem-root {
+        background-color: var(--dark-grey); // Background for the menu items
+        color: var(--white); // Text color for the menu items
+
+        &:hover {
+            background-color: var(--blue); // Background color when hovering on a menu item
+        }
+    }
+}
+
+.transactions-table-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--dark-grey);
+    border-radius: var(--radius);
+    padding: 1rem;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.transactions-table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    color: var(--white);
+    background-color: var(--black);
+    border-radius: var(--radius);
+
+    th,
+    td {
+        padding: 16px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: 14px;
+    }
+
+    th {
+        background-color: rgba(255, 255, 255, 0.1);
+        text-transform: uppercase;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+}

@@ -1,0 +1,23 @@
+.filter {
+    background-color: var(--dark-grey);
+    max-width: var(--content-width);
+    margin: 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: 1px 2px 20px 0 rgba(24, 30, 38, 1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 2rem;
+    button {
+        padding: 14px;
+        &.closed {
+            background-color: red;
+        }
+    }
+    
+    &--add {
+        display: grid;
+        grid-template-columns: 4fr 100px 100px 3fr 2fr;
+    }
+}

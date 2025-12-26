@@ -1,0 +1,35 @@
+.account-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-column-gap: 1rem;
+    grid-row-gap: 1rem;
+
+    button {
+        font-size: 0.875rem;
+        padding: 0.5rem !important;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: center;
+        flex-wrap: wrap;
+        line-height: 1;
+        font-weight: bold;
+
+        >span {
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            font-weight: 500;
+        }
+    }
+
+    >div {
+        grid-column: 1 / -1;
+    }
+
+    .search {
+        input {
+            padding: 14px;
+            background: transparent !important;
+        }
+    }
+}

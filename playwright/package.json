@@ -1,0 +1,19 @@
+{
+  "name": "playwright",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "scripts": {
+    "test": "bunx playwright test",
+    "test:ui": "bunx playwright test --ui"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^10.1.0"
+  }
+}

@@ -42,8 +42,8 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           HOST: test-db
         ports:
@@ -72,12 +72,12 @@ jobs:
         env:
           CI: true
           SECRET: ${{ secrets.SECRET }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           REDIS_URL: ${{ vars.REDIS_URL }}
           POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          POSTGRES_URL: ${{ vars.POSTGRES_URL }}
 
   playwright-tests:
     name: Playwright tests
@@ -96,11 +96,11 @@ jobs:
         env:
           CI: true
           SECRET: ${{ secrets.SECRET }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+          POSTGRES_URL: ${{ vars.POSTGRES_URL }}
           REDIS_URL: ${{ vars.REDIS_URL }}
 
       - run: bunx wait-on http://localhost:3000/api/health
@@ -127,10 +127,10 @@ jobs:
       test-db:
         image: postgres
         env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+          POSTGRES_HOST: ${{ vars.POSTGRES_HOST }}
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5

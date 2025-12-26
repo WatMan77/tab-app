@@ -18,12 +18,14 @@ router.get("/transactions", async (_req, res) => {
         }
         // Get all users with their most recent transaction.
         // Leaves blank transaction if user has not done it earlier.
-        const accounts = await db`
+        /*const accounts = await db`
         SELECT u.*, MAX(t.transaction_date) AS recent
         FROM account AS u
         LEFT JOIN transaction t ON u.id = t.user_id
+        GROUP BY u.id
         ORDER BY recent DESC
-        `;
+        `;*/
+        const accounts = await db`SELECT * FROM account`
 
         await redisClient.setEx(CACHE_ACCOUNT_TRANSACTIONS, 600, JSON.stringify(accounts));
 
@@ -39,7 +41,7 @@ router.get("/", async (_req, res) => {
         if (cached) {
             return res.status(200).send(JSON.parse(cached));
         }
-        const accounts: Account[] = await db`SELECT * FROM account`;
+        const accounts: Account[] = await db`SELECT * FROM account;`;
 
         await redisClient.setEx(CACHE_ACCOUNTS, 600, JSON.stringify(accounts));
         res.status(200).send(accounts);

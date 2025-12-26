@@ -2,6 +2,7 @@ services:
     db:
         image: postgres
         restart: always
+        container_name: tabapp-db
         ports:
             - 5432:5432
         environment:
@@ -14,6 +15,7 @@ services:
     test-db:
         image: postgres
         restart: always
+        container_name: tabapp-test-db
         ports:
             - 5432:5432
         environment:
@@ -26,6 +28,7 @@ services:
     backend:
         build: ./backend
         restart: always
+        container_name: tabapp-backend
         ports:
             - 3000:3000
         environment:
@@ -36,6 +39,7 @@ services:
     frontend:
         build: ./frontend
         restart: always
+        container_name: tabapp-frontend
         ports:
             - 4173:4173
         expose:
@@ -48,11 +52,13 @@ services:
     redis:
         image: redis:latest
         restart: always
+        container_name: tabapp-redis
         ports:
             - 6379:6379
 
     caddy:
         image: caddy:latest
+        container_name: tabapp-caddy
         ports:
             - "80:80"
             - "443:443"

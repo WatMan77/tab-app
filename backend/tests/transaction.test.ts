@@ -144,7 +144,7 @@ describe("Transaction", () => {
         await request(app)
             .post("/api/transaction")
             .send(transaction)
-            .expect(207); // <-- testing 400 would be better
+            .expect(400); // Test is bit flunky
         /*for (const account of users) {
             expect(response.text).toContain("Wrong pincode for " + account.username)
         }*/

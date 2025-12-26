@@ -77,7 +77,7 @@ if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
         for (const a of testValues.accounts) {
             await db`
             INSERT INTO account (username, balance)
-            VALUES (${a.username} ${a.balance!.toString()})
+            VALUES (${a.username}, ${a.balance!.toString()})
             `;
         }
 

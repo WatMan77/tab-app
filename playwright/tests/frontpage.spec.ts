@@ -13,6 +13,18 @@ const login = async (page: any) => {
 test.beforeEach(async ({ request }) => {
     await request.delete("http://localhost:3000/api/reset")
     await request.get("http://localhost:3000/api/testdb")
+    await request.get("http://localhost:3000/api/testadmin")
+})
+
+test('Frontpage asks to create an admin if none exists', async ({ page, request }) => {
+    await request.delete("http://localhost:3000/api/reset")
+    await page.goto('http://localhost:5173')
+
+    await expect(page).toHaveURL("/create-admin")
+
+    await page.getByRole('textbox').first().fill(admin)
+    await page.getByRole('textbox').last().fill(password)
+    await page.getByRole("button", { name: "CREATE ADMIN" }).click()
 })
 
 test('Frontpage shows the basic texts', async ({ page }) => {

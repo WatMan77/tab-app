@@ -54,7 +54,7 @@ const CreateAdmin = () => {
                         onChange={({ target }) => setPassword(target.value)}
                     />
                     <Button onClick={createAdmin} variant="contained">
-                        Log in
+                        Create Admin
                     </Button>
                 </div>
             </div>

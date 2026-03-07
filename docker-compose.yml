@@ -10,8 +10,6 @@ services:
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             HOST: db
-        depends_on:
-            - redis
     test-db:
         image: postgres
         restart: always

@@ -33,7 +33,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
-    "@app/common": "workspace:*",
+    "@app/common": "file:../common",
     "@faker-js/faker": "^10.1.0",
     "accepts": "^1.3.8",
     "array-flatten": "^1.1.1",

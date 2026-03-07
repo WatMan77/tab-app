@@ -51,13 +51,15 @@ const AdminLogin = () => {
           <TextField
             label="Enter username"
             variant="outlined"
-            onChange={({ target }) => setUsername(target.value)}
+            onChange={({ target }) => setUsername(target.value.trim())}
+            value={username}
           />
           <TextField
             label="Enter password"
             variant="outlined"
             type="password"
-            onChange={({ target }) => setPassword(target.value)}
+            onChange={({ target }) => setPassword(target.value.trim())}
+            value={password}
           />
           <Button onClick={logIn} variant="contained">
             Log in

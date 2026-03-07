@@ -9,11 +9,6 @@
         "winston": "^3.19.0"
     },
     "name": "tabapp",
-    "workspaces": [
-        "common",
-        "frontend",
-        "backend"
-    ],
     "devDependencies": {
         "@eslint/compat": "^2.0.0",
         "@eslint/eslintrc": "^3.3.3",

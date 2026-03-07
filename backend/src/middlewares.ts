@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { Request, Response, NextFunction } from 'express';
+import { db } from "./database";
+
 
 
 const validateToken = (req: Request, res: Response, next: NextFunction) => {
@@ -26,4 +28,21 @@ const validateToken = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export { validateToken };
+const requireAdminIfExists = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const admins = await db`SELECT EXISTS (SELECT 1 FROM admin);`;
+        const adminExists: boolean = admins[0].exists;
+
+        if (!adminExists) {
+            return next();
+        }
+
+        return validateToken(req, res, next);
+
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Failed to check admin existence" });
+    }
+};
+
+export { validateToken, requireAdminIfExists };

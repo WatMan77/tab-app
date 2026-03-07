@@ -1,9 +1,13 @@
 FROM oven/bun:alpine
 
-WORKDIR /frontend
+WORKDIR /app
 
-COPY . .
+COPY common ./common
+COPY frontend ./frontend
 
-RUN bun install && bun run build
+WORKDIR /app/frontend
+
+RUN bun install --trusted
+RUN bun run build
 
 CMD ["bun", "run", "preview", "--", "--host"]

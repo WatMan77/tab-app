@@ -19,6 +19,7 @@ import PriceList from "./components/PricesList.tsx";
 import Changes from "./components/Changes.tsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CreateAdmin from "./components/Admin/CreateAdmin.tsx";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,15 @@ const router = createBrowserRouter([
         <Changes />
       </>
     ),
+  },
+  {
+    path: "/create-admin",
+    element: (
+      <>
+        <NavBar />
+        <CreateAdmin />
+      </>
+    )
   },
   {
     path: "*",

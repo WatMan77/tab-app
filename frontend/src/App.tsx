@@ -6,10 +6,24 @@ import CategoryWrapper from "./components/CategoryWrapper";
 import ProductContainer from "./components/ProductContainer";
 import { io } from "socket.io-client";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 const socket = io(import.meta.env["VITE_API_URL"] || "http://localhost:3000");
 
 const App = () => {
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    axios.get("/api/admin/admin-check")
+      .then(({ data }) => {
+        if (!data.adminExists) {
+          navigate("/create-admin")
+        }
+      })
+  }, [])
+
   const [users, setUsers] = useState<{ user: Account; pressed: boolean }[]>([]);
   const [drinkStates, setDrinkStates] = useState<
     { product: Product; amount: number }[]

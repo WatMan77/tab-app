@@ -12,7 +12,7 @@ else
 fi
 
 # The db is the POSTGRES_DB value in docker-compose.yml
-docker exec $DB_CONTAINER pg_dump -Fc -U postgres piikki_db > $BACKUP_FILE
+docker exec $DB_CONTAINER pg_dump -Fc -U postgres tabapp-db > $BACKUP_FILE
 
 # Save backup
 gzip "$BACKUP_FILE"

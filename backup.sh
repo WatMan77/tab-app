@@ -5,7 +5,10 @@ BACKUP_FILE="backup_$TIMESTAMP.dump"
 
 # Load the environment variables
 if [ -f .env.production ]; then
-    export $(cat .env.production | xargs)
+    set -o allexport
+    # shellcheck source=/dev/null
+    source .env.production
+    set +o allexport
 else
     echo "❌ No .env or .env.production file found. Cannot continue."
     exit 1

@@ -1,7 +1,10 @@
 #!/bin/bash
 
 if [ -f .env.production ]; then
-    export $(cat .env.production | xargs)
+    set -o allexport
+    # shellcheck source=/dev/null
+    source .env.production
+    set +o allexport
 fi
 
 LATEST_BACKUP=$(sshpass -p $SSHPASS ssh $DESTINATION_URL \

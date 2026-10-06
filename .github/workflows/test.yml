@@ -138,3 +138,71 @@ jobs:
         image: redis:latest
         ports:
           - 6379:6379
+
+  # The same end-to-end tests, but against the production Docker images
+  # (NODE_ENV=production backend and the built frontend served by Vite preview).
+  playwright-production:
+    name: Playwright tests (production build)
+    runs-on: ubuntu-latest
+    needs: [tests]
+    if: ${{ always() && contains(join(needs.tests.result, ','), 'success')}}
+    env:
+      # docker-compose.ci.yml turns on the reset/seed endpoints that the tests need
+      COMPOSE: docker compose -f docker-compose.yml -f docker-compose.ci.yml --env-file .env.production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Get Bun
+        uses: oven-sh/setup-bun@v1
+
+      # Install everything the runner needs first: Playwright and its browser
+      - name: Install Playwright
+        working-directory: ./playwright
+        run: |
+          bun install
+          bunx playwright install --with-deps chromium
+
+      # The real env file is git-ignored, so create it for this run from the repository secrets.
+      # One file at the repo root serves Compose interpolation, the backend container (through
+      # env_file:) and the scripts. The host names are the Docker Compose service names (db,
+      # redis), not the localhost values the other jobs use for their service containers.
+      - name: Create the env file
+        env:
+          POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+          POSTGRES_DB: ${{ vars.POSTGRES_DB }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SECRET: ${{ secrets.SECRET }}
+        run: |
+          cat > .env.production <<EOF
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_DB=$POSTGRES_DB
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          POSTGRES_HOST=db
+          POSTGRES_URL=postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
+          SECRET=$SECRET
+          REDIS_URL=redis://redis:6379
+          EOF
+
+      # Then start all the production containers together. If the backend comes up before the
+      # database accepts connections, the migrations run when the tests call /api/reset.
+      - name: Build and start the production containers
+        run: $COMPOSE up db redis backend frontend --build -d
+
+      - run: bunx wait-on http://localhost:3000/api/health http://localhost:4173
+
+      - name: Run the playwright tests
+        working-directory: ./playwright
+        run: bun run test
+        env:
+          BASE_URL: http://localhost:4173
+
+      - name: Show container logs
+        if: failure()
+        run: $COMPOSE logs
+      - name: Upload trace
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trace-production
+          path: ./playwright/test-results/**/*.zip

@@ -1,94 +1,80 @@
-import UpdateBalance from "./UpdateBalance";
-import { useState, useEffect, useCallback, startTransition } from "react";
+import AccountList from "./AccountList";
+import type { Draft } from "./UpdateBalance";
+import { EMPTY_DRAFT } from "./UpdateBalance";
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
 import type { Account, UpdateAccount } from "@app/common";
 import NewUser from "./NewAccount";
 import { Button, Dialog, DialogContentText, DialogTitle, TextField } from "@mui/material";
-import { debounce } from "lodash";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "../../styling/balanceadmin.scss";
 import { toast } from "react-toastify";
 import axios, { type AxiosRequestConfig } from "axios";
+import { compareAccounts, matchesSearch } from "../../utils";
+
+const ACCOUNTS_KEY = ["accounts"];
 
 const BalanceAdmin = () => {
-  const [users, setUsers] = useState<
-    {
-      account: Account;
-      change: number;
-      newName: string;
-      pincode: string;
-    }[]
-  >([]);
-  const [userFilter, setUserFilter] = useState("");
+  // Server data and the admin's unsaved edits are kept apart: one keystroke then only
+  // changes one row's draft, and a refetch cannot wipe edits that are in progress.
+  const [drafts, setDrafts] = useState<Record<number, Draft>>({});
+  const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+  const [filterInput, setFilterInput] = useState("");
   const [showClosed, setShowClosed] = useState(false);
   const [showStats, setShowStats] = useState(false);
-  const [stats, setStats] = useState("");
 
-  const userData = window.localStorage.getItem("loggedPiikkiAdmin");
-  const token = JSON.parse(userData!).token;
+  const queryClient = useQueryClient();
+
+  const token = useMemo(
+    () => JSON.parse(window.localStorage.getItem("loggedPiikkiAdmin")!).token as string,
+    []
+  );
+
+  const requestOptions: AxiosRequestConfig = useMemo(
+    () => ({ headers: { "Content-Type": "application/json", "Authorization": token } }),
+    [token]
+  );
+
+  const {
+    data: accounts = [],
+    isPending,
+    error,
+  } = useQuery({
+    queryKey: ACCOUNTS_KEY,
+    queryFn: async () => {
+      const { data } = await axios.get<Account[]>("/api/account");
+      return [...data].sort(compareAccounts); // the sorted array is what gets cached
+    },
+    staleTime: 60_000,
+    // A background refetch re-sorts the list, which would move it under a row the
+    // admin is editing.
+    refetchOnWindowFocus: false,
+  });
+
+  const invalidateAccounts = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ACCOUNTS_KEY });
+  }, [queryClient]);
 
   const balanceSum =
-    users.map((u) => u.account.balance!).reduce((a, b) => a + b, 0) / 100;
+    accounts.map((a) => a.balance!).reduce((a, b) => a + b, 0) / 100;
 
-  const compareAccounts = (a: Account, b: Account): number => {
-    if (a.username < b.username) {
-      return -1;
-    }
-    if (a.username > b.username) {
-      return 1;
-    }
-    return 0;
-  };
-
-  const handleBalanceChange = useCallback((id: number, change: number) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.account.id! === id ? { ...u, change } : u))
-    );
+  const updateDraft = useCallback((id: number, patch: Partial<Draft>) => {
+    setDrafts((prev) => ({ ...prev, [id]: { ...(prev[id] ?? EMPTY_DRAFT), ...patch } }));
   }, []);
 
-  const handleNameChange = useCallback((id: number, newName: string) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.account.id! === id ? { ...u, newName } : u))
-    );
-  }, []);
-
-  const handlePinChange = (id: number, newPin: string) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((u) => (u.account.id! === id ? { ...u, pincode: newPin.replace(/\D/g, "") } : u))) // Allow only numbers
-  }
-
-  const fetchUsers = useCallback(async () => {
-    try {
-      const { data } = await axios.get<Account[]>("/api/account");
-      data.sort(compareAccounts);
-      // Don't block scrolling or input while setting users.
-      startTransition(() => {
-        setUsers(
-          (data as Account[]).map((u: Account) => {
-            return {
-              account: u,
-              change: 0,
-              newName: "",
-              pincode: "",
-              unlockedUntil: ""
-            };
-          })
-        );
-      })
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        toast.error("Failed to fetch users: " + e.response?.data)
-      } else if (e instanceof Error) {
-        toast.error(e.message)
+  const handleToggleExpanded = useCallback((id: number, expanded: boolean) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (expanded) {
+        next.add(id);
       } else {
-        toast.error("Unexpected error: " + e)
+        next.delete(id);
       }
-      console.log(e)
-    }
+      return next;
+    });
   }, []);
 
   const fetchStats = useCallback(async (): Promise<string> => {
-    const res = await axios.get("/api/account/stats", {
-      headers: { "Content-Type": "application/json", "Authorization": token }
-    });
+    const res = await axios.get("/api/account/stats", { headers: requestOptions.headers });
     const rows: { username: string; balance: number; closed: boolean }[] = res.data;
 
     const usernames = rows.map((u) => u.username);
@@ -124,16 +110,21 @@ const BalanceAdmin = () => {
 
     return `${header}\n${separator}\n${data}`;
 
-  }, [token]);
+  }, [requestOptions]);
 
-  const changePiikkiStatus = async (account: Account) => {
-    const requestOptions: AxiosRequestConfig = {
-      headers: { "Content-Type": "application/json", "Authorization": token },
-    };
+  // Only fetched once the dialog is actually opened. The key is nested under
+  // ACCOUNTS_KEY so invalidating the accounts prefix-matches it too.
+  const { data: stats = "" } = useQuery({
+    queryKey: ["accounts", "stats"],
+    queryFn: fetchStats,
+    enabled: showStats,
+    staleTime: 30_000,
+  });
 
+  const changePiikkiStatus = useCallback(async (account: Account) => {
     try {
       await axios.put("/api/account/closed", account, requestOptions);
-      fetchUsers();
+      invalidateAccounts();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         const message = e?.response?.data && e.response.data !== "" ?
@@ -143,47 +134,60 @@ const BalanceAdmin = () => {
         toast.error("Failed to update piikki status: ")
       }
       console.log(e);
-
     }
-  };
+  }, [requestOptions, invalidateAccounts]);
 
   const handleChangeConfirm = async () => {
-    const filteredUsers = users.filter(
-      (u) =>
-        u.change !== 0 ||
-        u.newName !== "" ||
-        u.pincode !== ""
-    );
-    if (filteredUsers.length == 0) {
+    const updatedChangeUsers: UpdateAccount[] = accounts.flatMap((account) => {
+      const draft = drafts[account.id!];
+      if (!draft) {
+        return [];
+      }
+      const changed =
+        draft.change !== 0 ||
+        draft.newName !== "" ||
+        draft.pincode !== "";
+      if (!changed) {
+        return [];
+      }
+      return [{
+        ...account,
+        balance: account.balance! + draft.change * 100,
+        newName: draft.newName,
+        change: draft.change * 100,
+        pincode: draft.pincode
+      }];
+    });
+    if (updatedChangeUsers.length == 0) {
       return;
     }
-    const updatedChangeUsers: UpdateAccount[] = filteredUsers.map((u) => ({
-      ...u.account,
-      balance: u.account.balance! + u.change * 100,
-      newName: u.newName,
-      change: u.change * 100,
-      pincode: u.pincode
-    }));
 
-
-    const requestOptions = {
-      headers: { "Content-Type": "application/json", "Authorization": token }
-    };
     try {
       await axios.put("/api/balance", { accounts: updatedChangeUsers }, requestOptions);
-      window.location.reload();
+      // The drafts have been applied, so keeping them would re-apply the same
+      // balance delta on the next confirm.
+      setDrafts({});
+      setExpandedIds(new Set());
+      invalidateAccounts();
     } catch (e) {
       console.log(e);
     }
   };
 
-  const handleDelete = async (id: number) => {
-    const requestOptions = {
-      headers: { "Content-Type": "application/json", "Authorization": token }
-    };
+  const handleDelete = useCallback(async (id: number) => {
     try {
       await axios.delete(`/api/account/${id}`, requestOptions);
-      fetchUsers();
+      setDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      invalidateAccounts();
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         toast.error("Error deleting account: " + e.response?.data)
@@ -194,46 +198,32 @@ const BalanceAdmin = () => {
       }
       console.log(e);
     }
-  };
+  }, [requestOptions, invalidateAccounts]);
 
-  const debouncedFilterChange =
-    debounce((filter: string) => {
-      setUserFilter(filter);
-    }, 300);
+  // The typed characters land immediately, the re-filter runs at transition priority
+  // and is interrupted by the next keystroke.
+  const deferredFilter = useDeferredValue(filterInput);
 
-  useEffect(() => {
-    fetchUsers();
-    fetchStats().then(x => setStats(x))
-  }, [fetchUsers, fetchStats]);
-
-  useEffect(() => {
-    return () => {
-      debouncedFilterChange.cancel()
-    }
-  }, [debouncedFilterChange])
-
-
-  const filteredUsers = () => {
-    let filtered = [...users];
+  const visibleAccounts = useMemo(() => {
+    let filtered = accounts;
     if (showClosed) {
-      filtered = filtered.filter((u) => u.account.closed);
+      filtered = filtered.filter((a) => a.closed);
     }
-    if (userFilter !== null && userFilter.length >= 3) {
-      filtered = filtered.filter((u) =>
-        u.account.username.toLowerCase().includes(userFilter.toLowerCase())
-      );
+    if (deferredFilter.length >= 3) {
+      filtered = filtered.filter((a) => matchesSearch(a, deferredFilter));
     }
     return filtered;
-  };
+  }, [accounts, showClosed, deferredFilter]);
 
   return (
     <div className="container container--balance">
-      <NewUser fetchUsers={fetchUsers} />
+      <NewUser fetchUsers={invalidateAccounts} />
 
       <div className="filter">
         <TextField
           label="Filter name"
-          onChange={({ target }) => debouncedFilterChange(target.value)}
+          value={filterInput}
+          onChange={({ target }) => setFilterInput(target.value)}
         />
         <Button
           className={showClosed ? "closed" : ""}
@@ -244,17 +234,18 @@ const BalanceAdmin = () => {
         </Button>
       </div>
 
-      {filteredUsers().map((u) => (
-        <UpdateBalance
-          key={u.account.username}
-          user={u}
-          handleBalanceChange={handleBalanceChange}
-          changePiikkiStatus={changePiikkiStatus}
-          handleNameChange={handleNameChange}
-          handleDelete={handleDelete}
-          handlePinChange={handlePinChange}
-        />
-      ))}
+      {isPending && <p>Loading...</p>}
+      {error && <p>Could not load the accounts: {error.message}</p>}
+
+      <AccountList
+        accounts={visibleAccounts}
+        drafts={drafts}
+        expandedIds={expandedIds}
+        onToggleExpanded={handleToggleExpanded}
+        updateDraft={updateDraft}
+        changePiikkiStatus={changePiikkiStatus}
+        handleDelete={handleDelete}
+      />
       <Dialog
         open={showStats}
         onClose={() => setShowStats(false)}

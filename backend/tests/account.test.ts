@@ -50,6 +50,9 @@ describe("Accounts", () => {
             .get("/api/account/transactions");
         const body = response.body as unknown[];
         expect(body).toBeArray();
+        // The route is open, so it must never hand out the password hashes
+        body.forEach(a => expect(a).not.toHaveProperty("pincode"));
+
         const accs: Account[] = body.map(a => toNewAccount(a));
 
         // Ensure every account in "accounts" list exists in the response
@@ -57,8 +60,10 @@ describe("Accounts", () => {
             const found = accounts.find(x => x.username == a.username);
             expect(found).toBeDefined();
 
-            const commonFielded = commonFieldMap(found!, a);
-            expect(commonFielded).toEqual(found!);
+            const expected = { ...found! };
+            delete expected.pincode;
+            const commonFielded = commonFieldMap(expected, a);
+            expect(commonFielded).toEqual(expected);
         });
     });
 

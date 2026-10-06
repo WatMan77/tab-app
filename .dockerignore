@@ -1,0 +1,16 @@
+# Both services build with `context: .`, and Docker only reads .dockerignore from the context
+# root — so backend/.dockerignore and frontend/.dockerignore are inert for these builds.
+node_modules
+**/node_modules
+dist
+**/dist
+
+# Secrets must never reach an image layer. The backend gets them from compose's env_file instead.
+.env*
+!.env*.example
+
+.git
+.github
+playwright
+backup_*.dump
+*.md

@@ -94,7 +94,8 @@ input {
 }
 
 .account {
-  margin-bottom: 1rem;
+  // The row spacing lives on .virtual-row instead: the virtualizer measures
+  // getBoundingClientRect().height, which does not include margins.
   border-radius: -var(--radius);
 
   h3 {
@@ -106,16 +107,6 @@ input {
       background-color: #1c1010;
     }
 
-  }
-}
-
-.row {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-
-  button {
-    margin-left: auto;
   }
 }
 

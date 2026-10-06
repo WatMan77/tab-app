@@ -1,0 +1,7 @@
+# Used only by CI to run the end-to-end tests against the production build:
+#   docker compose -f docker-compose.yml -f docker-compose.ci.yml --env-file .env.production up ...
+# It turns on the reset/seed endpoints the tests need. Never use this file in real production.
+services:
+    backend:
+        environment:
+            ENABLE_TEST_ENDPOINTS: "true"

@@ -25,7 +25,12 @@ router.get("/transactions", async (_req, res) => {
         GROUP BY u.id
         ORDER BY recent DESC
         `;*/
-        const accounts = await db`SELECT * FROM account`
+        // The columns are listed explicitly so the argon2id pincode hash never leaves the
+        // server. unlocked_until is needed by the frontend to decide when to ask for a pin.
+        const accounts = await db`
+        SELECT id, username, balance, closed, unlocked_until,
+               (pincode IS NOT NULL) AS has_pincode
+        FROM account`;
 
         await redisClient.setEx(CACHE_ACCOUNT_TRANSACTIONS, 600, JSON.stringify(accounts));
 
@@ -41,7 +46,11 @@ router.get("/", async (_req, res) => {
         if (cached) {
             return res.status(200).send(JSON.parse(cached));
         }
-        const accounts: Account[] = await db`SELECT * FROM account;`;
+        // Explicit columns, so the pincode hash is never sent to this open route
+        const accounts: Account[] = await db`
+        SELECT id, username, balance, closed, unlocked_until,
+               (pincode IS NOT NULL) AS has_pincode
+        FROM account`;
 
         await redisClient.setEx(CACHE_ACCOUNTS, 600, JSON.stringify(accounts));
         res.status(200).send(accounts);
@@ -95,8 +104,25 @@ router.patch("/unlockUntil", async (req, res) => {
         WHERE id = ${body.id}
         `)[0];
 
-        // Case 1: Is bcrypt
-        const correctPin = await Bun.password.verify(body.pincode, hash.pincode);
+        if (!hash) {
+            return res.status(404).send("No such account");
+        }
+        if (!hash.pincode) {
+            // unlocked_until can be set on an account that has no pin at all. Nothing to verify,
+            // and POST /api/transaction does not ask for a pin either, so say so plainly instead
+            // of letting Bun.password.verify throw on a null hash.
+            return res.status(400).send("This account has no pin set");
+        }
+
+        // Bun.password.verify detects the algorithm, and throws rather than returning false when
+        // the stored value is not a hash it recognises
+        let correctPin = false;
+        try {
+            correctPin = await Bun.password.verify(body.pincode, hash.pincode);
+        } catch (e) {
+            console.log("Stored pincode is not a usable hash for account " + body.id, e);
+            return res.status(401).send("Incorrect pincode");
+        }
         if (!correctPin) {
             return res.status(401).send("Incorrect pincode");
         }
@@ -121,7 +147,7 @@ router.patch("/unlockUntil", async (req, res) => {
         return res.status(204).end();
     } catch (e) {
         console.log(e);
-        res.status(400).send(e);
+        res.status(400).send("Could not unlock the account");
     }
 });
 

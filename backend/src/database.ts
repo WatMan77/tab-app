@@ -9,13 +9,19 @@ const dbConfig = {
     port: 5432,
     database: Bun.env["POSTGRES_DB"]!
 };
-console.log(dbConfig);
 const psqlString = Bun.env["POSTGRES_URL"];
 const pool = new SQL(psqlString!);
-console.log(psqlString);
+
+// The reset/seed endpoints and clearing the database are only allowed in test and development.
+// CI opts in with ENABLE_TEST_ENDPOINTS=true so the end-to-end tests can run against the
+// production build. Never set it in real production.
+const testToolsAllowed =
+    Bun.env.NODE_ENV === "test" ||
+    Bun.env.NODE_ENV === "development" ||
+    Bun.env["ENABLE_TEST_ENDPOINTS"] === "true";
 
 const clearDatabase = async () => {
-    if (!(Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development")) {
+    if (!testToolsAllowed) {
         throw Error(`NODE_ENV is set to ${Bun.env.NODE_ENV}. Clearing database not allowed`);
     }
     const tables = ["admin_change", "account", "transaction", "admin", "product"];
@@ -38,4 +44,4 @@ const initDb = async () => {
 
 await initDb();
 
-export { pool as db, initDb, clearDatabase };
+export { pool as db, initDb, clearDatabase, testToolsAllowed };

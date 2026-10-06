@@ -8,8 +8,11 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules/
-dist/*
+dist/
 dist-ssr
+
+# Vite cache
+.vite/
 *.local
 
 
@@ -27,6 +30,7 @@ backup_*.sql
 backup_*.dump
 
 .env*
+!.env*.example
 
 .package-lock.json
 

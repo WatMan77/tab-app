@@ -74,8 +74,10 @@ const App = () => {
   };
 
   useEffect(() => {
-    // Disable scrolling for this page;
-    if (process.env.NODE_ENV === "production") {
+    // Disable scrolling for this page. import.meta.env.PROD rather than process.env.NODE_ENV:
+    // the client bundle no longer carries the build machine's environment, and NODE_ENV was never
+    // set during the Docker build, so this branch has been dead in production.
+    if (import.meta.env.PROD) {
       document.body.style.overflow = "hidden";
     }
     socket.on("accounts-updated", () => {
@@ -84,9 +86,7 @@ const App = () => {
 
     return () => {
       socket.off("accounts-updated");
-      if (process.env.NODE_ENV !== "dev") {
-        document.body.style.overflow = "auto";
-      }
+      document.body.style.overflow = "auto";
     };
   }, []);
   useEffect(() => {

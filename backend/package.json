@@ -24,10 +24,10 @@
   "type": "module",
   "scripts": {
     "tsc": "tsc",
-    "dev": "NODE_ENV=development bun --watch run ./index.ts",
+    "dev": "NODE_ENV=development bun --env-file=../.env.development --watch run ./index.ts",
     "lint": "eslint --ext .ts .",
-    "test": "NODE_ENV=test BUN_TEST_CONCURRENCY=1 bun test --timeout 20000",
-    "dev-prod": "NODE_ENV=production bun --watch run ./index.ts"
+    "test": "NODE_ENV=test BUN_TEST_CONCURRENCY=1 bun --env-file=../.env.test test --timeout 20000",
+    "dev-prod": "NODE_ENV=production bun --env-file=../.env.production --watch run ./index.ts"
   },
   "name": "backend",
   "version": "1.0.0",
@@ -49,7 +49,6 @@
     "define-data-property": "^1.1.4",
     "depd": "^2.0.0",
     "destroy": "^1.2.0",
-    "dotenv": "^16.6.1",
     "ee-first": "^1.1.1",
     "encodeurl": "^1.0.2",
     "escape-html": "^1.0.3",

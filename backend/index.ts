@@ -1,7 +1,6 @@
 import express from 'express';
 import "express-async-errors";
-import 'dotenv/config';
-import { db, clearDatabase, initDb } from "./src/database";
+import { db, clearDatabase, initDb, testToolsAllowed } from "./src/database";
 import { redisClient, toNewAccount } from "./src/utils";
 import type { Account } from "@app/common";
 import { accountRouter } from "./src/routes/account";
@@ -43,7 +42,7 @@ app.use("/api/login", loginRouter);
 app.use("/api/balance", balanceRouter);
 app.use("/api/changes", changeRouter);
 
-if (Bun.env.NODE_ENV === "test" || Bun.env.NODE_ENV === "development") {
+if (testToolsAllowed) {
     app.delete("/api/reset", async (_req, res) => {
         await redisClient.flushAll();
         try {

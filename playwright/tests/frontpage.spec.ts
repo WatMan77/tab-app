@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
+import type { APIRequestContext, Page } from '@playwright/test'
 import * as testValues from "../utils"
+import { confirmChanges } from "../helpers"
 
 const admin = "admin"
 const password = "password123"
@@ -8,6 +10,44 @@ const login = async (page: any) => {
     await page.getByRole('textbox').first().fill(admin)
     await page.getByRole('textbox').last().fill(password)
     await page.getByRole("button", { name: "LOG IN" }).click()
+}
+
+// Gives an account a pincode through the admin UI. PUT /api/balance also sets unlocked_until to
+// the current moment, so the account needs a pincode again for the next order.
+const setPinThroughAdmin = async (page: Page, username: string, pin: string) => {
+    await page.goto('/')
+    await login(page)
+    await page.getByText("Balances").click()
+    await page.getByText(username).click()
+    await page.getByRole('textbox', { name: 'New pin' }).fill(pin)
+    await confirmChanges(page)
+
+    // Log out, then back to the front page
+    await page.locator('.MuiMenuItem-root').last().click()
+    await page.locator('.MuiMenuItem-root').first().click()
+}
+
+// GET /api/transaction is uncached, so it says exactly who was really charged
+const fetchTransactions = async (request: APIRequestContext) => {
+    const res = await request.get("http://localhost:3000/api/transaction")
+    return await res.json() as { count: number; logs: { username: string; sum: number }[] }
+}
+
+const PRESSED = "rgb(102, 187, 106)"
+const UNPRESSED = "rgb(144, 202, 249)"
+
+// Scoped to the user grid, because getByText does a substring match and the toasts this flow
+// raises contain the username too ("Skipped Jarmo, not charged"). ToastContainer renders outside
+// .main-content, so scoping here keeps the locator pointing at exactly one button.
+const userButton = (page: Page, username: string) =>
+    page.locator('.main-content').getByText(username)
+
+const press = async (page: Page, username: string) => {
+    const button = userButton(page, username)
+    await button.click({ force: true })
+    await page.click('body') // Loose focus of the button
+    await expect(button).toHaveCSS("background-color", PRESSED, { timeout: 2000 })
+    return button
 }
 
 test.beforeEach(async ({ request }) => {
@@ -140,61 +180,83 @@ test.describe("Basic user", () => {
         await expect(page.getByText("Yhteensä: 0.00")).toBeVisible()
     })
 
-    test("can enter a pincode in case time has passed", async ({ page, request }) => {
+    test("skipping a pincode still charges the users who do not need one", async ({ page, request }) => {
+        const locked = testValues.accounts[0]   // gets a pincode
+        const open = testValues.accounts[1]     // no pincode
+        const drink = testValues.products[0]
 
-        await request.delete("http://localhost:3000/api/reset")
-        await request.get("http://localhost:3000/api/testdb")
-        await request.get("http://localhost:3000/api/testadmin")
-        const admin = "admin"
-        const password = "password123"
+        await setPinThroughAdmin(page, locked.username, "1234")
 
-        await page.goto('http://localhost:5173')
+        // Both users are selected, but only the one with a pincode joins the pin queue
+        await press(page, locked.username)
+        await press(page, open.username)
 
-        const login = async (page: any) => {
-            await page.getByText("Login").click()
-            await page.getByRole('textbox').first().fill(admin)
-            await page.getByRole('textbox').last().fill(password)
-            await page.getByRole("button", { name: "LOG IN" }).click()
-        }
-        await login(page);
-        // Create a pin for the 
-        const account = testValues.accounts[0];
-        await page.getByText("Balances").click()
-        await page.getByText(account.username).click();
-        await page.getByRole('textbox', { name: 'Pin' }).fill('1234');
-        await page.getByText("CONFIRM CHANGE").click()
-        await page.waitForURL('**/balances');
-
-
-        //Logout
-        await page.locator('.MuiMenuItem-root').last().click()
-
-        // Go back to main page
-        await page.locator('.MuiMenuItem-root').first().click()
-
-        // Do a simple order
-        const button = page.getByText(account.username)
-        await button.click({ force: true })
-        await page.click('body'); // Loose focus of the button
-        await page.getByText("+").first().click()
+        await page.locator('.drink').filter({ hasText: drink.name }).locator('.plus').click()
+        await expect(page.getByText(`Yhteensä: ${(drink.pricein / 100).toFixed(2)}`)).toBeVisible()
         await page.getByText("VAHVISTA").click()
 
-        //Expect to see a window for inserting pin
-        const buttons = ["SKIP", "ONE TIME", "1H", "3H", "8H", "CUSTOM TIME", "PERMANENT"]
-        for (const button of buttons.slice(1)) {
-            await expect(page.getByText(button)).toBeDisabled()
+        await expect(page.getByText('Enter pin for ' + locked.username)).toBeVisible()
+        // By role, so the locator cannot also match the "Skipped ..." toast
+        await page.getByRole('button', { name: 'Skip' }).click()
+
+        // The skip is reported and the dialog closes
+        await expect(page.getByText('Skipped ' + locked.username)).toBeVisible()
+        await expect(page.getByText('Enter pin for ' + locked.username)).toBeHidden()
+
+        // The dialog closed under the pointer, so move it off before reading a background colour
+        await page.mouse.move(0, 0)
+
+        // The order went through for the other user, so the cart and the buttons reset
+        await expect(page.getByText("Yhteensä: 0.00")).toBeVisible()
+        await expect(page.getByText("VAHVISTA")).toBeDisabled()
+        await expect(userButton(page, locked.username)).toHaveCSS("background-color", UNPRESSED)
+
+        // Only the user who needed no pincode was charged
+        await expect(userButton(page, open.username))
+            .toContainText(((open.balance! - drink.pricein) / 100).toFixed(2))
+        await expect(userButton(page, locked.username))
+            .toContainText((locked.balance! / 100).toFixed(2))
+
+        const { count, logs } = await fetchTransactions(request)
+        expect(count).toBe(1)
+        expect(logs[0].username).toBe(open.username)
+        expect(Number(logs[0].sum)).toBe(drink.pricein)
+    })
+
+    test("skipping the only user who needs a pincode keeps the order", async ({ page, request }) => {
+        const locked = testValues.accounts[0]
+        const drink = testValues.products[0]
+
+        await setPinThroughAdmin(page, locked.username, "1234")
+
+        const button = await press(page, locked.username)
+
+        await page.locator('.drink').filter({ hasText: drink.name }).locator('.plus').click()
+        await page.getByText("VAHVISTA").click()
+
+        // Skip is the only button that works before a pincode has been typed
+        await expect(page.getByText('Enter pin for ' + locked.username)).toBeVisible()
+        const pinButtons = ["ONE TIME", "1H", "3H", "8H", "CUSTOM TIME", "PERMANENT"]
+        for (const b of pinButtons) {
+            await expect(page.getByText(b)).toBeDisabled()
         }
-        await page.getByRole('textbox', { name: 'Pin' }).fill('1234');
-        for (const button of buttons) {
-            await expect(page.getByText(button)).toBeEnabled()
+        await expect(page.getByRole('button', { name: 'Skip' })).toBeEnabled()
+        await page.getByRole('textbox', { name: 'Pin' }).fill('1234')
+        for (const b of pinButtons) {
+            await expect(page.getByText(b)).toBeEnabled()
         }
-        await expect(page.getByText('Enter pin for ' + account.username)).toBeVisible();
 
-        await page.getByText(buttons[0]).click()
+        await page.getByRole('button', { name: 'Skip' }).click()
+        await page.mouse.move(0, 0)
 
-        await expect(page.getByText('Enter pin for ' + account.username)).not.toBeVisible();
+        // Nobody is left to charge, so nothing is sent and the order is kept for a retry
+        await expect(page.getByText('Enter pin for ' + locked.username)).toBeHidden()
+        await expect(page.getByText(`Yhteensä: ${(drink.pricein / 100).toFixed(2)}`)).toBeVisible()
+        await expect(page.getByText("VAHVISTA")).toBeEnabled()
+        await expect(button).toHaveCSS("background-color", PRESSED)
 
-        await expect(page.getByText("Yhteensä: 0.00")).toBeVisible();
-        await expect(page.getByText("VAHVISTA")).toBeDisabled();
+        const { count } = await fetchTransactions(request)
+        expect(count).toBe(0)
+        await expect(userButton(page, locked.username)).toContainText((locked.balance! / 100).toFixed(2))
     })
 })

@@ -5,6 +5,9 @@ interface Account {
     recent?: Date | null,
     id?: number,
     pincode?: string,
+    // Whether a pin is set. The list endpoints send this instead of the hash, so the frontend
+    // can tell a locked account from one that merely has an expired unlocked_until.
+    has_pincode?: boolean,
     unlocked_until?: Date | null
 }
 

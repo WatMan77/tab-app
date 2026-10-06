@@ -31,15 +31,22 @@ services:
         container_name: tabapp-backend
         ports:
             - 3000:3000
+        # Supplies POSTGRES_*, SECRET and REDIS_URL. The path is relative to this compose file.
+        # Without it the only route into the container would be baking backend/.env.production
+        # into the image.
+        env_file:
+            - .env.production
         environment:
+            # environment: wins over env_file:, so keep only what genuinely belongs to the image
             NODE_ENV: production
-            POSTGRES_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-            REDIS_URL: redis://redis:6379
 
     frontend:
         build:
             context: .
             dockerfile: frontend/Dockerfile
+            args:
+                # Vite inlines VITE_* at build time, so this cannot be a runtime environment entry
+                VITE_API_URL: ${VITE_API_URL:-}
         restart: always
         container_name: tabapp-frontend
         ports:

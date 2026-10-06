@@ -1,9 +1,7 @@
 import express from "express";
 import { db } from "../database";
 import type { Log, LogInformation, Transaction } from '@app/common';
-import { redisClient, toNewTransaction } from '../utils';
-
-const CACHE_ACCOUNT_TRANSACTIONS = "accounts:transactions";
+import { cleanRedisAccounts, toNewTransaction } from '../utils';
 
 const router = express.Router();
 
@@ -84,7 +82,9 @@ router.post("/", async (req, res) => {
             return totalCost + item.amount * item.product.pricein;
         }, 0);
         const errorList: string[] = [];
-        await redisClient.del(CACHE_ACCOUNT_TRANSACTIONS);
+        // Both account caches, not just this one: GET /api/account is cached under its own
+        // key for 600 s, so the admin Balances page would show pre-purchase balances
+        await cleanRedisAccounts();
 
 
         for (const user of transaction.users) {

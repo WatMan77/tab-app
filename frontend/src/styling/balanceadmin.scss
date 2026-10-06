@@ -21,3 +21,58 @@
         grid-template-columns: 4fr 100px 100px 3fr 2fr;
     }
 }
+
+// One measured row of the virtualized account list. The spacing is padding, not margin,
+// because the virtualizer measures the element's border box.
+.virtual-row {
+    padding-bottom: 1rem;
+}
+
+// One expanded account row. A grid rather than a flex line: the controls used to shrink to
+// their minimum width, so the name and pin boxes ended up about 45px wide and showed only
+// "Na" and "Pi", which made them impossible to tell apart.
+.account-editor {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+    align-items: start;
+    padding-top: 0.5rem;
+
+    &__amount {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+
+        label {
+            // Lines up with MUI's floating labels on the fields beside it
+            font-size: 0.75rem;
+            letter-spacing: 0.03em;
+            color: rgba(255, 255, 255, 0.7);
+            padding-left: 0.15rem;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            // Matches MUI's medium outlined field beside it, so the row lines up
+            padding: 16.5px 14px;
+        }
+    }
+
+    &__sum {
+        font-size: 0.875rem;
+        color: rgba(255, 255, 255, 0.7);
+        font-variant-numeric: tabular-nums;
+        padding-left: 0.15rem;
+    }
+
+    &__actions {
+        grid-column: 1 / -1;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}

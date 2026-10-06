@@ -16,7 +16,16 @@ export default defineConfig({
       }
     }
   },
-  define: {
-    'process.env': process.env
-  }
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Vite 5 defaults to Sass's legacy JS API, which Dart Sass 2.0 removes
+        api: 'modern-compiler'
+      }
+    }
+  },
+  // The env files live in the repo root, shared with the backend, Docker Compose and the scripts.
+  // Only VITE_-prefixed names are exposed to the client, so the database credentials sitting in
+  // the same file stay server-side.
+  envDir: '..'
 })

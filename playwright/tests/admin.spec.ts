@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import * as testvalues from "../utils";
-const baseUrl = "http://localhost:5173"
+import { confirmChanges } from "../helpers";
+const baseUrl = process.env["BASE_URL"] ?? "http://localhost:5173"
 
 
 const admin = "admin"
@@ -98,8 +99,7 @@ test.describe("Admin can", () => {
         }
 
         // Confirm the change
-        await page.getByText("Confirm change").click()
-        await page.waitForURL('**/balances');
+        await confirmChanges(page)
         for (let i = 0; i < users.length; i += 1) {
             await page.getByText(users[i].name).click(); // Open user info
             await expect(page.getByText(`${users[i].name} ${parseFloat(users[i].amount) + 10}`)).toBeVisible()

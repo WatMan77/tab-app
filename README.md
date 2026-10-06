@@ -10,30 +10,41 @@ In both backend and frontend run `bun install` and you should be ok
 
 `bun run dev`
 
-## .env files
+## Environment files
 
-Project is configurated to use 3 .env files
-- .env.test
-- .env.development
-- .env.production
+There are three env files, all in the repo root: `.env.development`, `.env.test` and
+`.env.production`. Each one is shared by the backend, the frontend, Docker Compose and the backup
+scripts. The real files are git-ignored so that secrets never reach the repository, and each has a
+committed `.example` template next to it:
 
-An example env file can hold the following value
+```bash
+for f in .env.*.example; do cp -n "$f" "${f%.example}"; done
+```
 
-POSTGRES_USER=postgres
+`cp -n` never overwrites a file that already exists. The development and test templates work as
+they are. In the production template, replace every `CHANGE_ME`.
 
-POSTGRES_DB=test-db
+| Variable | Used for |
+| --- | --- |
+| `POSTGRES_USER`, `POSTGRES_DB`, `POSTGRES_PASSWORD` | Database credentials. Docker Compose reads them to create the database |
+| `POSTGRES_HOST`, `POSTGRES_URL` | How the backend connects. In production the host is `db`, the name of the compose service |
+| `SECRET` | Signs the admin login tokens |
+| `REDIS_URL` | `redis://localhost:6379` in development, `redis://redis:6379` in production |
+| `VITE_API_URL` | Frontend only, optional. The backend address for the Socket.IO connection. Defaults to `http://localhost:3000` |
+| `DB_CONTAINER`, `REDIS_CONTAINER` | Backup and restore scripts only. The container names to run `pg_dump`, `pg_restore` and `redis-cli` in |
+| `DESTINATION_DIR`, `SSHPASS` | Backup scripts only, in `.env.production` |
 
-POSTGRES_PASSWORD=test
+The backend passes the matching file explicitly, so `bun run dev` loads `../.env.development`
+through Bun's `--env-file`. A real environment variable still wins over the file, which is how CI
+supplies everything without writing one. The frontend reads the same files because
+`vite.config.ts` sets `envDir: '..'`, but Vite only exposes names beginning with `VITE_`, so the
+database credentials in the same file never reach the browser.
 
-SECRET=secret
+In Docker the backend gets these through `env_file:` in `docker-compose.yml` rather than from a
+file baked into the image. `VITE_API_URL` is different: Vite inlines it at build time, so it is
+passed as a build argument.
 
-BACKUP_FILE=backup.sql
-
-DESTINATION_DIR=/srv/mybackups # Desintation directory on the remote server to store backup database files
-
-SSHPASS=&lt;ssh password for your remote server&gt;
-
-REDIS=redis://localhost:6379 -> For production use redis://redis:6379
+The password in `POSTGRES_URL` has to match `POSTGRES_PASSWORD`.
 
 ## Running backend
 

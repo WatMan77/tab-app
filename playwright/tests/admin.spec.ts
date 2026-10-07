@@ -91,7 +91,9 @@ test.describe("Admin can", () => {
             await page.getByPlaceholder("Amount").nth(i).fill("10")
         }
 
-        await page.click('body')
+        // Deliberately not page.click('body'): that clicks the centre of the page, which now lands
+        // on an expanded row's AccordionSummary and collapses it, unmounting the very fields this
+        // test is about to assert on. The sums update on change, so no blur is needed.
         // Now change the value in the bank
         for (let i = 0; i < users.length; i += 1) {
             // 10.00 + 10 = 20.00

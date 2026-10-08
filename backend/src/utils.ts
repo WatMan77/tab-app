@@ -74,12 +74,30 @@ const isValidTransaction = (transaction: unknown): transaction is Transaction =>
     if (typeof transaction !== "object" || transaction === null) return false;
     const trans = transaction as Record<string, unknown>
 
+    // "other" is the free amount in cents. It is the only money figure the client supplies, so it
+    // has to be a non-negative integer; everything else is priced from the product table.
+    const hasValidOther =
+        typeof trans["other"] === "undefined" ||
+        trans["other"] === null ||
+        (typeof trans["other"] === "number" &&
+            Number.isInteger(trans["other"]) &&
+            trans["other"] >= 0);
+
     return (
         transaction &&
         Array.isArray(trans["items"]) &&
         Array.isArray(trans["users"]) &&
+        hasValidOther &&
+        // Amounts must be whole and positive: the database CHECK would otherwise fire partway
+        // through the per-user loop, after earlier users had already been charged.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        trans["items"].every((item: any) => isValidProduct(item.product) && typeof item.amount === "number") &&
+        trans["items"].every((item: any) =>
+            item &&
+            typeof item.name === "string" &&
+            item.name.length > 0 &&
+            typeof item.amount === "number" &&
+            Number.isInteger(item.amount) &&
+            item.amount >= 1) &&
         trans["users"].every(isValidAccount)
     );
 };

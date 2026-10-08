@@ -58,7 +58,7 @@ test.beforeEach(async ({ request }) => {
 
 test('Frontpage asks to create an admin if none exists', async ({ page, request }) => {
     await request.delete("http://localhost:3000/api/reset")
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
 
     await expect(page).toHaveURL("/create-admin")
 
@@ -68,7 +68,7 @@ test('Frontpage asks to create an admin if none exists', async ({ page, request 
 })
 
 test('Frontpage shows the basic texts', async ({ page }) => {
-    await page.goto('http://localhost:5173')
+    await page.goto('/')
     await expect(page.getByText("Koti")).toBeVisible()
     await expect(page.getByText("Tapahtumat")).toBeVisible()
     await expect(page.getByText("Muutokset")).toBeVisible()
@@ -77,7 +77,7 @@ test('Frontpage shows the basic texts', async ({ page }) => {
 
 test.describe("Basic user", () => {
     test("can see users, products and buttons", async ({ page }) => {
-        await page.goto('http://localhost:5173')
+        await page.goto('/')
         for (const u of testValues.accounts) {
             await expect(page.getByText(u.username)).toBeVisible()
         }
@@ -96,7 +96,7 @@ test.describe("Basic user", () => {
     })
 
     test("can press the buttons and order products", async ({ page }) => {
-        await page.goto('http://localhost:5173')
+        await page.goto('/')
         for (const u of testValues.accounts) {
             const button = page.getByText(u.username)
             await expect(button).toHaveCSS("background-color", "rgb(144, 202, 249)");
@@ -129,7 +129,7 @@ test.describe("Basic user", () => {
     })
 
     test("can press buttons twice to deselect a user", async ({ page }) => {
-        await page.goto('http://localhost:5173')
+        await page.goto('/')
 
         for (const a of testValues.accounts) {
             const button = page.getByText(a.username)
@@ -161,7 +161,7 @@ test.describe("Basic user", () => {
     })
 
     test("can remove drinks from the 'cart'", async ({ page }) => {
-        await page.goto('http://localhost:5173')
+        await page.goto('/')
 
         const plus = page.getByText("+")
         for (let i = 0; i < testValues.products.length; i += 1) {

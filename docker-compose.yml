@@ -1,21 +1,41 @@
 services:
     db:
-        image: postgres
+        image: postgres:18
         restart: always
         container_name: tabapp-db
         ports:
             - 5432:5432
+        # Without this the data lives in the container's writable layer, so `docker compose down`
+        # followed by `up` comes back to an empty ledger. Postgres 18 sets
+        # PGDATA=/var/lib/postgresql/18/docker and declares its VOLUME one level up, so the mount
+        # point is /var/lib/postgresql — not the /var/lib/postgresql/data of older images.
+        volumes:
+            - db-data:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+            start_period: 10s
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_DB: ${POSTGRES_DB}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             HOST: db
     test-db:
-        image: postgres
+        image: postgres:18
         restart: always
         container_name: tabapp-test-db
         ports:
             - 5432:5432
+        volumes:
+            - test-db-data:/var/lib/postgresql
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+            start_period: 10s
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_DB: ${POSTGRES_DB}
@@ -31,6 +51,15 @@ services:
         container_name: tabapp-backend
         ports:
             - 3000:3000
+        # The backend runs its migrations and connects to Redis at import time, so it cannot start
+        # before both are accepting connections. Without this it won the race against Postgres'
+        # first-run initdb, initDb() swallowed the error, and the server came up with no schema:
+        # every API call then returned 400 until someone restarted it.
+        depends_on:
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
         # Supplies POSTGRES_*, SECRET and REDIS_URL. The path is relative to this compose file.
         # Without it the only route into the container would be baking backend/.env.production
         # into the image.
@@ -59,19 +88,35 @@ services:
             DOCKER: true
 
     redis:
-        image: redis:latest
+        image: redis:8-alpine
         restart: always
         container_name: tabapp-redis
         ports:
             - 6379:6379
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 10
 
     caddy:
-        image: caddy:latest
+        image: caddy:2
+        restart: always
         container_name: tabapp-caddy
         ports:
             - "80:80"
             - "443:443"
         volumes:
             - ./Caddyfile:/etc/caddy/Caddyfile
+            # Without these the ACME account key and the issued certificates are thrown away on
+            # every container recreate, which re-requests them and can hit Let's Encrypt limits.
+            - caddy-data:/data
+            - caddy-config:/config
         depends_on:
             - frontend
+
+volumes:
+    db-data:
+    test-db-data:
+    caddy-data:
+    caddy-config:

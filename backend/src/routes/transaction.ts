@@ -72,15 +72,45 @@ router.get("/:id", async (req, res) => {
 router.post("/", async (req, res) => {
     /*
     * The object received is
-    * {items: {product: Product, amount: number }[], users: Account[] }
+    * { items: { name: string, amount: number }[], users: Account[], other?: number }
+    *
+    * Prices are NOT taken from the request. They used to be, which meant an unauthenticated
+    * caller could name its own pricein and credit or debit any account by any amount.
     */
 
     try {
         const transaction: Transaction = toNewTransaction(req.body);
         const normalize = (date: Date) => new Date(Math.floor(date.getTime() / 1000) * 1000);
-        const totalCost: number = transaction.items.reduce((totalCost, item) => {
-            return totalCost + item.amount * item.product.pricein;
-        }, 0);
+
+        // The product table is small, so one read is cheaper than a query per item.
+        const priced = await db`SELECT name, pricein FROM product`;
+        const prices = new Map<string, number>(
+            priced.map((p: { name: string; pricein: number }) => [p.name, p.pricein])
+        );
+
+        const unknown = transaction.items
+            .map((item) => item.name)
+            .filter((name) => !prices.has(name));
+        if (unknown.length > 0) {
+            return res.status(400).send("Unknown product: " + unknown.join(", "));
+        }
+
+        // The free "Muu määrä" amount is the only figure the client supplies. toNewTransaction has
+        // already checked it is a non-negative integer.
+        const other = transaction.other ?? 0;
+
+        const lines = transaction.items.map((item) => ({
+            name: item.name,
+            amount: item.amount,
+            sum: item.amount * prices.get(item.name)!,
+        }));
+        if (other > 0) {
+            lines.push({ name: "MUU", amount: 1, sum: other });
+        }
+
+        // Derived from the same per-line sums that get written, so the ledger rows always add up
+        // to the balance change.
+        const totalCost: number = lines.reduce((total, line) => total + line.sum, 0);
         const errorList: string[] = [];
         // Both account caches, not just this one: GET /api/account is cached under its own
         // key for 600 s, so the admin Balances page would show pre-purchase balances
@@ -106,18 +136,20 @@ router.post("/", async (req, res) => {
                     continue;
                 }
             }
-            for (const item of transaction.items) {
-                const sum = (item.amount * item.product.pricein).toFixed(0);
+            for (const line of lines) {
                 await db`
                     INSERT INTO transaction (user_id, product_name, amount, sum)
-                    VALUES (${user.id!.toString()}, ${item.product.name}, ${item.amount.toString()}, ${sum})
+                    VALUES (${user.id!.toString()}, ${line.name}, ${line.amount.toString()}, ${line.sum.toFixed(0)})
                     RETURNING *
                     `;
             }
+            // Keyed on id, like the pin lookup above. Keying this on username meant a renamed or
+            // stale username matched zero rows: the transaction rows were still written, nothing
+            // was charged, and the handler returned 200.
             await db`
             UPDATE account
             SET balance = balance - ${totalCost.toFixed(0)}
-            WHERE username = ${user.username}
+            WHERE id = ${user.id!.toString()}
             `;
         }
         if (errorList.length > 0 && errorList.length !== transaction.users.length) {

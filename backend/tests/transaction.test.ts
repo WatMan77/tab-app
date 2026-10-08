@@ -65,7 +65,7 @@ describe("Transaction", () => {
             const product = products[faker.number.int({ min: 0, max: products.length - 1 })];
             const amount = faker.number.int({ min: 1, max: 10 });
             const transaction: Transaction = {
-                items: [{ product, amount }],
+                items: [{ name: product.name, amount }],
                 users: [account]
             };
             await request(app)
@@ -103,7 +103,7 @@ describe("Transaction", () => {
     test("many users, many different products", async () => {
 
         // Reset data for this database
-        const items = products.map(p => ({ product: p, amount: faker.number.int({ min: 1, max: 10 }) }));
+        const items = products.map(p => ({ name: p.name, amount: faker.number.int({ min: 1, max: 10 }) }));
 
         const transaction: Transaction = {
             items,
@@ -119,8 +119,8 @@ describe("Transaction", () => {
             .get("/api/account/transactions")
             .expect(200);
 
-        const totalCost = transaction.items.reduce((total, { product, amount }) => {
-            return total + product.pricein * amount;
+        const totalCost = transaction.items.reduce((total, { name, amount }) => {
+            return total + products.find(p => p.name === name)!.pricein * amount;
         }, 0);
 
         for (const u of db_accounts.body) {
@@ -137,7 +137,7 @@ describe("Transaction", () => {
         const pinAccounts = accounts.filter(a => a.pincode && a.unlocked_until && normalize(a.unlocked_until) < normalize(new Date()));
         const users = pinAccounts.map(a => ({ ...a, pincode: a.pincode!.split("").reverse().join("") }));
         const transaction: Transaction = {
-            items: products.map(p => ({ product: p, amount: 1 })),
+            items: products.map(p => ({ name: p.name, amount: 1 })),
             users: users
         };
 

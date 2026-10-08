@@ -1,5 +1,4 @@
 import type { Product, Account } from "@app/common";
-import { Color } from "@app/common";
 import Drink from "./DrinkComponent";
 import { useRef, useState } from "react";
 import { Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
@@ -69,6 +68,17 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   //   fetchRecentTransactions();
   // }, []);
 
+  // The free "Muu määrä" amount in cents. A single source of truth for both the total on screen
+  // and the amount posted: these used to be computed by different rules, so a negative value
+  // displayed a smaller total than it charged.
+  const otherCents = (): number => {
+    const parsed = Number.parseFloat(other);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return 0;
+    }
+    return Math.round(parsed * 100);
+  };
+
   const resetAll = () => {
     setEnteredPin("")
     setConfirmedUsers([])
@@ -83,26 +93,20 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   }
 
   const confirm = async (finalUsers: Account[]) => {
-    const items = drinkState.filter((x) => x.amount >= 1);
-    if (parseFloat(other) > 0) {
-      const otherFloat = parseFloat(other);
-      const otherFixed = otherFloat.toFixed(2);
-      const otherProduct: { product: Product; amount: number } = {
-        product: {
-          name: "MUU",
-          pricein: parseFloat(otherFixed) * 100,
-          priceout: 0,
-          color: Color.EMPTY, // Inserted as Color is required
-        },
-        amount: 1,
-      };
-      items.push(otherProduct);
-    }
+    // Names and quantities only. The server prices these from the product table; it used to
+    // charge whatever pricein the client sent.
+    const items = drinkState
+      .filter((x) => x.amount >= 1)
+      .map((x) => ({ name: x.product.name, amount: x.amount }));
     const requestOptions = {
       headers: { "Content-Type": "application/json" },
     };
     try {
-      const response = await axios.post("/api/transaction", { items, users: finalUsers }, requestOptions);
+      const response = await axios.post(
+        "/api/transaction",
+        { items, users: finalUsers, other: otherCents() },
+        requestOptions
+      );
       // 207 means some users were charged and some were rejected. Axios resolves on 207, so
       // without this a partial failure is indistinguishable from a success.
       if (response.status === 207) {
@@ -145,11 +149,7 @@ const ProductContainer: React.FC<ProductContainerProps> = ({
   };
 
   const finalSum = () => {
-    if (other === "") {
-      return sum / 100;
-    } else {
-      return (sum + parseFloat(other) * 100) / 100;
-    }
+    return (sum + otherCents()) / 100;
   };
 
   const handleSkip = async () => {

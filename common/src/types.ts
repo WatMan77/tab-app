@@ -32,9 +32,19 @@ interface Product {
 }
 
 
+// Items carry a name and a quantity only. Prices are looked up from the product table, because
+// the client used to send pricein and the server charged whatever it was told.
+interface TransactionItem {
+    name: string,
+    amount: number
+}
+
 interface Transaction {
-    items: { product: Product, amount: number }[],
-    users: Account[]
+    items: TransactionItem[],
+    users: Account[],
+    // The free "Muu määrä" amount in cents. This is the one figure that genuinely cannot come
+    // from the product table, so it is validated rather than looked up.
+    other?: number
 }
 
 interface Log {
@@ -71,4 +81,4 @@ interface BalanceChange {
     change: number
 }
 
-export type { Account, Product, Transaction, Log, LogInformation, UpdateAccount, BalanceChange, BalanceChangeInfo }
+export type { Account, Product, Transaction, TransactionItem, Log, LogInformation, UpdateAccount, BalanceChange, BalanceChangeInfo }

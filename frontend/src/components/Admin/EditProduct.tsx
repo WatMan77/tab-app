@@ -163,7 +163,12 @@ const EditProduct: React.FC<{
         Update
       </Button>
 
-      <Button variant="outlined" color="error" onClick={handleClickOpen}>
+      <Button
+        variant="outlined"
+        color="error"
+        onClick={handleClickOpen}
+        aria-label="Delete product"
+      >
         <DeleteIcon />
       </Button>
       <Dialog

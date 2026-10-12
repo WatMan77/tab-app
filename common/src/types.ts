@@ -51,7 +51,9 @@ interface Log {
     name: string,
     product_name: string,
     transaction_date: Date,
-    amount: number
+    amount: number,
+    username: string,
+    sum: number
 }
 
 interface LogInformation {

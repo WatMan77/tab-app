@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
     use: {
@@ -11,5 +11,8 @@ export default defineConfig({
     retries: process.env["CI"] ? 1 : 0,
     fullyParallel: false,
     testDir: 'tests',
-    workers: 1
+    workers: 1,
+    // WebKit's prebuilt binary wants Ubuntu sonames (icu 74, libxml2.so.2) that Arch cannot
+    // supply, and `playwright install-deps` is apt-only. Chromium needs nothing extra.
+    projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }]
 })

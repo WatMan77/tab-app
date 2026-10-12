@@ -13,6 +13,8 @@
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    // TS 6 no longer pulls in every @types package by default
+    "types": ["bun"],
 
     // Best practices
     "strict": true,

@@ -37,11 +37,14 @@ body {
 }
 
 /* General button/link styles */
-.MuiMenuItem-root {
+.nav-item {
     color: white;
     font-weight: 500;
     font-size: 16px;
     margin-left: 10px;
+    /* Buttons uppercase their label by default; the navbar reads as mixed-case Finnish */
+    text-transform: none;
+    padding: 6px 16px;
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.1);

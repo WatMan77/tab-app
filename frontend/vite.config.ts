@@ -3,24 +3,14 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react({
-    babel: {
-      plugins: ['babel-plugin-react-compiler']
-    }
-  })],
+  // The React Compiler runs through oxc; plugin-react v6 dropped its Babel integration.
+  // Needs the optional `oxc-transform-react` package installed.
+  plugins: [react({ compiler: true })],
   server: {
     proxy: {
       '/api': {
         target: process.env["DOCKER"] ? "http://backend:3000" : "http://localhost:3000",
         changeOrigin: true,
-      }
-    }
-  },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        // Vite 5 defaults to Sass's legacy JS API, which Dart Sass 2.0 removes
-        api: 'modern-compiler'
       }
     }
   },

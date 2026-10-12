@@ -1,5 +1,4 @@
 import express from 'express';
-import "express-async-errors";
 import { db, clearDatabase, initDb, testToolsAllowed } from "./src/database";
 import { redisClient, toNewAccount } from "./src/utils";
 import type { Account } from "@app/common";

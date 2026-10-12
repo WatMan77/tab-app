@@ -60,8 +60,9 @@ router.put("/", validateToken, async (req, res) => {
 
 router.delete("/:name", validateToken, async (req, res) => {
     try {
-        const params = req.params;
-        const name: string = decodeURIComponent(params['name'] ?? "");
+        // Express 5 types params as `string | string[]` (wildcards yield arrays); `:name` is a string
+        const param = req.params['name'];
+        const name: string = typeof param === "string" ? decodeURIComponent(param) : "";
 
         if (!name || name.length == 0) {
             return res.status(400).json({ error: "'name' not found" });

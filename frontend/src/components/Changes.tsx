@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactElement } from "react";
 import type { BalanceChangeInfo, Account } from "@app/common";
 import axios from 'axios';
 import {
@@ -38,7 +38,7 @@ const Changes = () => {
     return 0;
   };
 
-  const userMenuItems = (): JSX.Element[] => {
+  const userMenuItems = (): ReactElement[] => {
     const sortedUsers = [...users];
     sortedUsers.sort(compareAccounts);
     return sortedUsers.map((u) => (

@@ -1,5 +1,5 @@
 import AppBar from "@mui/material/AppBar";
-import MenuItem from "@mui/material/MenuItem";
+import Button from "@mui/material/Button";
 import { Toolbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import "../styling/navbar.scss";
@@ -18,46 +18,69 @@ const NavBar = () => {
 
   const adminOrLogout = (logged: string | null) => {
     if (logged) {
-      // return <Button onClick={logout}>Logout</Button>;
       return (
-        <MenuItem className="admin" key="logout" onClick={logout}>
+        <Button className="nav-item admin" key="logout" onClick={logout}>
           <LogoutIcon sx={{ marginRight: "10px" }} /> Logout
-        </MenuItem>
+        </Button>
       );
     } else {
       return (
-        <MenuItem key="login" onClick={() => navigate("/adminlogin")}>
+        <Button
+          className="nav-item"
+          key="login"
+          onClick={() => navigate("/adminlogin")}
+        >
           Login
-        </MenuItem>
+        </Button>
       );
     }
   };
 
   const home = (
     <>
-      <MenuItem key="home" onClick={() => navigate("/")}>
+      <Button className="nav-item" key="home" onClick={() => navigate("/")}>
         Koti
-      </MenuItem>
-      <MenuItem key="transactions" onClick={() => navigate("/transactions")}>
+      </Button>
+      <Button
+        className="nav-item"
+        key="transactions"
+        onClick={() => navigate("/transactions")}
+      >
         Tapahtumat
-      </MenuItem>
-      <MenuItem key="changes" onClick={() => navigate("/changes")}>
+      </Button>
+      <Button
+        className="nav-item"
+        key="changes"
+        onClick={() => navigate("/changes")}
+      >
         Muutokset
-      </MenuItem>
-      <MenuItem key="pricelist" onClick={() => navigate("/pricelist")}>
+      </Button>
+      <Button
+        className="nav-item"
+        key="pricelist"
+        onClick={() => navigate("/pricelist")}
+      >
         Viivat
-      </MenuItem>
+      </Button>
     </>
   );
 
   const adminPages = (
     <>
-      <MenuItem key="balances" onClick={() => navigate("/balances")}>
+      <Button
+        className="nav-item"
+        key="balances"
+        onClick={() => navigate("/balances")}
+      >
         Balances
-      </MenuItem>
-      <MenuItem key="products" onClick={() => navigate("/products")}>
+      </Button>
+      <Button
+        className="nav-item"
+        key="products"
+        onClick={() => navigate("/products")}
+      >
         Products
-      </MenuItem>
+      </Button>
     </>
   );
 

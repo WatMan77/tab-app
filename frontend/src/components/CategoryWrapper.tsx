@@ -78,12 +78,14 @@ const CategoryWrapper: React.FC<{
     <div className="account-grid">
       <div className="search">
         <TextField
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            },
           }}
           variant="standard"
           value={nameFilter}

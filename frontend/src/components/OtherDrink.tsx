@@ -9,8 +9,10 @@ const Other: React.FC<{
         label="Muu määrä"
         placeholder="0"
         color="secondary"
-        InputProps={{
-          startAdornment: <InputAdornment position="start"></InputAdornment>,
+        slotProps={{
+          input: {
+            startAdornment: <InputAdornment position="start"></InputAdornment>,
+          },
         }}
         type="number"
         onChange={({ target }) => {

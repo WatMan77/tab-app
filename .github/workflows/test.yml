@@ -9,8 +9,8 @@ jobs:
     name: eslint-checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install backend deps
         working-directory: ./backend
@@ -56,8 +56,8 @@ jobs:
 
     steps:
       # ...
-      - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v1
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
 
       # run any `bun` or `bunx` command
       - run: bun install
@@ -87,9 +87,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Get Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
 
       - run: bun install && bun run dev &
         working-directory: ./backend
@@ -121,7 +121,7 @@ jobs:
         run: bun run test
       - name: Upload trace
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trace
           path: ./playwright/test-results/**/*.zip
@@ -155,9 +155,9 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Get Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@v2
 
       # Install everything the runner needs first: Playwright and its browser
       - name: Install Playwright
@@ -205,7 +205,7 @@ jobs:
         run: $COMPOSE logs
       - name: Upload trace
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trace-production
           path: ./playwright/test-results/**/*.zip

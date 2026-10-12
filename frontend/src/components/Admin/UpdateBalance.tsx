@@ -70,7 +70,7 @@ const UpdateBalance: React.FC<{
         onChange={(_event, isExpanded) => onToggleExpanded(account.id!, isExpanded)}
         // Collapsed rows render nothing, and skipping the animation keeps the
         // virtualizer from re-measuring on every frame of the transition.
-        TransitionProps={{ unmountOnExit: true, timeout: 0 }}
+        slotProps={{ transition: { unmountOnExit: true, timeout: 0 } }}
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -100,7 +100,7 @@ const UpdateBalance: React.FC<{
               helperText="Digits only. Empty keeps the current pin"
               fullWidth
               // A numeric keypad on the tablet this runs on
-              inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+              slotProps={{ htmlInput: { inputMode: "numeric", pattern: "[0-9]*" } }}
               value={draft.pincode}
               onChange={({ target }) =>
                 updateDraft(account.id!, {

@@ -1,14 +1,18 @@
 import { test, expect } from '@playwright/test'
 import type { APIRequestContext, Page } from '@playwright/test'
 import * as testValues from "../utils"
-import { confirmChanges } from "../helpers"
+import { accountRow, confirmChanges, gotoBalances } from "../helpers"
 
 const admin = "admin"
 const password = "password123"
 const login = async (page: any) => {
-    await page.locator('.MuiMenuItem-root').last().click()
-    await page.getByRole('textbox').first().fill(admin)
-    await page.getByRole('textbox').last().fill(password)
+    await page.locator('.nav-item').last().click()
+    // Fill by label, not by position. Clicking "Login" only starts the navigation, so a
+    // positional textbox locator can still bind to the page we came from - the front page
+    // has a search box, /balances has the new-account fields. The credentials then land in
+    // an input that is about to unmount and the login silently posts an empty username.
+    await page.getByLabel("Enter username").fill(admin)
+    await page.getByLabel("Enter password").fill(password)
     await page.getByRole("button", { name: "LOG IN" }).click()
 }
 
@@ -17,14 +21,14 @@ const login = async (page: any) => {
 const setPinThroughAdmin = async (page: Page, username: string, pin: string) => {
     await page.goto('/')
     await login(page)
-    await page.getByText("Balances").click()
-    await page.getByText(username).click()
+    await gotoBalances(page)
+    await accountRow(page, username).click()
     await page.getByRole('textbox', { name: 'New pin' }).fill(pin)
     await confirmChanges(page)
 
     // Log out, then back to the front page
-    await page.locator('.MuiMenuItem-root').last().click()
-    await page.locator('.MuiMenuItem-root').first().click()
+    await page.locator('.nav-item').last().click()
+    await page.locator('.nav-item').first().click()
 }
 
 // GET /api/transaction is uncached, so it says exactly who was really charged

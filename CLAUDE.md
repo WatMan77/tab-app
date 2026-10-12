@@ -51,7 +51,7 @@ Plain SQL files in `backend/migrations/` named `<number>_<description>.sql`, app
 
 ## Frontend architecture
 
-- Routes are declared in `src/main.tsx` (each page is wrapped with `NavBar`). MUI dark theme, and React Compiler runs through a Babel plugin in `vite.config.ts`.
+- Routes are declared in `src/main.tsx` (each page is wrapped with `NavBar`). MUI dark theme, and React Compiler runs through oxc via `react({ compiler: true })` in `vite.config.ts` (needs the optional `oxc-transform-react` package).
 - API calls use `axios` with relative `/api/...` URLs. The Vite dev server proxies `/api` to `localhost:3000`, or to `backend:3000` when the `DOCKER` env var is set.
 - Socket.IO is used for one event, `accounts-updated`, consumed in `src/App.tsx`. The client connects directly to `VITE_API_URL` or `http://localhost:3000`, bypassing the proxy.
 - `src/utils.ts` holds `compareAccounts` (numeric, so a room-number prefix like `325. Kake` sorts naturally) and `matchesSearch`. Use them rather than ad-hoc sorting or filtering.
@@ -61,6 +61,7 @@ Plain SQL files in `backend/migrations/` named `<number>_<description>.sql`, app
 
 - Backend tests (`backend/tests/*.test.ts`) use `bun:test` and `supertest`. Each `beforeEach` clears the DB, flushes Redis, and reseeds using `faker` (fixed seed) and the helpers in `tests/db_values.ts`.
 - Playwright tests reset and seed through the test-only endpoints. The reset calls are hardcoded to `http://localhost:3000`, while `BASE_URL` only changes where the frontend is loaded (for example `BASE_URL=http://localhost:4173` for the production build). Shared helpers are in `playwright/helpers.ts` and test data in `playwright/utils.ts`.
+- The suite runs **chromium only** (pinned in `playwright/playwright.config.ts`), so install with `bunx playwright install chromium`. On Arch/CachyOS ignore the host-validation warning that suggests `sudo npx playwright install-deps`: it is apt-only, and WebKit's prebuilt binary wants libraries Arch does not ship at those sonames. Never run `bun install` or `playwright install` under sudo.
 - When asserting on a user button, scope the locator to `.main-content`: `getByText(username)` also matches the toasts this app raises, and react-toastify's `pauseOnFocusLoss` stops them auto-closing in a headless run.
 
 ## Conventions

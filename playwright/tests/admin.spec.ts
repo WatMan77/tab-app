@@ -1,15 +1,19 @@
 import { test, expect } from '@playwright/test'
 import * as testvalues from "../utils";
-import { confirmChanges } from "../helpers";
+import { accountRow, confirmChanges, gotoBalances } from "../helpers";
 const baseUrl = process.env["BASE_URL"] ?? "http://localhost:5173"
 
 
 const admin = "admin"
 const password = "password123"
 const login = async (page: any) => {
-    await page.locator('.MuiMenuItem-root').last().click()
-    await page.getByRole('textbox').first().fill(admin)
-    await page.getByRole('textbox').last().fill(password)
+    await page.locator('.nav-item').last().click()
+    // Fill by label, not by position. Clicking "Login" only starts the navigation, so a
+    // positional textbox locator can still bind to the page we came from - the front page
+    // has a search box, /balances has the new-account fields. The credentials then land in
+    // an input that is about to unmount and the login silently posts an empty username.
+    await page.getByLabel("Enter username").fill(admin)
+    await page.getByLabel("Enter password").fill(password)
     await page.getByRole("button", { name: "LOG IN" }).click()
 }
 
@@ -21,10 +25,10 @@ test.beforeEach(async ({ request }) => {
 test.describe("Admin can", () => {
     test("Log in", async ({ page }) => {
         await page.goto(baseUrl)
-        await page.locator('.MuiMenuItem-root').last().click()
+        await page.locator('.nav-item').last().click()
         await expect(page.getByText("LOG IN")).toBeVisible()
-        await page.getByRole('textbox').first().fill(admin)
-        await page.getByRole('textbox').last().fill(password)
+        await page.getByLabel("Enter username").fill(admin)
+        await page.getByLabel("Enter password").fill(password)
         await page.getByRole("button", { name: "LOG IN" }).click()
 
         await expect(page.getByText("Balances")).toBeVisible()
@@ -34,9 +38,9 @@ test.describe("Admin can", () => {
 
     test("Log out", async ({ page }) => {
         await page.goto(baseUrl)
-        await page.locator('.MuiMenuItem-root').last().click()
-        await page.getByRole('textbox').first().fill(admin)
-        await page.getByRole('textbox').last().fill(password)
+        await page.locator('.nav-item').last().click()
+        await page.getByLabel("Enter username").fill(admin)
+        await page.getByLabel("Enter password").fill(password)
         await page.getByRole("button", { name: "LOG IN" }).click()
         // Due to flakyness, we need these so that the Logout button
         // renders
@@ -45,7 +49,7 @@ test.describe("Admin can", () => {
         await expect(page.getByText("Logout")).toBeVisible()
 
         // Now the logout button should be last
-        await page.locator('.MuiMenuItem-root').last().click()
+        await page.locator('.nav-item').last().click()
         await expect(page.getByText("Balances")).not.toBeVisible()
         await expect(page.getByText("Products")).not.toBeVisible()
         await expect(page.getByText("Logout")).not.toBeVisible()
@@ -71,14 +75,19 @@ test.describe("Admin can", () => {
         ]
         await page.goto(baseUrl)
         await login(page)
-        await page.getByText("Balances").click()
+        await gotoBalances(page)
+        // By label, not by position: a positional textbox locator binds to whatever is mounted
+        // right now, which can still be the front page's search box.
+        const accountName = page.getByLabel("Enter account name")
+
         for (const u of users) {
-            await page.getByRole('textbox').first().fill(u.name) // Enter name
+            await accountName.fill(u.name) // Enter name
+            await expect(accountName).toHaveValue(u.name)
             await page.getByPlaceholder('Enter a value').first().fill(u.amount)
             await page.getByText("CREATE USER").click()
 
-            // The page refreshes after adding a user. Wait for it to load
-            await page.waitForURL('**/balances');
+            // Creating a user refetches the list in place, it does not navigate, so the row
+            // appearing is the only signal that the POST went through.
             await expect(page.getByText(u.name + " " + u.amount)).toBeVisible()
         }
 
@@ -112,9 +121,14 @@ test.describe("Admin can", () => {
 
         const table = page.locator('table');
 
+        // `allTextContents()` is one of the few Playwright calls that does not auto-wait: against
+        // a locator that matches nothing yet it returns [] instead of retrying. So wait for the
+        // header to render, and for the fetched rows to land, before reading either.
+        await expect(table.locator('tr').first()).toBeVisible()
         const firstRow = await table.locator('tr').first().locator('td, th').allTextContents();
         expect(firstRow).toEqual(["Käyttäjä", "Määrä", "Päivämäärä"]);
 
+        await expect(table.locator('tbody tr')).toHaveCount(users.length)
         const tableTexts = await table.locator('tr td').allTextContents();
         for (const u of users) {
             expect(tableTexts).toEqual(expect.arrayContaining([u.name, "10.00"]))
@@ -168,12 +182,14 @@ test.describe("Admin can", () => {
 
         // Delete the items
 
+        // By accessible name, not by the icon's data-testid: MUI v9 only renders that test id
+        // outside production, so it is missing from the built frontend.
+        const deleteButtons = page.getByRole('button', { name: 'Delete product' })
         for (let i = 0; i < products.length; i += 1) {
-            await page.locator('[data-testid="DeleteIcon"]').first().click();
+            await deleteButtons.first().click();
             await page.getByText("Kyllä").click();
+            await expect(deleteButtons).toHaveCount(products.length - i - 1)
         }
-        await page.waitForTimeout(1000);
-        expect(await page.getByTestId("DeleteIcon").count()).toBe(0)
     })
 
     test("Close and open piikki for a user", async ({ page, request }) => {
@@ -184,15 +200,19 @@ test.describe("Admin can", () => {
         await login(page);
 
         for (const user of testvalues.accounts) {
-            await page.getByText("Balances").click();
-            await page.getByText(user.username).click();
-            await page.getByText('Sulje piikki', { exact: true }).filter({ has: page.locator(':visible') }).click();
+            await gotoBalances(page);
+            await accountRow(page, user.username).click();
+            // One visible button per expanded row. The old `filter({ has: ':visible' })` worked
+            // only because MUI eagerly rendered a TouchRipple span inside every button; v9's
+            // ripple is lazy, so the button has no child elements and `has` - which requires a
+            // descendant - matched nothing. Ask for the button by its accessible name instead.
+            await page.getByRole('button', { name: 'Sulje piikki' }).click();
             await page.getByText("Koti").click();
 
             await expect(page.getByText(user.username)).toBeDisabled();
 
-            await page.getByText("Balances").click();
-            await page.getByText(user.username).click();
+            await gotoBalances(page);
+            await accountRow(page, user.username).click();
             await page.getByText("AVAA PIIKKI").click();
 
             await page.getByText("Koti").click();
@@ -208,7 +228,7 @@ test.describe("Admin can", () => {
         await page.goto(baseUrl);
         await login(page);
 
-        await page.getByText("Balances").click()
+        await gotoBalances(page)
         await page.waitForTimeout(2000)
 
         expect(await page.locator('.account').count()).toBe(testvalues.accounts.length)

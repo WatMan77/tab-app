@@ -106,9 +106,8 @@ const App = () => {
     <Stack
       className="wrapper"
       direction="row"
-      justifyContent="flex-start"
-      alignItems="stretch"
       spacing={2}
+      sx={{ justifyContent: "flex-start", alignItems: "stretch" }}
     >
       <div className="main-content">
 

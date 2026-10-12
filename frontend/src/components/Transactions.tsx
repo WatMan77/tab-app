@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useState } from "react";
+import { startTransition, useEffect, useState, type ReactElement } from "react";
 import type { LogInformation, Account } from "@app/common";
 import {
   Select,
@@ -70,7 +70,7 @@ const Transactions = () => {
     }
     return 0;
   };
-  const userMenuItems = (): JSX.Element[] => {
+  const userMenuItems = (): ReactElement[] => {
     const sortedUsers = [...users];
     sortedUsers.sort(compareAccounts);
     return sortedUsers.map((u) => (
